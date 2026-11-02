@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>معلم القراءة</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="game">
+  <header class="top"><a href="/" aria-label="الصفحة الرئيسية"><img class="logo" src="images/logo.webp" alt=""></a></header>
+
+  <section class="view" id="view-grid">
+    <div class="grid" id="grid"></div>
+    <button class="button" id="practice" type="button">تَدَرَّبْ عَلَى الْقِرَاءَةِ</button>
+  </section>
+
+  <section class="view" id="view-practice" hidden>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="solo">
+      <p class="prompt" id="read-prompt" hidden>اقرأ</p>
+      <div class="solo-card" id="solo">
+        <img id="solo-img" src="" alt="">
+        <span class="word" id="solo-word"></span>
+      </div>
+    </div>
+    <button class="button" id="next" type="button">التالي <span aria-hidden="true">←</span></button>
+  </section>
+
+  <section class="view" id="view-match" hidden>
+    <p class="prompt">اسحب كل صورة إلى كلمتها</p>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section class="view" id="view-done" hidden>
+    <p class="praise">أحسنت</p>
+  </section>
+</div>
+<div class="scrim" id="scrim"></div>
+<script src="js/reading.js"></script>
+</body>
+</html>
