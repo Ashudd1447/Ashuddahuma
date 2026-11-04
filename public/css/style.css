@@ -38,6 +38,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .game-card h2{margin:0;padding:.3em .5em;text-align:center;font-weight:700;font-size:clamp(1.8rem,6vw,2.4rem);line-height:1.5;color:var(--deep)}
 .game-card .word{display:block;padding:.1em 0 .25em;color:var(--ink);font-size:clamp(2.4rem,8vw,3.2rem)}
 .site-foot{text-align:center;padding:0 16px 28px;color:var(--muted);font-size:1rem}
+.install{display:block;margin:0 auto 16px;border:2px solid var(--gold);border-radius:999px;background:var(--surface);color:var(--deep);padding:.35em 1.4em;font-weight:700;font-size:1.15rem;line-height:1.6}
+.install:active{transform:scale(.97)}
 
 /* Game shell */
 .game{min-height:100svh;display:flex;flex-direction:column}
