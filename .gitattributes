@@ -1,0 +1,10 @@
+# Same line endings on every computer, Windows or Mac: LF in the repo and on disk.
+* text=auto eol=lf
+
+# Never touch these.
+*.jpg binary
+*.png binary
+*.webp binary
+*.m4a binary
+*.woff2 binary
+*.pdf binary
