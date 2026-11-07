@@ -26,6 +26,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .button{display:inline-flex;align-items:center;gap:.6em;border:0;border-radius:999px;background:var(--deep);color:#fff;padding:.5em 1.6em;font-weight:700;font-size:clamp(1.25rem,3vh,1.6rem);line-height:1.6;box-shadow:var(--shadow);transition:transform .15s ease}
 .button:active{transform:scale(.97)}
+.button.quiet{background:var(--surface);color:var(--deep);border:2px solid var(--line);box-shadow:none}
 
 /* Home */
 .hero{min-height:calc(100svh - 110px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,3vh,32px);padding:clamp(16px,3vh,32px) 16px;text-align:center}
@@ -39,6 +40,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .game-card:active{transform:scale(.99)}
 .game-card img{width:100%;aspect-ratio:1;object-fit:cover}
 .game-card h2{margin:0;padding:.3em .5em;text-align:center;font-weight:700;font-size:clamp(1.8rem,6vw,2.4rem);line-height:1.5;color:var(--deep)}
+.game-card h2.quran{font-weight:400;font-size:clamp(2rem,6.5vw,2.8rem)}
 .game-card .word{display:block;padding:.1em 0 .25em;color:var(--ink);font-size:clamp(2.4rem,8vw,3.2rem)}
 .game-card .basmala{padding:.6em .4em .8em;font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.9}
 .site-foot{text-align:center;padding:0 16px 28px;color:var(--muted);font-size:1rem}
@@ -94,19 +96,33 @@ button{font:inherit;color:inherit;cursor:pointer}
 .ghost{position:fixed;z-index:30;margin:0;pointer-events:none;box-shadow:0 14px 34px rgba(74,52,36,.3);cursor:grabbing}
 
 /* Reciter */
-.recite .view{gap:clamp(8px,1.8vh,18px)}
-.ayat{list-style:none;margin:0;padding:4px 8px;width:100%;max-width:760px;max-height:42svh;overflow-y:auto;text-align:center;font-size:clamp(1.15rem,2.7vh,1.6rem);line-height:2.1}
-.ayah-item{display:inline;cursor:pointer;border-radius:10px;padding:.05em .15em;box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:background .2s ease}
+.recite .view{gap:clamp(8px,1.6vh,16px)}
+.surah-title{margin:0;font-size:clamp(1.7rem,4.6vh,2.5rem);line-height:1.8;color:var(--deep)}
+.modes{display:flex;gap:4px;padding:4px;background:var(--line);border-radius:999px}
+.modes button{border:0;border-radius:999px;background:transparent;color:var(--muted);padding:.25em 1em;font-weight:700;font-size:clamp(1.05rem,2.5vh,1.3rem);line-height:1.7;transition:background .2s ease,color .2s ease}
+.modes button.on{background:var(--surface);color:var(--deep);box-shadow:var(--shadow)}
+.ayat{list-style:none;margin:0;padding:4px 8px;width:100%;max-width:760px;max-height:38svh;overflow-y:auto;overflow-x:hidden;text-align:center;font-size:clamp(1.15rem,2.7vh,1.6rem);line-height:2.1}
+.ayah-item{display:inline;border-radius:10px;padding:.05em .15em;box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:background .2s ease}
 .ayah-item.on{background:#F3E4C8;color:var(--deep)}
+.mode-ayah .ayah-item{cursor:pointer}
 .ayah-no{color:var(--gold)}
+.play-mark{display:none;color:var(--gold);margin-left:.2em;vertical-align:middle}
+.play-mark svg{width:.72em;height:.72em;fill:currentColor;vertical-align:-.05em}
+.mode-ayah .play-mark{display:inline-block}
+.ayah-item.playing .play-mark{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.3}}
 .focus{flex:1;width:100%;max-width:860px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2vh,20px);text-align:center;padding:0 8px}
-.ayah-focus{margin:0;font-size:clamp(2.1rem,min(7.2vw,6.4vh),4.2rem);line-height:2;cursor:pointer}
+.ayah-focus{margin:0;font-size:clamp(2rem,min(7vw,6.2vh),4.2rem);line-height:2}
+.mode-ayah .ayah-focus{cursor:pointer}
 .word-lit{border-radius:12px;padding:0 .08em;transition:background .12s ease,color .12s ease}
 .word-lit.on{background:var(--gold);color:#fff}
-.home-talk{color:var(--muted);font-weight:400;font-size:.85em}
 .controls{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;padding-bottom:8px}
-.button.round{padding:.5em .9em;font-size:clamp(1.3rem,3.2vh,1.7rem)}
-@media (max-width:430px){.controls .button{font-size:1.15rem;padding:.45em 1.1em}.controls .button.round{padding:.4em .8em}}
+#controls-ayah{display:none}
+.mode-ayah #controls-ayah{display:flex}
+.mode-ayah #controls-surah{display:none}
+.button .icon{width:.85em;height:.85em;fill:currentColor;flex:none}
+.button.playing{background:var(--gold)}
+@media (max-width:430px){.controls .button{font-size:1.15rem;padding:.45em 1.1em}}
 
 /* Finished */
 #view-done{justify-content:center}
@@ -121,6 +137,25 @@ button{font:inherit;color:inherit;cursor:pointer}
 .page ul{margin:0;padding:0;list-style:none}
 .page li{padding:.45em 0;border-bottom:1px solid var(--line)}
 .page bdi{direction:ltr}
+
+/* Menu, top right */
+.menu-button{position:fixed;top:10px;right:10px;z-index:40;width:46px;height:46px;padding:0;border:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
+.menu-button svg{width:26px;height:26px}
+.menu{position:fixed;top:64px;right:10px;z-index:40;min-width:210px;padding:14px 16px 8px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.menu-label{margin:0;color:var(--muted);font-size:1.05rem}
+.dialect{display:flex;align-items:center;justify-content:center;min-width:130px;height:54px;padding:0 20px;border:2px solid var(--gold);border-radius:999px;background:var(--bg);color:var(--deep);font-weight:700;font-size:1.35rem}
+.dialect .flag{width:54px;height:36px;border-radius:4px;box-shadow:0 0 0 1px rgba(74,52,36,.15)}
+.menu-admin{width:40px;height:40px;padding:7px;border:0;border-radius:50%;background:none;color:var(--muted);opacity:.5}
+.menu-admin svg{width:100%;height:100%}
+
+/* Admin gate */
+.gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(74,52,36,.35)}
+.gate-card{width:min(100%,320px);display:flex;flex-direction:column;align-items:center;gap:14px;margin:0;padding:24px;background:var(--surface);border-radius:24px;box-shadow:var(--shadow);font-family:"Noto Naskh Arabic","Geeza Pro",serif}
+.gate-title{margin:0;font-weight:700;color:var(--deep);font-size:1.4rem}
+.gate-pin{width:100%;padding:.3em;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:1.8rem;text-align:center;letter-spacing:.3em;direction:ltr}
+.gate-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.gate.shake .gate-card{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}

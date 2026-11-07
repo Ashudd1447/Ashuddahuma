@@ -2,10 +2,14 @@
    tap, and played through Web Audio, so a tap sounds at once instead of
    waiting on a download. Ported from the IQRA app, where this fixed the same
    lag. Rules kept: a missing clip stays silent, one clip plays at a time,
-   chimes for praise and a soft buzzer for errors. */
+   chimes for praise and a soft buzzer for errors.
+   The dialect setting lives here too: the text the child reads is always
+   Fusha, and a spoken prompt may exist twice, as <name> (Fusha) and
+   <name>-masri (Egyptian). say() plays the chosen one. */
 const sound = (() => {
   const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const START_LEAD = 0.03;
+  const DIALECTS = ['fusha', 'masri'];
   let context = null;
   let keepAlive = null;
   let warmed = false;
@@ -102,7 +106,7 @@ const sound = (() => {
   }
 
   /* iPhones and iPads mute Web Audio when the ring switch is on silent. A
-     looping silent media element keeps the page's audio in the playback
+     looping silent media element keeps the page in the playback audio
      category while something sounds, which the switch does not mute. */
   function holdSession(on) {
     if (!IOS) return;
@@ -151,6 +155,14 @@ const sound = (() => {
     for (const name of names) load(name);
   }
 
+  /* The first of several names that has a recording, with its buffer. */
+  function first(names) {
+    return names.reduce(
+      (chain, name) => chain.then((hit) => hit || load(name).then((buffer) => (buffer ? { name, buffer } : null))),
+      Promise.resolve(null),
+    );
+  }
+
   function stop() {
     generation += 1;
     if (!active) return;
@@ -174,18 +186,20 @@ const sound = (() => {
     return Math.min(byClock, byStamp) - startedAt;
   }
 
-  /* Plays a recording by name and resolves when it ends, at once if the clip
-     is missing or a newer play took over. */
+  /* Plays a recording by name, or the first that exists of a list of names,
+     and resolves when it ends, at once if nothing was found or a newer play
+     took over. */
   function play(name) {
     stop();
     warm();
     const mine = generation;
+    const names = Array.isArray(name) ? name : [name];
     return new Promise((resolve) => {
-      load(name).then((buffer) => {
+      first(names).then((hit) => {
         const c = ctx();
-        if (mine !== generation || !buffer || !c) return resolve();
+        if (mine !== generation || !hit || !c) return resolve();
         const source = c.createBufferSource();
-        source.buffer = buffer;
+        source.buffer = hit.buffer;
         source.connect(c.destination);
         const startedAt = c.currentTime + START_LEAD;
         let finished = false;
@@ -197,8 +211,8 @@ const sound = (() => {
           resolve();
         };
         const playing = {
-          name,
-          duration: buffer.duration,
+          name: hit.name,
+          duration: hit.buffer.duration,
           position: () => Math.max(0, heard(c, startedAt)),
           stop: () => {
             source.onended = null;
@@ -217,6 +231,36 @@ const sound = (() => {
 
   function current() {
     return active;
+  }
+
+  /* Dialect: 'fusha' (the default) or 'masri', kept on the device. */
+  function dialect() {
+    try {
+      const saved = localStorage.getItem('dialect');
+      return DIALECTS.includes(saved) ? saved : 'fusha';
+    } catch {
+      return 'fusha';
+    }
+  }
+
+  function setDialect(next) {
+    try {
+      localStorage.setItem('dialect', DIALECTS.includes(next) ? next : 'fusha');
+    } catch {
+      // Private browsing: the choice lasts for this page only.
+    }
+  }
+
+  const variants = (name) => (dialect() === 'masri' ? [`${name}-masri`, name] : [name]);
+
+  /* A spoken prompt in the chosen dialect; the Fusha recording plays when the
+     Egyptian one does not exist. */
+  function say(name) {
+    return play(variants(name));
+  }
+
+  function preloadPrompts(names) {
+    for (const name of names) for (const variant of variants(name)) load(variant);
   }
 
   function tone(frequency, startsIn, length, volume, type = 'sine') {
@@ -263,5 +307,5 @@ const sound = (() => {
     else wake();
   });
 
-  return { preload, play, stop, current, unlock: warm, chime, buzz, wrong };
+  return { preload, preloadPrompts, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, wrong };
 })();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>الفاتحة</title>
+<title>سُورَةُ ٱلْفَاتِحَةِ</title>
 <link rel="icon" href="images/logo.webp">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -13,23 +13,26 @@
 </head>
 <body data-surah="fatihah">
 <div class="game recite">
-  <header class="top"><a href="/" aria-label="الصفحة الرئيسية"><img class="logo" src="images/logo.webp" alt=""></a></header>
+  <header class="top"><a href="/" aria-label="الصَّفْحَةُ الرَّئِيسِيَّةُ"><img class="logo" src="images/logo.webp" alt=""></a></header>
 
   <section class="view" id="view-surah">
+    <h1 class="surah-title quran">سُورَةُ ٱلْفَاتِحَةِ</h1>
+    <div class="modes" role="tablist" aria-label="طَرِيقَةُ الِاسْتِمَاعِ">
+      <button type="button" role="tab" data-mode="surah">السُّورَةُ كَامِلَةً</button>
+      <button type="button" role="tab" data-mode="ayah">آيَةً آيَةً</button>
+    </div>
     <ol class="ayat quran" id="ayat"></ol>
     <div class="focus">
       <p class="ayah-focus quran" id="focus"></p>
-      <p class="prompt" id="turn" hidden>الآن اقرأها أنت<br><span class="home-talk">دلوقتي اقراها أنت</span></p>
+      <p class="prompt" id="turn" hidden>الْآنَ اقْرَأْهَا أَنْتَ</p>
     </div>
-    <div class="controls">
-      <button class="button" id="listen" type="button">استمع</button>
-      <button class="button round" id="again" type="button" aria-label="أعد"><span aria-hidden="true">↻</span></button>
-      <button class="button" id="next" type="button">التالي <span aria-hidden="true">←</span></button>
+    <div class="controls" id="controls-surah">
+      <button class="button" id="listen" type="button"></button>
     </div>
-  </section>
-
-  <section class="view" id="view-done" hidden>
-    <p class="praise">أحسنت</p>
+    <div class="controls" id="controls-ayah">
+      <button class="button" id="again" type="button"><span aria-hidden="true">↻</span> أَعِدِ الْآيَةَ</button>
+      <button class="button" id="next" type="button">الْآيَةُ التَّالِيَةُ <span aria-hidden="true">←</span></button>
+    </div>
   </section>
 </div>
 <script src="js/app.js"></script>

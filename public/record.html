@@ -6,16 +6,8 @@
 <title>Recording tool</title>
 <link rel="icon" href="images/logo.webp">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
 <style>
-.tool{max-width:820px;margin:auto;padding:16px 16px 64px;font-family:system-ui,sans-serif;line-height:1.5}
-.tool h1{margin:.2em 0 .4em;color:var(--deep)}
-.tool h2{margin:1.6em 0 .5em;color:var(--deep);font-size:1.2rem;border-bottom:1px solid var(--line);padding-bottom:.2em}
-.tool label{display:inline-block;margin:0 16px 8px 0}
-.tool select,.tool input{font:inherit;padding:4px 8px}
-.tool button{font:inherit;padding:8px 16px;border:0;border-radius:999px;background:var(--deep);color:#fff;cursor:pointer}
-.tool button:disabled{opacity:.4;cursor:default}
-.tool button.quiet{background:var(--surface);color:var(--deep);border:2px solid var(--line)}
-.tool button.rec{background:#C0392B}
 .setup{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin:12px 0}
 .meter{height:14px;background:var(--line);border-radius:7px;overflow:hidden;position:relative;margin:8px 0}
 .meter i{display:block;height:100%;width:0;background:var(--gold);transition:width .05s linear}
@@ -23,8 +15,8 @@
 .slot{background:var(--surface);border-radius:16px;padding:14px 16px;margin:10px 0;box-shadow:var(--shadow)}
 .slot.selected{outline:3px solid var(--gold)}
 .slot .text{direction:rtl;font-size:2.2rem;line-height:1.9;margin:0}
-.slot .note{color:var(--muted);margin:2px 0 8px;font-size:.95rem}
-.slot .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.slot .note{margin:2px 0 8px}
+.slot .row{margin:0}
 .takes{list-style:none;margin:8px 0 0;padding:0}
 .takes li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:.95rem}
 .takes .kept{font-weight:700;color:var(--deep)}
@@ -36,7 +28,7 @@
 <body>
 <main class="tool">
   <h1>Recording tool</h1>
-  <p>Parents' tool, not linked from the site. Each card is one clip the site plays. Press <b>Record</b>, wait a beat, say it, press <b>Stop</b>. The newest take is kept; keep an older one if it was better. Then <b>Write to folder</b> and choose the <code>public/audio</code> folder of the repo (Chrome or Edge on a computer), or download each take. A new recording of a name that already has an <code>.m4a</code> file is ignored by the site until that <code>.m4a</code> is removed.</p>
+  <p>Admin tool, not linked from the site. Each card is one clip the site plays. Where the child hears a prompt in either dialect there are two cards: the Fusha one, and the Egyptian one named <code>-masri</code>, whose text is here only to read aloud and is never shown to the child. Press <b>Record</b>, wait a beat, say it, press <b>Stop</b>. The newest take is kept; keep an older one if it was better. Then <b>Write to folder</b> and choose the <code>public/audio</code> folder of the repo (Chrome or Edge on a computer), or download each take. A new recording of a name that already has an <code>.m4a</code> file is ignored by the site until that <code>.m4a</code> is removed.</p>
   <div class="setup">
     <label>Microphone <select id="mic"><option value="">Default</option></select></label>
     <label>Save as <select id="rate"><option value="22050">WAV mono 22,050 Hz (small, clear speech)</option><option value="44100">WAV mono 44,100 Hz</option><option value="48000">WAV mono 48,000 Hz (as recorded)</option></select></label>
@@ -44,7 +36,7 @@
   </div>
   <div class="meter" id="meter"><i></i><b style="left:70%"></b><b style="left:90%"></b></div>
   <p class="note">Aim for the voice to reach between the two marks (−18 to −6 dBFS). Press <b>R</b> to record or stop the selected card.</p>
-  <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+  <div class="row">
     <button id="write" type="button">Write to folder</button>
     <span id="written" class="note"></span>
   </div>
@@ -52,6 +44,7 @@
   <p id="status"></p>
 </main>
 <script src="js/app.js"></script>
+<script src="js/admin.js"></script>
 <script src="js/record.js"></script>
 </body>
 </html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Letter strokes</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+<style>
+.letters{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.tool .chip{position:relative;min-width:44px;height:44px;padding:0 10px;border-radius:12px;background:var(--surface);color:var(--ink);border:2px solid var(--line);font-family:"Noto Naskh Arabic",serif;font-size:1.5rem;line-height:1}
+.tool .chip.on{border-color:var(--gold);background:#F3E4C8}
+.tool .chip.done::after{content:"";position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.custom input{font-family:"Noto Naskh Arabic",serif;font-size:1.4rem;direction:rtl;width:180px}
+#board{display:block;width:min(92vw,66vh,640px);aspect-ratio:1;margin:12px auto;background:#fff;border-radius:20px;box-shadow:var(--shadow);touch-action:none;cursor:crosshair}
+</style>
+</head>
+<body>
+<main class="tool">
+  <h1>Letter strokes</h1>
+  <p>Admin tool, not linked from the site. The gray letter is drawn exactly as the child's tracing board will draw it. Draw each stroke on it <b>in the order and direction the child should follow</b>: drag for a stroke, tap for a dot. A green dot marks each stroke's start and an arrow its end. <b>Replay</b> shows the result the way the child will see it. When the letters are done, <b>Write to folder</b> and choose the <code>public/tracing</code> folder of the repo (Chrome or Edge on a computer), or <b>Download</b> the file and put it there.</p>
+  <div class="letters" id="letters"></div>
+  <div class="row custom"><label>Other text <input id="custom" placeholder="أَبْ"></label><button id="use" type="button" class="quiet">Use it</button></div>
+  <canvas id="board" width="600" height="600"></canvas>
+  <div class="row">
+    <button id="undo" type="button">Undo last stroke</button>
+    <button id="clear" type="button" class="quiet">Clear this letter</button>
+    <button id="replay" type="button" class="quiet">Replay</button>
+  </div>
+  <p id="status" class="status"></p>
+  <h2>Strokes file</h2>
+  <div class="row">
+    <button id="write" type="button">Write to folder</button>
+    <button id="download" type="button" class="quiet">Download</button>
+  </div>
+  <textarea id="out" rows="8" readonly></textarea>
+</main>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/tracing.js"></script>
+<script src="js/strokes.js"></script>
+</body>
+</html>

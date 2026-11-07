@@ -6,29 +6,20 @@
 <title>Word timings</title>
 <link rel="icon" href="images/logo.webp">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
 <style>
-.tool{max-width:760px;margin:auto;padding:16px 16px 48px;font-family:system-ui,sans-serif;line-height:1.5}
-.tool h1{margin:.2em 0 .4em;color:var(--deep)}
-.tool h2{margin:1.4em 0 .4em;color:var(--deep);font-size:1.2rem}
-.tool label{display:inline-block;margin:0 16px 8px 0}
-.tool input,.tool select{font:inherit;padding:4px 8px}
-.tool .row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
-.tool button{font:inherit;padding:8px 16px;border:0;border-radius:999px;background:var(--deep);color:#fff;cursor:pointer}
-.tool button:disabled{opacity:.4;cursor:default}
-.tool button.big{font-size:1.4rem;padding:16px 32px}
 .words{margin:16px 0;padding:16px;background:var(--surface);border-radius:16px;font-size:2.4rem;line-height:2;text-align:center}
 .words .w{border-radius:10px;padding:0 .08em}
 .words .w.pending{text-decoration:underline;text-decoration-color:var(--gold);text-decoration-thickness:4px;text-underline-offset:.2em}
 .words .w.tapped{color:var(--muted)}
 .words .w.on{background:var(--gold);color:#fff}
-.tool textarea{width:100%;font:13px/1.4 ui-monospace,monospace;padding:8px}
 #status{min-height:1.5em;color:var(--deep);font-weight:600}
 </style>
 </head>
 <body>
 <main class="tool">
   <h1>Word timings</h1>
-  <p>Parents' tool, not linked from the site. Pick an ayah and press <b>Play and tap</b>. Tap <b>Space</b> or the big button the moment each word begins; the word to tap next is underlined. The end of the recording closes the last word. Then <b>Preview</b>, and when every ayah is done, <b>Download</b> the file and put it at <code>public/audio/fatihah.timings.json</code>.</p>
+  <p>Admin tool, not linked from the site. Pick an ayah and press <b>Play and tap</b>. Tap <b>Space</b> or the big button the moment each word begins; the word to tap next is underlined. The end of the recording closes the last word. Then <b>Preview</b>, and when every ayah is done, <b>Download</b> the file and put it at <code>public/audio/fatihah.timings.json</code>.</p>
   <div>
     <label>Surah file <input id="surah" value="fatihah" size="10"></label>
     <label>Ayah <select id="ayah"></select></label>
@@ -51,6 +42,7 @@
 </main>
 <script src="js/app.js"></script>
 <script src="js/sound.js"></script>
+<script src="js/admin.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 let surah = null;

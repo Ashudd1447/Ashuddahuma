@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<main class="tool">
+  <h1>Admin</h1>
+  <p>Kareem's tools, unlocked for this browser session. Nothing here changes the live site: the tools write files on this computer, which then go into the repo and get deployed.</p>
+  <ul class="links">
+    <li><a href="record.html">Record audio</a><br><span class="note">Every clip the site plays, with the Egyptian version beside the Fusha one where both exist. Writes WAV files into <code>public/audio</code>.</span></li>
+    <li><a href="timing.html">Time the words</a><br><span class="note">Tap along a recording so the words light up as they are read. Writes <code>public/audio/&lt;surah&gt;.timings.json</code>.</span></li>
+    <li><a href="strokes.html">Draw letter strokes</a><br><span class="note">The strokes the tracing lesson will check, drawn on the Naskh letters. Writes <code>public/tracing/strokes.json</code>.</span></li>
+  </ul>
+  <h2>PIN on this device</h2>
+  <form class="row" id="pin-form">
+    <label>New PIN <input id="pin" type="password" inputmode="numeric" autocomplete="off" minlength="4" maxlength="12" required></label>
+    <button type="submit">Change on this device</button>
+    <button type="button" class="quiet" id="pin-reset">Use the site's PIN again</button>
+  </form>
+  <p class="note">The site's own PIN is set in <code>js/app.js</code> and works on every device. A PIN set here replaces it in this browser only.</p>
+  <p id="pin-status" class="status"></p>
+  <p class="row"><a href="/">Back to the site</a> <button type="button" class="quiet" id="lock">Lock</button></p>
+</main>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/admin.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+$('pin-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  try {
+    localStorage.setItem('pinHash', await sha256($('pin').value));
+    $('pin').value = '';
+    $('pin-status').textContent = 'Changed for this browser.';
+  } catch {
+    $('pin-status').textContent = 'Could not change it here: this needs https or localhost.';
+  }
+});
+$('pin-reset').addEventListener('click', () => {
+  localStorage.removeItem('pinHash');
+  $('pin-status').textContent = "Back to the site's PIN.";
+});
+$('lock').addEventListener('click', () => {
+  sessionStorage.removeItem('admin');
+  location.href = '/';
+});
+</script>
+</body>
+</html>

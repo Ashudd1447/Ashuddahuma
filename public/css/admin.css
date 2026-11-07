@@ -1,0 +1,20 @@
+/* The admin tools: English pages, not linked from the site, behind the PIN. */
+.tool{max-width:820px;margin:auto;padding:16px 16px 64px;font-family:system-ui,sans-serif;line-height:1.5}
+.tool h1{margin:.2em 0 .4em;color:var(--deep)}
+.tool h2{margin:1.6em 0 .5em;color:var(--deep);font-size:1.2rem;border-bottom:1px solid var(--line);padding-bottom:.2em}
+.tool label{display:inline-block;margin:0 16px 8px 0}
+.tool select,.tool input{font:inherit;padding:4px 8px}
+.tool .row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0;align-items:center}
+.tool button{font:inherit;padding:8px 16px;border:0;border-radius:999px;background:var(--deep);color:#fff;cursor:pointer}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool button.quiet{background:var(--surface);color:var(--deep);border:2px solid var(--line)}
+.tool button.big{font-size:1.4rem;padding:16px 32px}
+.tool button.rec{background:#C0392B}
+.tool .note{color:var(--muted);font-size:.95rem}
+.tool textarea{width:100%;font:13px/1.4 ui-monospace,monospace;padding:8px}
+.tool .status{min-height:1.5em;color:var(--deep);font-weight:600}
+.tool code{background:var(--surface);padding:0 .3em;border-radius:4px}
+.tool a{color:var(--deep)}
+.links{list-style:none;margin:0;padding:0}
+.links li{padding:10px 0;border-bottom:1px solid var(--line)}
+.links a{font-weight:700;font-size:1.1rem}

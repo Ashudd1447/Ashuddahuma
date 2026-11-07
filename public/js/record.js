@@ -6,19 +6,37 @@
 const $ = (id) => document.getElementById(id);
 
 /* Every clip the site plays, by file name. Quran text comes from the surah
-   file; the rest is the parents' own wording. */
+   file; the rest is the parents' own wording. A prompt the child hears in
+   either dialect has two cards: <name> is Fusha and <name>-masri is
+   Egyptian, which is spoken only and never shown to the child, so its text
+   here is just for reading aloud. */
+const COUNT_FUSHA = ['وَاحِد', 'اِثْنَان', 'ثَلَاثَة', 'أَرْبَعَة', 'خَمْسَة', 'سِتَّة', 'سَبْعَة'];
+const COUNT_MASRI = ['واحد', 'اتنين', 'تلاتة', 'أربعة', 'خمسة', 'ستة', 'سبعة'];
 const STATIC_SLOTS = [
-  { file: 'read-it', text: 'الآن اقرأها أنت', note: 'After an ayah: now you read it (Fusha)' },
-  { file: 'read-it-home', text: 'دلوقتي اقراها أنت', note: 'After an ayah: now you read it (home talk)' },
-  { file: 'lion', text: 'أَسَد', note: 'Reading game (an .m4a exists)' },
-  { file: 'rabbit', text: 'أَرْنَب', note: 'Reading game (an .m4a exists)' },
-  { file: 'door', text: 'بَاب', note: 'Reading game (an .m4a exists)' },
-  { file: 'house', text: 'بَيْت', note: 'Reading game (an .m4a exists)' },
-  { file: 'mosque', text: 'مَسْجِد', note: 'Reading game (an .m4a exists)' },
-  { file: 'kaaba', text: 'كَعْبَة', note: 'Reading game (an .m4a exists)' },
-  { file: 'read', text: 'اقرأ', note: 'Reading game prompt (an .m4a exists)' },
-  { file: 'match', text: 'اسحب كل صورة إلى كلمتها', note: 'Matching prompt (an .m4a exists)' },
-  { file: 'well-done', text: 'أحسنت', note: 'Praise, said with a sukoon on the ت (an .m4a exists)' },
+  { group: 'Reciter prompts', file: 'read-it', text: 'الْآنَ اقْرَأْهَا أَنْتَ', note: 'After an ayah: now you read it (Fusha)' },
+  { group: 'Reciter prompts', file: 'read-it-masri', text: 'دلوقتي اقراها أنت', note: 'After an ayah: now you read it (Egyptian, spoken only)' },
+  { group: 'Dialect switch', file: 'fusha', text: 'فُصْحَى', note: 'Said when the switch in the menu is set to Fusha' },
+  { group: 'Dialect switch', file: 'masri', text: 'مِصْرِي', note: 'Said when the switch in the menu is set to Egyptian' },
+  { group: 'Movement activity', file: 'jump', text: 'اقْفِزْ سَبْعَ مَرَّاتٍ!', note: 'Jump seven times (Fusha)' },
+  { group: 'Movement activity', file: 'jump-masri', text: 'نط سبع مرات!', note: 'Jump seven times (Egyptian, spoken only)' },
+  ...COUNT_FUSHA.flatMap((word, i) => [
+    { group: 'Movement activity', file: `count-${i + 1}`, text: word, note: `Counting ${i + 1} (Fusha)` },
+    { group: 'Movement activity', file: `count-${i + 1}-masri`, text: COUNT_MASRI[i], note: `Counting ${i + 1} (Egyptian, spoken only)` },
+  ]),
+  { group: 'Reading cards, unit 1', file: 'father', text: 'أَبْ', note: 'Unit 1 word' },
+  { group: 'Reading cards, unit 1', file: 'mother', text: 'أُمّ', note: 'Unit 1 word' },
+  { group: 'Reading cards, unit 1', file: 'brother', text: 'أَخْ', note: 'Unit 1 word' },
+  { group: 'Reading cards, unit 1', file: 'alif-name', text: 'أَلِف', note: 'The letter name, as in "its name is alif"' },
+  { group: 'Reading cards, unit 1', file: 'alif-sound', text: 'أَ', note: 'The letter sound, as in "and its sound is a"' },
+  { group: 'Reading game', file: 'lion', text: 'أَسَد', note: 'Reading game (an .m4a exists)' },
+  { group: 'Reading game', file: 'rabbit', text: 'أَرْنَب', note: 'Reading game (an .m4a exists)' },
+  { group: 'Reading game', file: 'door', text: 'بَاب', note: 'Reading game (an .m4a exists)' },
+  { group: 'Reading game', file: 'house', text: 'بَيْت', note: 'Reading game (an .m4a exists)' },
+  { group: 'Reading game', file: 'mosque', text: 'مَسْجِد', note: 'Reading game (an .m4a exists)' },
+  { group: 'Reading game', file: 'kaaba', text: 'كَعْبَة', note: 'Reading game (an .m4a exists)' },
+  { group: 'Reading game', file: 'read', text: 'اقرأ', note: 'Reading game prompt (an .m4a exists)' },
+  { group: 'Reading game', file: 'match', text: 'اسحب كل صورة إلى كلمتها', note: 'Matching prompt (an .m4a exists)' },
+  { group: 'Reading game', file: 'well-done', text: 'أحسنت', note: 'Praise, said with a sukoon on the ت (an .m4a exists)' },
 ];
 
 const WORKLET_SOURCE = `
@@ -401,7 +419,7 @@ async function init() {
   const surah = await fetch('quran/fatihah.json').then((response) => response.json());
   slots = [
     ...surah.ayat.map((ayah) => ({ file: `fatihah-${ayah.number}`, text: ayah.text, note: `Al-Fatihah, ayah ${ayah.number}`, quran: true, group: 'Al-Fatihah' })),
-    ...STATIC_SLOTS.map((slot) => ({ ...slot, group: slot.file.startsWith('read-it') ? 'Reciter prompts' : 'Reading game' })),
+    ...STATIC_SLOTS,
   ];
   render();
   listMicrophones();
