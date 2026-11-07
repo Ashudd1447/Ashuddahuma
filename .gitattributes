@@ -7,4 +7,6 @@
 *.webp binary
 *.m4a binary
 *.woff2 binary
+*.otf binary
+*.wav binary
 *.pdf binary

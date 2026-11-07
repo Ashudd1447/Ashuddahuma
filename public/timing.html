@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Word timings</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.tool{max-width:760px;margin:auto;padding:16px 16px 48px;font-family:system-ui,sans-serif;line-height:1.5}
+.tool h1{margin:.2em 0 .4em;color:var(--deep)}
+.tool h2{margin:1.4em 0 .4em;color:var(--deep);font-size:1.2rem}
+.tool label{display:inline-block;margin:0 16px 8px 0}
+.tool input,.tool select{font:inherit;padding:4px 8px}
+.tool .row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.tool button{font:inherit;padding:8px 16px;border:0;border-radius:999px;background:var(--deep);color:#fff;cursor:pointer}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool button.big{font-size:1.4rem;padding:16px 32px}
+.words{margin:16px 0;padding:16px;background:var(--surface);border-radius:16px;font-size:2.4rem;line-height:2;text-align:center}
+.words .w{border-radius:10px;padding:0 .08em}
+.words .w.pending{text-decoration:underline;text-decoration-color:var(--gold);text-decoration-thickness:4px;text-underline-offset:.2em}
+.words .w.tapped{color:var(--muted)}
+.words .w.on{background:var(--gold);color:#fff}
+.tool textarea{width:100%;font:13px/1.4 ui-monospace,monospace;padding:8px}
+#status{min-height:1.5em;color:var(--deep);font-weight:600}
+</style>
+</head>
+<body>
+<main class="tool">
+  <h1>Word timings</h1>
+  <p>Parents' tool, not linked from the site. Pick an ayah and press <b>Play and tap</b>. Tap <b>Space</b> or the big button the moment each word begins; the word to tap next is underlined. The end of the recording closes the last word. Then <b>Preview</b>, and when every ayah is done, <b>Download</b> the file and put it at <code>public/audio/fatihah.timings.json</code>.</p>
+  <div>
+    <label>Surah file <input id="surah" value="fatihah" size="10"></label>
+    <label>Ayah <select id="ayah"></select></label>
+    <label>Reaction time (ms) <input id="offset" type="number" value="150" min="0" max="500" step="10" size="5"></label>
+  </div>
+  <p class="words quran" id="words" dir="rtl" lang="ar"></p>
+  <div class="row">
+    <button id="start" type="button">Play and tap</button>
+    <button id="tap" class="big" type="button" disabled>Tap (Space)</button>
+    <button id="preview" type="button" disabled>Preview</button>
+    <button id="clear" type="button">Clear this ayah</button>
+  </div>
+  <p id="status"></p>
+  <h2>Timings file</h2>
+  <textarea id="out" rows="12" readonly></textarea>
+  <div class="row">
+    <button id="copy" type="button">Copy</button>
+    <button id="download" type="button">Download</button>
+  </div>
+</main>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+let surah = null;
+let timings = {};
+let words = [];
+let taps = [];
+let capturing = false;
+let duration = 0;
+
+const surahName = () => $('surah').value.trim();
+const ayah = () => surah.ayat[Number($('ayah').value) - 1];
+const clip = () => `${surahName()}-${ayah().number}`;
+
+async function load() {
+  const name = surahName();
+  surah = await fetch(`quran/${name}.json`).then((response) => response.json());
+  timings = await fetch(`audio/${name}.timings.json`).then((response) => (response.ok ? response.json() : {})).catch(() => ({}));
+  $('ayah').innerHTML = surah.ayat.map((a) => `<option value="${a.number}">${a.number}</option>`).join('');
+  sound.preload(surah.ayat.map((a) => `${name}-${a.number}`));
+  renderWords();
+  renderOut();
+}
+
+function renderWords() {
+  $('words').innerHTML = ayah().words.map((word, i) => `<span class="w" data-i="${i}">${mushafText(word)}</span>`).join(' ');
+  words = [...$('words').children];
+  mark();
+  $('preview').disabled = !timings[ayah().number];
+  $('status').textContent = timings[ayah().number] ? 'This ayah has timings. Play and tap again to redo them.' : '';
+}
+
+function mark() {
+  words.forEach((word, i) => {
+    word.classList.toggle('pending', capturing && i === taps.length);
+    word.classList.toggle('tapped', capturing && i < taps.length);
+  });
+}
+
+function light(index) {
+  words.forEach((word, i) => word.classList.toggle('on', i === index));
+}
+
+async function start() {
+  taps = [];
+  duration = 0;
+  capturing = true;
+  $('tap').disabled = false;
+  $('start').disabled = true;
+  $('preview').disabled = true;
+  mark();
+  $('status').textContent = `Tap at each word: 0 / ${words.length}`;
+  await sound.play(clip());
+  finish();
+}
+
+function tap() {
+  const playing = sound.current();
+  if (!capturing || !playing || taps.length >= words.length) return;
+  duration = playing.duration;
+  const t = Math.max(0, playing.position() - Number($('offset').value) / 1000);
+  const previous = taps.length ? taps[taps.length - 1] : -1;
+  taps.push(Math.round(Math.max(t, previous + 0.01) * 1000) / 1000);
+  mark();
+  $('status').textContent = `Tap at each word: ${taps.length} / ${words.length}`;
+}
+
+function finish() {
+  capturing = false;
+  $('tap').disabled = true;
+  $('start').disabled = false;
+  mark();
+  if (!duration) {
+    $('status').textContent = `No recording found for audio/${clip()} (.m4a or .wav), or no taps.`;
+    return;
+  }
+  if (taps.length !== words.length) {
+    $('status').textContent = `Only ${taps.length} of ${words.length} taps. Play and tap again.`;
+    return;
+  }
+  timings[ayah().number] = [...taps, Math.round(duration * 1000) / 1000];
+  $('status').textContent = 'Saved for this ayah. Preview it, then move to the next ayah.';
+  $('preview').disabled = false;
+  renderOut();
+}
+
+async function preview() {
+  const times = timings[ayah().number];
+  if (!times) return;
+  const name = clip();
+  let ended = false;
+  const done = sound.play(name).then(() => { ended = true; });
+  const tick = () => {
+    if (ended) { light(-1); return; }
+    const playing = sound.current();
+    if (playing && playing.name === name) {
+      const t = playing.position();
+      let index = -1;
+      if (t >= times[0] && t < times[times.length - 1]) {
+        index = 0;
+        while (index < words.length - 1 && t >= times[index + 1]) index += 1;
+      }
+      light(index);
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  await done;
+}
+
+function renderOut() {
+  const lines = Object.keys(timings)
+    .sort((a, b) => Number(a) - Number(b))
+    .map((key) => `  "${key}": [${timings[key].join(', ')}]`);
+  $('out').value = lines.length ? `{\n${lines.join(',\n')}\n}\n` : '{}\n';
+}
+
+$('surah').addEventListener('change', load);
+$('ayah').addEventListener('change', renderWords);
+$('start').addEventListener('click', start);
+$('tap').addEventListener('click', tap);
+$('preview').addEventListener('click', preview);
+$('clear').addEventListener('click', () => { delete timings[ayah().number]; renderWords(); renderOut(); });
+$('copy').addEventListener('click', () => navigator.clipboard.writeText($('out').value));
+$('download').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([$('out').value], { type: 'application/json' }));
+  link.download = `${surahName()}.timings.json`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 30000);
+});
+addEventListener('keydown', (event) => {
+  if (event.code === 'Space' && capturing) { event.preventDefault(); tap(); }
+});
+load();
+</script>
+</body>
+</html>

@@ -24,50 +24,10 @@ function show(viewId) {
   scrollTo(0, 0);
 }
 
-/* Sound. One audio element is reused so phones keep allowing it after the first tap.
-   A clip that has not been recorded yet simply stays silent. */
-const player = new Audio();
-let finishClip = null;
-
-function play(name) {
-  if (finishClip) finishClip();
-  return new Promise((resolve) => {
-    finishClip = resolve;
-    player.onended = resolve;
-    player.onerror = resolve;
-    player.src = `audio/${name}.m4a`;
-    const started = player.play();
-    if (started) started.catch(resolve);
-  });
-}
-
-let audioContext = null;
-function tone(frequency, startsIn, length, volume, type = 'sine') {
-  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioContext.state === 'suspended') audioContext.resume();
-  const start = audioContext.currentTime + startsIn;
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  osc.type = type;
-  osc.frequency.value = frequency;
-  gain.gain.setValueAtTime(0.0001, start);
-  gain.gain.exponentialRampToValueAtTime(volume, start + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
-  osc.connect(gain).connect(audioContext.destination);
-  osc.start(start);
-  osc.stop(start + length + 0.02);
-}
-
-function chime() {
-  tone(660, 0, 0.45, 0.14);
-  tone(880, 0.12, 0.6, 0.12);
-}
-
-function wrongFeedback() {
-  const canVibrate = 'vibrate' in navigator && matchMedia('(pointer: coarse)').matches;
-  if (canVibrate && navigator.vibrate(160)) return;
-  tone(150, 0, 0.22, 0.12, 'triangle');
-}
+/* Sound lives in sound.js. The recordings are decoded now so the first tap
+   plays at once. */
+const play = (name) => sound.play(name);
+sound.preload([...WORDS.map((entry) => entry.id), 'read', 'match', 'well-done']);
 
 /* Step 1: picture grid */
 let bigCard = null;
@@ -185,7 +145,7 @@ function targetAt(x, y, source) {
 function startDrag(event, item) {
   if (item.classList.contains('done') || document.querySelector('.ghost')) return;
   event.preventDefault();
-  chimeReady();
+  sound.unlock();
   const rect = item.getBoundingClientRect();
   const offsetX = event.clientX - rect.left;
   const offsetY = event.clientY - rect.top;
@@ -224,7 +184,7 @@ function startDrag(event, item) {
       return;
     }
     if (target) {
-      wrongFeedback();
+      sound.wrong();
       shake(item);
       shake(target);
     }
@@ -242,11 +202,6 @@ function startDrag(event, item) {
   item.addEventListener('pointercancel', onEnd);
 }
 
-function chimeReady() {
-  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioContext.state === 'suspended') audioContext.resume();
-}
-
 function shake(item) {
   item.animate(
     [0, -7, 7, -5, 5, 0].map((x) => ({ transform: `translateX(${x}px)` })),
@@ -261,13 +216,13 @@ async function lockPair(first, second) {
   name.classList.add('done');
   picture.classList.add('done');
   matched += 1;
-  chime();
+  sound.chime();
   const finished = matched === WORDS.length;
   await delay(220);
   await Promise.all([play(name.dataset.id), delay(finished ? 1000 : 0)]);
   if (finished) {
     show('view-done');
-    chime();
+    sound.chime();
     play('well-done');
   }
 }

@@ -4,17 +4,23 @@
    reload.
    Every page, photo, recording and font the pages use belongs in FILES. One
    that is missing still gets saved the first time it is used. */
-const CACHE = 'ashudd-v1';
+const CACHE = 'ashudd-v2';
 const FILES = [
   '/',
   '/reading.html',
+  '/fatihah.html',
   '/credits.html',
   '/404.html',
   '/css/style.css',
   '/js/app.js',
+  '/js/sound.js',
   '/js/reading.js',
+  '/js/recite.js',
+  '/quran/fatihah.json',
+  '/audio/fatihah.timings.json',
   '/fonts/NotoNaskhArabic.woff2',
   '/fonts/ScheherazadeNew.woff2',
+  '/fonts/UthmanicHafs1-Ver09.otf',
   '/images/logo.webp',
   '/images/lion.jpg',
   '/images/rabbit.jpg',

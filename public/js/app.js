@@ -1,3 +1,19 @@
+/* Quran text is stored exactly as the Quran.com API gives it. The Mushaf font
+   draws the sukoon on U+06E1 and the silent-letter circle on U+0652, so the
+   two are swapped for display only, never in the stored text. Its digits
+   already sit inside the ayah ornament, so the end-of-ayah sign U+06DD is
+   dropped before them. */
+function mushafText(text) {
+  return text
+    .replace(/۝(?=[٠-٩])/g, '')
+    .replace(/[ْ۟]/g, (mark) => (mark === 'ْ' ? 'ۡ' : 'ْ'));
+}
+
+for (const element of document.querySelectorAll('.quran')) {
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) node.data = mushafText(node.data);
+}
+
 /* Keep the screen on while the site is in use. After 5 minutes with no touch,
    click or key press, let go so the device sleeps on its own schedule.
    Browsers without the Wake Lock API, and installed iPhone/iPad apps before

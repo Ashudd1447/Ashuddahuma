@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الفاتحة</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-surah="fatihah">
+<div class="game recite">
+  <header class="top"><a href="/" aria-label="الصفحة الرئيسية"><img class="logo" src="images/logo.webp" alt=""></a></header>
+
+  <section class="view" id="view-surah">
+    <ol class="ayat quran" id="ayat"></ol>
+    <div class="focus">
+      <p class="ayah-focus quran" id="focus"></p>
+      <p class="prompt" id="turn" hidden>الآن اقرأها أنت<br><span class="home-talk">دلوقتي اقراها أنت</span></p>
+    </div>
+    <div class="controls">
+      <button class="button" id="listen" type="button">استمع</button>
+      <button class="button round" id="again" type="button" aria-label="أعد"><span aria-hidden="true">↻</span></button>
+      <button class="button" id="next" type="button">التالي <span aria-hidden="true">←</span></button>
+    </div>
+  </section>
+
+  <section class="view" id="view-done" hidden>
+    <p class="praise">أحسنت</p>
+  </section>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/recite.js"></script>
+</body>
+</html>
