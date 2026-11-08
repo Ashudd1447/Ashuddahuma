@@ -16,6 +16,7 @@ const STOP = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="
 
 let surah = null;
 let timings = {};
+let auto = {};
 let current = 1;
 let run = 0;
 let mode = 'surah';
@@ -93,11 +94,27 @@ function setMode(next) {
 
 /* Plays one ayah and lights its words from the clip's clock. Resolves when the
    clip ends, at once if the recording is missing. */
+/* The word times of an ayah: the parents' tapped timings from the file when
+   they exist, else the automatic estimate from the recording. */
+function timesFor(number, count) {
+  for (const given of [timings[number], auto[number]]) {
+    if (Array.isArray(given) && given.length === count + 1) return given;
+  }
+  return null;
+}
+
+/* The automatic timing of an ayah from its recording, computed once the
+   clip has decoded (and again after a failed download is retried). */
+function estimate(ayah) {
+  sound.buffer(clip(ayah.number)).then((decoded) => {
+    if (decoded && !auto[ayah.number]) auto[ayah.number] = timing.autoWords(ayah.words, timing.envelope(decoded), { waqf: true });
+  });
+}
+
 function playAyah(number, mine) {
   const name = clip(number);
   const words = [...$('focus').querySelectorAll('.word-lit')];
-  const given = timings[number];
-  const times = Array.isArray(given) && given.length === words.length + 1 ? given : null;
+  if (!auto[number]) estimate(surah.ayat[number - 1]);
   let ended = false;
   const done = sound.play(name).then(() => { ended = true; });
   const light = (index) => {
@@ -110,6 +127,8 @@ function playAyah(number, mine) {
     }
     const playing = sound.current();
     if (playing && playing.name === name) {
+      // Read each frame: the estimate may land just as the clip starts.
+      const times = timesFor(number, words.length);
       let index = 'all';
       if (times) {
         const t = playing.position();
@@ -177,6 +196,9 @@ async function init() {
   timings = times || {};
   sound.preload(surah.ayat.map((ayah) => clip(ayah.number)));
   sound.preloadPrompts(['read-it']);
+  /* Every ayah is timed from its recording as it decodes; timesFor prefers
+     a tapped timing from the file when it has the right length. */
+  for (const ayah of surah.ayat) estimate(ayah);
   renderOverview();
   select(1);
   let saved = 'surah';

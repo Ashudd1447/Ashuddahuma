@@ -155,6 +155,11 @@ const sound = (() => {
     for (const name of names) load(name);
   }
 
+  /* The decoded clip itself, for the automatic word timing; null when missing. */
+  function buffer(name) {
+    return load(name);
+  }
+
   /* The first of several names that has a recording, with its buffer. */
   function first(names) {
     return names.reduce(
@@ -307,5 +312,5 @@ const sound = (() => {
     else wake();
   });
 
-  return { preload, preloadPrompts, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, wrong };
+  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, wrong };
 })();

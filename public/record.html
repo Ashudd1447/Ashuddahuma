@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Recording tool</title>
+<meta name="robots" content="noindex">
 <link rel="icon" href="images/logo.webp">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/admin.css">
@@ -26,7 +27,7 @@
 </style>
 </head>
 <body>
-<main class="tool">
+<main class="tool" hidden>
   <h1>Recording tool</h1>
   <p>Admin tool, not linked from the site. Each card is one clip the site plays. Where the child hears a prompt in either dialect there are two cards: the Fusha one, and the Egyptian one named <code>-masri</code>, whose text is here only to read aloud and is never shown to the child. Press <b>Record</b>, wait a beat, say it, press <b>Stop</b>. The newest take is kept; keep an older one if it was better. Then <b>Write to folder</b> and choose the <code>public/audio</code> folder of the repo (Chrome or Edge on a computer), or download each take. A new recording of a name that already has an <code>.m4a</code> file is ignored by the site until that <code>.m4a</code> is removed.</p>
   <div class="setup">
@@ -44,6 +45,7 @@
   <p id="status"></p>
 </main>
 <script src="js/app.js"></script>
+<script src="js/account.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/record.js"></script>
 </body>

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Word timings</title>
+<meta name="robots" content="noindex">
 <link rel="icon" href="images/logo.webp">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/admin.css">
@@ -17,9 +18,9 @@
 </style>
 </head>
 <body>
-<main class="tool">
+<main class="tool" hidden>
   <h1>Word timings</h1>
-  <p>Admin tool, not linked from the site. Pick an ayah and press <b>Play and tap</b>. Tap <b>Space</b> or the big button the moment each word begins; the word to tap next is underlined. The end of the recording closes the last word. Then <b>Preview</b>, and when every ayah is done, <b>Download</b> the file and put it at <code>public/audio/fatihah.timings.json</code>.</p>
+  <p>Admin tool, not linked from the site. The site times the words of every ayah automatically from its recording; use this page to check that, and to fix an ayah by tapping. Pick an ayah and press <b>Preview</b> to hear it with the automatic timing. If a word is off, press <b>Play and tap</b>. Tap <b>Space</b> or the big button the moment each word begins; the word to tap next is underlined. The end of the recording closes the last word. Then <b>Preview</b>, and when every ayah is done, <b>Download</b> the file and put it at <code>public/audio/fatihah.timings.json</code>.</p>
   <div>
     <label>Surah file <input id="surah" value="fatihah" size="10"></label>
     <label>Ayah <select id="ayah"></select></label>
@@ -42,6 +43,8 @@
 </main>
 <script src="js/app.js"></script>
 <script src="js/sound.js"></script>
+<script src="js/timing.js"></script>
+<script src="js/account.js"></script>
 <script src="js/admin.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
@@ -70,8 +73,8 @@ function renderWords() {
   $('words').innerHTML = ayah().words.map((word, i) => `<span class="w" data-i="${i}">${mushafText(word)}</span>`).join(' ');
   words = [...$('words').children];
   mark();
-  $('preview').disabled = !timings[ayah().number];
-  $('status').textContent = timings[ayah().number] ? 'This ayah has timings. Play and tap again to redo them.' : '';
+  $('preview').disabled = false;
+  $('status').textContent = timings[ayah().number] ? 'This ayah has tapped timings. Preview them, or Play and tap again to redo them.' : 'Automatic timing. Preview it; Play and tap only if a word is off.';
 }
 
 function mark() {
@@ -113,6 +116,7 @@ function finish() {
   capturing = false;
   $('tap').disabled = true;
   $('start').disabled = false;
+  $('preview').disabled = false;
   mark();
   if (!duration) {
     $('status').textContent = `No recording found for audio/${clip()} (.m4a or .wav), or no taps.`;
@@ -124,13 +128,21 @@ function finish() {
   }
   timings[ayah().number] = [...taps, Math.round(duration * 1000) / 1000];
   $('status').textContent = 'Saved for this ayah. Preview it, then move to the next ayah.';
-  $('preview').disabled = false;
   renderOut();
 }
 
+/* The automatic estimate for this ayah, as the reciter computes it. */
+async function autoFor() {
+  const decoded = await sound.buffer(clip());
+  return decoded ? timing.autoWords(ayah().words, timing.envelope(decoded), { waqf: true }) : null;
+}
+
 async function preview() {
-  const times = timings[ayah().number];
-  if (!times) return;
+  const times = timings[ayah().number] || (await autoFor());
+  if (!times) {
+    $('status').textContent = `No recording found for audio/${clip()} (.m4a or .wav).`;
+    return;
+  }
   const name = clip();
   let ended = false;
   const done = sound.play(name).then(() => { ended = true; });

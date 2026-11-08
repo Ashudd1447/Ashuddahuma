@@ -29,7 +29,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .button.quiet{background:var(--surface);color:var(--deep);border:2px solid var(--line);box-shadow:none}
 
 /* Home */
-.hero{min-height:calc(100svh - 110px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,3vh,32px);padding:clamp(16px,3vh,32px) 16px;text-align:center}
+.hero{min-height:calc(100svh - 110px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,3vh,32px);padding:66px 16px clamp(16px,3vh,32px);text-align:center}
 .hero .logo{width:clamp(110px,22vh,200px);height:auto}
 .quran{font-family:"Uthmanic Hafs","Scheherazade New",serif;font-weight:400}
 .ayah{margin:0;max-width:820px;font-size:clamp(1.6rem,min(5.6vw,4.8vh),2.6rem);line-height:2.1;text-wrap:balance}
@@ -145,17 +145,22 @@ button{font:inherit;color:inherit;cursor:pointer}
 .menu-label{margin:0;color:var(--muted);font-size:1.05rem}
 .dialect{display:flex;align-items:center;justify-content:center;min-width:130px;height:54px;padding:0 20px;border:2px solid var(--gold);border-radius:999px;background:var(--bg);color:var(--deep);font-weight:700;font-size:1.35rem}
 .dialect .flag{width:54px;height:36px;border-radius:4px;box-shadow:0 0 0 1px rgba(74,52,36,.15)}
-.menu-admin{width:40px;height:40px;padding:7px;border:0;border-radius:50%;background:none;color:var(--muted);opacity:.5}
-.menu-admin svg{width:100%;height:100%}
 
-/* Admin gate */
-.gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(74,52,36,.35)}
-.gate-card{width:min(100%,320px);display:flex;flex-direction:column;align-items:center;gap:14px;margin:0;padding:24px;background:var(--surface);border-radius:24px;box-shadow:var(--shadow);font-family:"Noto Naskh Arabic","Geeza Pro",serif}
-.gate-title{margin:0;font-weight:700;color:var(--deep);font-size:1.4rem}
-.gate-pin{width:100%;padding:.3em;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:1.8rem;text-align:center;letter-spacing:.3em;direction:ltr}
-.gate-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.gate.shake .gate-card{animation:shake .4s}
-@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+/* Account, top left: the optional sign-in */
+.account{position:fixed;top:10px;left:10px;z-index:40}
+.account-button{display:flex;align-items:center;gap:.45em;height:46px;max-width:calc(100vw - 92px);padding:0 16px;border:0;border-radius:999px;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);font-weight:700;font-size:1.05rem;line-height:1}
+.account-button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account-button small{flex:none;font-weight:400;color:var(--muted);font-size:.8em}
+.account-panel{position:fixed;top:64px;left:10px;z-index:40;width:min(calc(100vw - 20px),340px);padding:16px;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:stretch;gap:10px;text-align:center}
+.account-panel p{margin:0}
+.account-form{display:flex;flex-direction:column;gap:10px}
+.account-note{color:var(--muted);font-size:1rem;line-height:1.6;overflow-wrap:anywhere}
+.account-name{font-weight:700;color:var(--deep);font-size:1.15rem}
+.account-panel input{width:100%;padding:.4em .6em;border:2px solid var(--line);border-radius:12px;font:inherit;font-size:1.1rem;background:var(--bg)}
+.account-panel input[type=email],.account-panel input[type=password]{direction:ltr;text-align:left}
+.account-panel .button{justify-content:center;font-size:1.15rem;padding:.4em 1.2em;text-decoration:none}
+.account-error{color:#B03A2E;font-weight:700;min-height:1.4em;font-size:1rem}
+.account-link{border:0;background:none;color:var(--deep);text-decoration:underline;font:inherit;font-size:1rem;padding:0}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}

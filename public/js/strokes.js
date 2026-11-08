@@ -323,7 +323,7 @@ async function init() {
       $('use').click();
     }
   });
-  // The page starts hidden behind the PIN, so the board is sized once it is laid out, and again on resize.
+  // The page starts hidden until the admin check passes, so the board is sized once it is laid out, and again on resize.
   new ResizeObserver(fit).observe(canvas);
   fit();
   await pick(text);
