@@ -4,7 +4,7 @@
    reload.
    Every page, photo, recording and font the pages use belongs in FILES. One
    that is missing still gets saved the first time it is used. */
-const CACHE = 'ashudd-v6';
+const CACHE = 'ashudd-v7';
 const FILES = [
   '/',
   '/reading.html',
@@ -35,6 +35,17 @@ const FILES = [
   '/images/house.jpg',
   '/images/mosque.jpg',
   '/images/kaaba.jpg',
+  '/images/day/boy.webp',
+  '/images/day/wake.webp',
+  '/images/day/breakfast.webp',
+  '/images/day/quran.webp',
+  '/images/day/play.webp',
+  '/images/day/lunch.webp',
+  '/images/day/nap.webp',
+  '/images/day/park.webp',
+  '/images/day/dinner.webp',
+  '/images/day/teeth.webp',
+  '/images/day/bed.webp',
   '/audio/lion.m4a',
   '/audio/rabbit.m4a',
   '/audio/door.m4a',

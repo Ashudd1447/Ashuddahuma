@@ -123,7 +123,7 @@ The block puzzle (`الْمُكَعَّبَاتُ`) and the clock (`السَّا
 2. The hours are spoken as written, in both dialects: `السَّاعَةُ الْوَاحِدَةُ` to `السَّاعَةُ الثَّانِيَةَ عَشْرَةَ` in Fusha, `الساعة واحدة` to `الساعة اتناشر` in Egyptian. The 24 cards (`hour-1` to `hour-12`, each with `-masri`) are in `record.html`.
 3. Pictures are made in Recraft (`docs/recraft-images.md`).
 
-**Next: my day.** Pictures of his day in order, each with its hour; the child sets the clock to match, and the picture is named aloud. Proposed scenes, without the prayers: waking up, breakfast, Quran lesson, playing outside, lunch, nap, the park, dinner, brushing teeth, bedtime with the du'a before sleep. The prompts are in `docs/recraft-images.md`.
+**My day** (built 2026-11-19, not yet deployed). Two round buttons above the card switch between the hours and "my day": the card shows a picture of his day with its hour (`السَّاعَةُ السَّابِعَةُ`), in the order of the day, and the child sets the clock to match; the sky then turns to that time of day. No captions yet. The pictures were made on Recraft Basic in the flat outlined style the parents chose, with everyone eating and brushing teeth with the right hand and the nap on the right side, blanket over the feet. The hours are my placeholders: wake 7, breakfast 8, Quran 9, play 10, lunch 1, nap 2, park 4, dinner 6, teeth 7, bed 8. Proposed scenes, without the prayers: waking up, breakfast, Quran lesson, playing outside, lunch, nap, the park, dinner, brushing teeth, bedtime with the du'a before sleep. The prompts are in `docs/recraft-images.md`.
 
 **Later:** half past (`وَالنِّصْفُ`), the digital clock beside the dial, and a quarter past.
 

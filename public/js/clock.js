@@ -4,7 +4,10 @@
    whole hour and says it. The card above the clock shows an hour; when the
    clock settles on it, the hour is said, then a chime, a star and أحسنت, and
    a new hour comes. Any other hour is simply said: nothing is ever wrong.
-   Behind the clock the sky follows the time of day. */
+   Behind the clock the sky follows the time of day.
+   Two ways to play, picked by the two round buttons and remembered on the
+   device: the hours, in any order, or "my day", where the card shows a
+   picture of his day with its hour, in the order of the day. */
 const $ = (id) => document.getElementById(id);
 
 const KEY = 'clock';
@@ -23,6 +26,23 @@ const HOURS = [
   'السَّاعَةُ الثَّانِيَةَ عَشْرَةَ',
 ];
 const clip = (hour) => `hour-${hour}`;
+/* His day, in order: the picture (images/day/<name>.webp) and its hour on a
+   24-hour clock, so the sky can follow. The hours are placeholders until the
+   parents give the real ones. */
+const DAY = [
+  { name: 'wake', hour: 7 },
+  { name: 'breakfast', hour: 8 },
+  { name: 'quran', hour: 9 },
+  { name: 'play', hour: 10 },
+  { name: 'lunch', hour: 13 },
+  { name: 'nap', hour: 14 },
+  { name: 'park', hour: 16 },
+  { name: 'dinner', hour: 18 },
+  { name: 'teeth', hour: 19 },
+  { name: 'bed', hour: 20 },
+];
+const MODES = ['hours', 'day'];
+const twelve = (hour) => mod(hour - 1, 12) + 1;
 const PRAISE = 'well-done';
 const DIGITS = '٠١٢٣٤٥٦٧٨٩';
 const arabic = (n) => String(n).replace(/\d/g, (d) => DIGITS[d]);
@@ -61,6 +81,8 @@ let shown = 0;
 let grab = null;
 let settleTimer = null;
 let busy = false; // during the praise, the clock rests
+let mode = 'hours';
+let scene = 0; // the picture shown in "my day"
 
 /* Drawing the dial: ticks, the numbers ١ to ١٢, the two hands. In the SVG,
    0 0 is the center and the face has a radius of 92. */
@@ -262,6 +284,7 @@ function settled() {
   stars += 1;
   save();
   flyStar();
+  if (mode === 'day') showSceneSky();
   // A missing or stalled clip never holds up the praise for long.
   Promise.race([said, delay(4000)]).then(praise);
 }
@@ -275,17 +298,67 @@ async function praise() {
   busy = false;
 }
 
+/* In "my day", once the clock shows the picture's hour, the sky turns to
+   that time of day: morning or evening at seven. The hands do not move,
+   since twelve hours is a whole turn of both. */
+function showSceneSky() {
+  const wanted = DAY[scene].hour * 60;
+  const off = wanted - mod(minutes, 1440);
+  if (mod(off, 720) !== 0) return;
+  minutes += off;
+  render();
+}
+
 function nextTarget(speak) {
-  const now = hourOf(minutes);
-  const choices = [];
-  for (let h = 1; h <= 12; h++) if (h !== now && h !== target) choices.push(h);
-  target = choices[Math.floor(Math.random() * choices.length)];
+  if (mode === 'day') {
+    scene = (scene + 1) % DAY.length;
+    target = twelve(DAY[scene].hour);
+  } else {
+    const now = hourOf(minutes);
+    const choices = [];
+    for (let h = 1; h <= 12; h++) if (h !== now && h !== target) choices.push(h);
+    target = choices[Math.floor(Math.random() * choices.length)];
+  }
+  showTarget();
+  if (speak) sound.say(clip(target));
+}
+
+function showTarget() {
   $('target-text').textContent = HOURS[target - 1];
+  const picture = $('target-img');
+  picture.hidden = mode !== 'day';
+  if (mode === 'day') picture.src = `images/day/${DAY[scene].name}.webp`;
+  card.classList.toggle('day', mode === 'day');
   card.classList.remove('won', 'new');
   void card.offsetWidth; // restart the arrival animation
   card.classList.add('new');
   setTimeout(() => card.classList.remove('new'), 500);
-  if (speak) sound.say(clip(target));
+}
+
+/* The two ways to play. "My day" starts at the next picture after the time
+   now, so at four in the afternoon it is the park. */
+function setMode(next, speak) {
+  mode = MODES.includes(next) ? next : 'hours';
+  for (const button of document.querySelectorAll('[data-mode]')) {
+    const on = button.dataset.mode === mode;
+    button.classList.toggle('on', on);
+    button.setAttribute('aria-pressed', String(on));
+  }
+  if (mode === 'day') {
+    const hour = new Date().getHours();
+    const next = DAY.findIndex((item) => item.hour > hour);
+    scene = mod((next === -1 ? 0 : next) - 1, DAY.length);
+  }
+  nextTarget(speak);
+}
+
+for (const button of document.querySelectorAll('[data-mode]')) {
+  button.addEventListener('click', () => {
+    if (busy || button.dataset.mode === mode) return;
+    card.classList.remove('invite');
+    setMode(button.dataset.mode, true);
+    save();
+  });
 }
 
 card.addEventListener('click', () => {
@@ -333,10 +406,11 @@ function flyStar() {
   setTimeout(count, 1200); // in case the animation never runs
 }
 
-/* Saved on the device: the stars. The clock itself opens at the real time. */
+/* Saved on the device: the stars and the way to play. The clock itself opens
+   at the real time. */
 function save() {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ stars }));
+    localStorage.setItem(KEY, JSON.stringify({ stars, mode }));
   } catch {
     // Private browsing: the stars last for this visit only.
   }
@@ -346,6 +420,7 @@ function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Number.isInteger(saved.stars) && saved.stars >= 0) stars = saved.stars;
+    if (saved && MODES.includes(saved.mode)) mode = saved.mode;
   } catch {
     stars = 0;
   }
@@ -369,7 +444,7 @@ showCount();
 const now = new Date();
 minutes = Math.round((now.getHours() * 60 + now.getMinutes()) / 60) * 60;
 render();
-nextTarget(false);
+setMode(mode, false);
 card.classList.add('invite');
 sound.preloadPrompts(HOURS.map((_, i) => clip(i + 1)));
 sound.preload([PRAISE]);

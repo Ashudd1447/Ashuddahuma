@@ -71,7 +71,11 @@
     <a href="games.html" aria-label="أَلْعَاب"><img class="logo" src="images/logo.webp" alt=""></a>
     <div class="score" id="score"><span id="score-star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg></span><span id="count">٠</span></div>
   </header>
-  <button class="target" id="target" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="target-text"></span></button>
+  <div class="clock-modes">
+    <button type="button" data-mode="hours" aria-label="السَّاعَاتُ" aria-pressed="true"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="19" fill="#FFFDF6" stroke="#CDB89A" stroke-width="3"/><path d="M24 24V10" stroke="#2A9D8F" stroke-width="3.5" stroke-linecap="round"/><path d="M24 24l8 5" stroke="#A9603A" stroke-width="5" stroke-linecap="round"/><circle cx="24" cy="24" r="3" fill="#4A3424"/></svg></button>
+    <button type="button" data-mode="day" aria-label="يَوْمِي" aria-pressed="false"><img src="images/day/boy.webp" alt=""></button>
+  </div>
+  <button class="target" id="target" type="button"><img id="target-img" alt="" hidden><span class="target-line"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="target-text"></span></span></button>
   <div class="dial-wrap">
     <svg class="dial" id="dial" viewBox="-100 -100 200 200" role="img" tabindex="0" aria-label="السَّاعَةُ"></svg>
   </div>

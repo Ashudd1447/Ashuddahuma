@@ -279,8 +279,16 @@ button{font:inherit;color:inherit;cursor:pointer}
 .target.invite{animation:breathe 1.6s ease-in-out infinite}
 .target.won{background:var(--gold);color:#fff}
 .target.new{animation:deal .4s cubic-bezier(.2,.8,.3,1.25)}
-.dial-wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
-.dial{display:block;width:var(--dial);height:var(--dial);overflow:visible;cursor:grab;touch-action:none;filter:drop-shadow(0 10px 24px rgba(30,20,10,.3))}
+.target-line{display:inline-flex;align-items:center;gap:.4em}
+.target.day{flex-direction:column;gap:4px;border-radius:24px;padding:10px 14px 4px;font-size:clamp(1.2rem,min(3.6vh,6vw),2rem)}
+.target img{display:block;width:min(42vw,24svh,240px);aspect-ratio:1;border-radius:16px;object-fit:cover}
+.clock-modes{display:flex;gap:12px}
+.clock-modes button{width:52px;height:52px;padding:0;border:3px solid var(--surface);border-radius:50%;background:var(--surface);box-shadow:var(--shadow);overflow:hidden;opacity:.55;filter:grayscale(.6);transition:opacity .2s ease,filter .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease}
+.clock-modes button.on{border-color:var(--gold);opacity:1;filter:none;transform:scale(1.12);box-shadow:0 0 0 4px rgba(201,138,69,.35),var(--shadow)}
+.clock-modes svg{display:block;width:100%;height:100%}
+.clock-modes img{display:block;width:100%;height:100%;object-fit:cover;transform:scale(2.3);transform-origin:50% 14%}
+.dial-wrap{flex:1;min-height:0;width:100%;container-type:size;display:flex;align-items:center;justify-content:center}
+.dial{display:block;width:min(100cqw,100cqh,640px);height:min(100cqw,100cqh,640px);overflow:visible;cursor:grab;touch-action:none;filter:drop-shadow(0 10px 24px rgba(30,20,10,.3))}
 .dial .rim{fill:#C98A45}
 .dial .face{fill:#FFFDF6}
 .dial .tick{stroke:#D5C3A7;stroke-width:1.2;stroke-linecap:round}
@@ -299,12 +307,15 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* Wide screens: the clock beside a column holding the logo and the card. */
 @media (min-aspect-ratio:5/4){
   .clock-game{
-    display:grid;grid-template-columns:1fr auto minmax(0,auto) 1fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". dial . ." ". dial head ." ". dial target ." ". dial . .";
+    display:grid;grid-template-columns:1fr auto minmax(0,auto) 1fr;grid-template-rows:1fr auto auto auto 1fr;grid-template-areas:". dial . ." ". dial head ." ". dial modes ." ". dial target ." ". dial . .";
     column-gap:clamp(20px,5vw,72px);row-gap:clamp(12px,3vh,28px);
     --dial:min(calc(100svh - 48px),calc((100vw - 96px) * .6),700px);
   }
-  .dial-wrap{grid-area:dial}
+  .dial-wrap{grid-area:dial;width:var(--dial);height:var(--dial);container-type:normal}
+  .dial{width:var(--dial);height:var(--dial)}
   .clock-game .head{grid-area:head}
+  .clock-modes{grid-area:modes;justify-self:center}
+  .target.day img{width:min(24vw,34svh,260px)}
   .target{grid-area:target;justify-self:center}
 }
 
