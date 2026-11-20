@@ -12,6 +12,15 @@ const $ = (id) => document.getElementById(id);
    here is just for reading aloud. */
 const COUNT_FUSHA = ['وَاحِد', 'اِثْنَان', 'ثَلَاثَة', 'أَرْبَعَة', 'خَمْسَة', 'سِتَّة', 'سَبْعَة'];
 const COUNT_MASRI = ['واحد', 'اتنين', 'تلاتة', 'أربعة', 'خمسة', 'ستة', 'سبعة'];
+const HOURS_FUSHA = [
+  'السَّاعَةُ الْوَاحِدَةُ', 'السَّاعَةُ الثَّانِيَةُ', 'السَّاعَةُ الثَّالِثَةُ', 'السَّاعَةُ الرَّابِعَةُ',
+  'السَّاعَةُ الْخَامِسَةُ', 'السَّاعَةُ السَّادِسَةُ', 'السَّاعَةُ السَّابِعَةُ', 'السَّاعَةُ الثَّامِنَةُ',
+  'السَّاعَةُ التَّاسِعَةُ', 'السَّاعَةُ الْعَاشِرَةُ', 'السَّاعَةُ الْحَادِيَةَ عَشْرَةَ', 'السَّاعَةُ الثَّانِيَةَ عَشْرَةَ',
+];
+const HOURS_MASRI = [
+  'الساعة واحدة', 'الساعة اتنين', 'الساعة تلاتة', 'الساعة أربعة', 'الساعة خمسة', 'الساعة ستة',
+  'الساعة سبعة', 'الساعة تمانية', 'الساعة تسعة', 'الساعة عشرة', 'الساعة حداشر', 'الساعة اتناشر',
+];
 const STATIC_SLOTS = [
   { group: 'Reciter prompts', file: 'read-it', text: 'الْآنَ اقْرَأْهَا أَنْتَ', note: 'After an ayah: now you read it (Fusha)' },
   { group: 'Reciter prompts', file: 'read-it-masri', text: 'دلوقتي اقراها أنت', note: 'After an ayah: now you read it (Egyptian, spoken only)' },
@@ -36,7 +45,13 @@ const STATIC_SLOTS = [
   { group: 'Reading game', file: 'kaaba', text: 'كَعْبَة', note: 'Reading game (an .m4a exists)' },
   { group: 'Reading game', file: 'read', text: 'اقرأ', note: 'Reading game prompt (an .m4a exists)' },
   { group: 'Reading game', file: 'match', text: 'اسحب كل صورة إلى كلمتها', note: 'Matching prompt (an .m4a exists)' },
-  { group: 'Reading game', file: 'well-done', text: 'أحسنت', note: 'Praise, said with a sukoon on the ت (an .m4a exists)' },
+  { group: 'Reading game', file: 'well-done', text: 'أحسنت', note: 'Praise, said with a sukoon on the ت; the games use it too (an .m4a exists)' },
+  { group: 'Block puzzle', file: 'mashaallah', text: 'مَا شَاءَ اللَّهُ', note: 'Praise for two lines or more at once, and for a cleared board (one line plays well-done)' },
+  ...HOURS_FUSHA.flatMap((text, i) => [
+    { group: 'Clock', file: `hour-${i + 1}`, text, note: `${i + 1} o'clock (Fusha)` },
+    { group: 'Clock', file: `hour-${i + 1}-masri`, text: HOURS_MASRI[i], note: `${i + 1} o'clock (Egyptian, spoken only)` },
+  ]),
+  { group: 'Obstacle course', file: 'masjid-dua', text: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ', note: "The du'a for entering the masjid (Sahih Muslim 713), at the end of the walk to the masjid. One recording for both dialect settings" },
 ];
 
 const WORKLET_SOURCE = `

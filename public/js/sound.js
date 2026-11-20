@@ -268,7 +268,7 @@ const sound = (() => {
     for (const name of names) for (const variant of variants(name)) load(variant);
   }
 
-  function tone(frequency, startsIn, length, volume, type = 'sine') {
+  function tone(frequency, startsIn, length, volume, type = 'sine', slideTo = 0) {
     const c = ctx();
     if (!c) return;
     wake();
@@ -279,7 +279,8 @@ const sound = (() => {
     const osc = c.createOscillator();
     const gain = c.createGain();
     osc.type = type;
-    osc.frequency.value = frequency;
+    osc.frequency.setValueAtTime(frequency, start);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, start + length * 0.7);
     gain.gain.setValueAtTime(0.0001, start);
     gain.gain.exponentialRampToValueAtTime(volume, start + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
@@ -297,6 +298,11 @@ const sound = (() => {
     tone(150, 0, 0.22, 0.12, 'triangle');
   }
 
+  /* A short, soft tap when a block puzzle piece settles on the board. */
+  function tick() {
+    tone(700, 0, 0.09, 0.1, 'sine', 260);
+  }
+
   /* Wrong answers vibrate on touch devices that support it (not iPhone or
      iPad) and otherwise play the buzzer. */
   function wrong() {
@@ -312,5 +318,5 @@ const sound = (() => {
     else wake();
   });
 
-  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, wrong };
+  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, tick, wrong };
 })();
