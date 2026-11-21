@@ -56,3 +56,17 @@ Only after you decide to use Recraft for the heroes (see `docs/games-plan.md`). 
 > Character sheet of a 5-year-old boy shown in three poses side by side: standing, walking, jumping. Smooth plain face with no eyes, no nose and no mouth. **Musa:** white thobe and a green kufi, brown sandals. Flat children's game illustration, side view, clean shapes, plain white background, no text.
 
 For Ubai, use the same prompt with: a light blue jalabiya and a white kufi. Export these with a transparent background if Recraft offers it, or on plain white.
+
+## Sprites for the driving game (vector)
+
+The buildings, trees, boat and people beside the road are Recraft vector drawings (SVG), so they stay sharp at any size and weigh little. They were made through Claude's Recraft connector with the saved vector style "Ashuddahuma flat outlined (vector)" (`99df65a5-6781-44cb-8f0f-02a4127320d0`), one object per picture, with a prompt of this shape:
+
+> A single game sprite: *the object, its colors and details*, seen straight from the front, flat elevation view. No people, no text, no letters. Isolated object centered on a plain solid white background, no ground, no shadow, no scenery.
+
+People are made the same way, "seen from the side, walking", always with: "His face is completely blank and smooth: no eyes, no eyebrows, no nose, no mouth."
+
+Each raw file is then run through `clean-svg.py` (in the `recraft` folder, beside the raw files in `recraft/drive-raw/`):
+
+    python clean-svg.py drive-raw/palm.svg ../Ashuddahuma/public/images/drive/palm.svg
+
+It cuts the drawing out of its background, fills what Recraft leaves unpainted (white walls, a thobe, a sail) so nothing is see-through, drops the embedded metadata, and crops to the drawing. A fourth argument drops the tiniest shapes of a heavy drawing. A new sprite also needs its width-to-height ratio in `SPRITES` and its height in `SIZE` in `js/drive.js`, and a line in `FILES` in `sw.js`.

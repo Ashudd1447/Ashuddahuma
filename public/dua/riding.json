@@ -1,0 +1,33 @@
+{
+  "source": "Written by tools/make-riding-dua.py. Never edit by hand.",
+  "hadith": "https://sunnah.com/abudawud:2602 (Sunan Abi Dawud 2602), copied 2026-11-21; the parents kept two of its parts; 0 words respelled.",
+  "quran": "Quran.com API v4, text_uthmani words of 43:13 (from its 12th word) and 43:14, fetched 2026-11-21.",
+  "parts": [
+    {
+      "id": "hamd",
+      "words": [
+        "الْحَمْدُ",
+        "لِلَّهِ"
+      ]
+    },
+    {
+      "id": "verses",
+      "quran": true,
+      "words": [
+        "سُبْحَـٰنَ",
+        "ٱلَّذِى",
+        "سَخَّرَ",
+        "لَنَا",
+        "هَـٰذَا",
+        "وَمَا",
+        "كُنَّا",
+        "لَهُۥ",
+        "مُقْرِنِينَ",
+        "وَإِنَّآ",
+        "إِلَىٰ",
+        "رَبِّنَا",
+        "لَمُنقَلِبُونَ"
+      ]
+    }
+  ]
+}

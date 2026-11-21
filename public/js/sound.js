@@ -303,6 +303,25 @@ const sound = (() => {
     tone(700, 0, 0.09, 0.1, 'sine', 260);
   }
 
+  /* The driving game: a seat belt clicking in, and a car's short double horn. */
+  function click() {
+    tone(2100, 0, 0.035, 0.09, 'square', 1200);
+    tone(1300, 0.06, 0.05, 0.08, 'square', 600);
+  }
+
+  /* A star picked up on the road; step makes each one in a row a little higher. */
+  function pop(step = 0) {
+    const pitch = 560 * 2 ** (Math.min(step, 12) / 12);
+    tone(pitch, 0, 0.1, 0.08, 'sine', pitch * 1.5);
+  }
+
+  function honk() {
+    for (const at of [0, 0.17]) {
+      tone(415, at, 0.13, 0.07, 'triangle');
+      tone(523, at, 0.13, 0.06, 'triangle');
+    }
+  }
+
   /* Wrong answers vibrate on touch devices that support it (not iPhone or
      iPad) and otherwise play the buzzer. */
   function wrong() {
@@ -318,5 +337,5 @@ const sound = (() => {
     else wake();
   });
 
-  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, tick, wrong };
+  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, tick, click, honk, pop, wrong };
 })();

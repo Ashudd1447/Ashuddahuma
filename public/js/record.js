@@ -51,6 +51,13 @@ const STATIC_SLOTS = [
     { group: 'Clock', file: `hour-${i + 1}`, text, note: `${i + 1} o'clock (Fusha)` },
     { group: 'Clock', file: `hour-${i + 1}-masri`, text: HOURS_MASRI[i], note: `${i + 1} o'clock (Egyptian, spoken only)` },
   ]),
+  { group: 'Driving game', file: 'belt', text: 'اِرْبِطْ حِزَامَ الْأَمَانِ', note: 'Before every drive: fasten the seat belt (Fusha)' },
+  { group: 'Driving game', file: 'belt-masri', text: 'اربط حزام الأمان', note: 'Fasten the seat belt (Egyptian, spoken only)' },
+  { group: 'Driving game', file: 'place-masjid', text: 'الْمَسْجِدُ', note: 'Said on arriving at the masjid (Fusha)' },
+  { group: 'Driving game', file: 'place-masjid-masri', text: 'المسجد', note: 'The masjid (Egyptian, spoken only)' },
+  { group: 'Driving game', file: 'place-grandma', text: 'بَيْتُ جَدَّتِي', note: "Said on arriving at the grandmother's house (Fusha)" },
+  { group: 'Driving game', file: 'place-grandma-masri', text: 'بيت تيتة', note: "Grandmother's house (Egyptian, spoken only)" },
+  { group: 'Driving game', file: 'alhamdulillah', text: 'الْحَمْدُ لِلَّهِ', note: 'Said on arriving. One recording for both dialect settings' },
   { group: 'Obstacle course', file: 'masjid-dua', text: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ', note: "The du'a for entering the masjid (Sahih Muslim 713), at the end of the walk to the masjid. One recording for both dialect settings" },
 ];
 
@@ -436,6 +443,19 @@ async function init() {
     ...surah.ayat.map((ayah) => ({ file: `fatihah-${ayah.number}`, text: ayah.text, note: `Al-Fatihah, ayah ${ayah.number}`, quran: true, group: 'Al-Fatihah' })),
     ...STATIC_SLOTS,
   ];
+  // The du'a of riding is read from its own file, like the Quran text: never typed here.
+  const riding = await fetch('dua/riding.json').then((response) => response.json()).catch(() => null);
+  if (riding) {
+    const text = riding.parts.map((part) => {
+      const words = part.words.join(' ');
+      return (part.quran ? `<span class="quran">${mushafText(words)}</span>` : words) + (part.times > 1 ? ` <small dir="ltr">×${part.times}</small>` : '');
+    }).join('<br>');
+    const at = slots.findIndex((slot) => slot.file === 'alhamdulillah');
+    slots.splice(at, 0, {
+      group: 'Driving game', file: 'riding-dua', text,
+      note: "The du'a of riding in one recording: the praise, then the verses (from Sunan Abi Dawud 2602). Pause briefly between the two lines so the words light up in step. One recording for both dialect settings",
+    });
+  }
   render();
   listMicrophones();
   $('write').addEventListener('click', writeAll);

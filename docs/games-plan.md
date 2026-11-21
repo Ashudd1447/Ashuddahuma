@@ -2,7 +2,7 @@
 
 Draft 2, 2026-11-19. Kareem answered draft 1's questions the same night; his answers are under **Decided** in each game. Everything else is still a proposal: every name, phrase, picture and sound the child would see or hear is for the parents to approve, change or drop. Open questions come last in each game, my recommendation first.
 
-The block puzzle (`الْمُكَعَّبَاتُ`) and the clock (`السَّاعَةُ`) are built and described in `CLAUDE.md`. Pictures are made in Recraft following `docs/recraft-images.md`.
+The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاعَةُ`) and the driving game (`السَّيَّارَةُ`, two roads) are built and described in `CLAUDE.md`. Pictures are made in Recraft following `docs/recraft-images.md`.
 
 ## Rules that apply to every game
 
@@ -56,7 +56,26 @@ The block puzzle (`الْمُكَعَّبَاتُ`) and the clock (`السَّا
 1. The things picked up on the way to the masjid: miswak, a small bottle of perfume, clean socks. Keep, change or add (a kufi, a prayer mat)?
 2. The hero art: Recraft (`docs/recraft-images.md` has the prompt for the two boys) or a simple figure drawn in code for the first playable version? I recommend code first to tune the jump with him, then Recraft.
 
-## 2. The driving game
+## 2. The driving game: `السَّيَّارَةُ` (built)
+
+**What was built** (`drive.html`, `js/drive.js`, 2026-11-21; reworked the same day after Kareem tried it). Two roads: `الْحَيُّ` (two red lights, to the masjid) and `كُورْنِيشُ النِّيلِ` (two crossings and a red light, to the grandmother's house). Before every drive the child drags the seat belt to the buckle (an empty seat, no figure) and sees the du'a of riding; then he drives. The road is seen straight from above. Steering is by turning the tablet like a wheel, level always straight; a finger or the arrow keys steer where there is no sensor. Two pedals, either one. Stars lie on the road to drive over. The car follows traffic by itself, a touch is a soft bump and a horn, and it stops itself at a red light and for people crossing, the pedals turning red with a raised hand. At the end the car turns into a side street and stops at the door; the place's name shows; at the masjid the opening of the adhan plays, and at her house the grandmother comes out and waves. A ✕ button leaves the drive.
+
+**Decided** (2026-11-21, after trying it)
+1. The du'a is `الْحَمْدُ لِلَّهِ` and then the verses, nothing else.
+2. A way out of the game from inside it.
+3. The tilted view made him dizzy: the road is now flat, from above, at one size.
+4. A faster car, and traffic there is always a way past.
+5. Reward and thrill come from the road (stars to drive over), not from stopping at a red light.
+6. Arriving means pulling off the road to the place itself, with its name written.
+7. At the masjid, only `اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ` of the adhan, three recordings in turn. He likes Ali Mulla's and al-Surayhi's and the Egyptian adhan; none of those is free to use, so three free recordings stand in until he says otherwise.
+8. At the grandmother's house she walks out and waves.
+
+**For the parents to check**
+1. The three adhan recordings: listen to each on arriving at the masjid, and say if one is not good enough or its cut is wrong.
+2. The verses are shown in the Mushaf's spelling (the site's rule for Quran text); the hadith page prints them in ordinary spelling. Keep the Mushaf spelling?
+3. New words: `السَّيَّارَةُ`, `الْحَيُّ`, `كُورْنِيشُ النِّيلِ`, `اِرْبِطْ حِزَامَ الْأَمَانِ` (Egyptian for the recording: `اربط حزام الأمان`), `الْمَسْجِدُ`, `بَيْتُ جَدَّتِي` (Egyptian for the recording: `بيت تيتة`), `الْحَمْدُ لِلَّهِ` on arriving.
+4. The drawings (three houses, a tower, a bakery, two masajid, trees, a lamp, a fruit cart, a felucca, a man, a woman, a boy) and the cars drawn in code.
+5. Turn on the tablet's rotation lock before he plays, or a big turn of the wheel makes the picture rotate.
 
 **The idea.** The child drives the family car along a road to a destination, steering by tilting the tablet like a steering wheel and holding a pedal to go faster. Before every drive he buckles the seat belt and hears the du'a of riding. Traffic and crossings teach patience and road manners.
 
@@ -90,9 +109,9 @@ The block puzzle (`الْمُكَعَّبَاتُ`) and the clock (`السَّا
 5. Nobody is named as the driver, and no wording says who drives; seen from above, no driver shows. If the seat-belt scene needs a figure, it is an adult, faceless.
 6. Straight is straight (see Steering above), never the angle at the start.
 
-**Questions**
-1. The seat-belt scene: just the seat, the strap and the buckle seen from inside the car (no figure), or the faceless adult buckling up? I recommend no figure: the child's own drag is the action.
-2. Where does the neighborhood drive end? I proposed the masjid for Dhuhr; the bakery or the park would also work.
+**Built on my recommendation, yours to change:** the seat-belt scene has no figure, and the neighborhood drive ends at the masjid.
+
+**Next for this game:** the other three roads (desert highway, city at night, road to Makkah), the school zone with its slow sign, and a horn the child can sound if you want one.
 
 ## 3. Archery
 
@@ -136,8 +155,8 @@ The block puzzle (`الْمُكَعَّبَاتُ`) and the clock (`السَّا
 | Game | Size | Waits on |
 |---|---|---|
 | Telling the time | Built; "my day" next | Recordings of the hours; the "my day" pictures and hours |
-| Driving | Medium: road scenery per road, traffic, tilt | The du'a text checked against sunnah.com, the car and scenery art |
+| Driving | Built: two roads; three more roads later | The parents' check of the du'a wording and the art; the recordings; a try on the real tablet |
 | Obstacle course | Large: the hero, a course's art, the ending scene | The hero, the first course's art, more rounds of design |
 | Archery | Medium: reuses the hero and the engine | The hero |
 
-I suggest the driving game next: its questions are almost all answered and it needs no hero. Then the obstacle course's first playable version with simple shapes, then archery once the hero exists.
+Next: the obstacle course's first playable version with simple shapes, then archery once the hero exists.
