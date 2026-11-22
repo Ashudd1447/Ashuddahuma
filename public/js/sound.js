@@ -18,6 +18,8 @@ const sound = (() => {
   let generation = 0;
   let sessionTimer = null;
   const clips = new Map();
+  let air = null; // the background sound now playing
+  let motor = null; // the desert bike's engine
 
   function ctx() {
     const Context = window.AudioContext || window.webkitAudioContext;
@@ -119,7 +121,7 @@ const sound = (() => {
         const started = a.play();
         if (started) started.catch(() => {});
       }
-    } else if (!active) {
+    } else if (!active && !air && !motor) {
       a.loop = false;
       a.pause();
     }
@@ -322,6 +324,105 @@ const sound = (() => {
     }
   }
 
+  /* Background sound for the driving games, made here and not recorded: wind
+     is hiss through a filter that swells and fades, and birds are a few short
+     rising whistles now and then. kind is 'town', 'river' or 'desert' (wind
+     alone, a little stronger); nothing, or a page gone to the background,
+     stops it. */
+  function ambience(kind) {
+    const c = ctx();
+    if (air) {
+      const old = air;
+      air = null;
+      clearTimeout(old.timer);
+      old.gain.gain.setTargetAtTime(0.0001, c.currentTime, 0.15);
+      setTimeout(() => {
+        try {
+          old.source.stop();
+          old.swell.stop();
+        } catch {
+          // Already stopped.
+        }
+      }, 800);
+    }
+    if (!kind || !c) {
+      holdSession(false);
+      return;
+    }
+    wake();
+    const hiss = c.createBuffer(1, c.sampleRate * 2, c.sampleRate);
+    const data = hiss.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const source = c.createBufferSource();
+    source.buffer = hiss;
+    source.loop = true;
+    const filter = c.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = kind === 'desert' ? 420 : 640;
+    filter.Q.value = 0.6;
+    const level = kind === 'desert' ? 0.05 : 0.02;
+    const gain = c.createGain();
+    gain.gain.value = 0.0001;
+    gain.gain.setTargetAtTime(level, c.currentTime, 0.8);
+    const swell = c.createOscillator();
+    swell.frequency.value = kind === 'desert' ? 0.13 : 0.09;
+    const depth = c.createGain();
+    depth.gain.value = level * 0.6;
+    swell.connect(depth).connect(gain.gain);
+    source.connect(filter).connect(gain).connect(c.destination);
+    source.start();
+    swell.start();
+    const mine = { source, gain, swell, timer: null };
+    air = mine;
+    holdSession(true);
+    if (kind === 'desert') return;
+    const sing = () => {
+      if (air !== mine) return;
+      const notes = 2 + Math.floor(Math.random() * 3);
+      const pitch = 2300 + Math.random() * 1500;
+      for (let i = 0; i < notes; i++) tone(pitch * (1 + i * 0.04), i * 0.13, 0.1, 0.022, 'sine', pitch * 1.25);
+      mine.timer = setTimeout(sing, 2500 + Math.random() * 6000);
+    };
+    mine.timer = setTimeout(sing, 1500);
+  }
+
+  /* A light motor for the desert bike: level, 0 to 1, is how loud, and pitch
+     how fast it turns. It starts at the first call above zero. */
+  function engine(level, pitch = 0) {
+    const c = ctx();
+    if (!c || (!motor && level <= 0)) return;
+    if (!motor) {
+      const osc = c.createOscillator();
+      osc.type = 'sawtooth';
+      const filter = c.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 480;
+      const gain = c.createGain();
+      gain.gain.value = 0.0001;
+      osc.connect(filter).connect(gain).connect(c.destination);
+      osc.start();
+      motor = { osc, gain };
+      holdSession(true);
+    }
+    motor.osc.frequency.setTargetAtTime(46 + 44 * pitch, c.currentTime, 0.08);
+    motor.gain.gain.setTargetAtTime(Math.max(0.0001, level * 0.06), c.currentTime, 0.12);
+  }
+
+  function engineOff() {
+    if (!motor) return;
+    const old = motor;
+    motor = null;
+    old.gain.gain.setTargetAtTime(0.0001, ctx().currentTime, 0.1);
+    setTimeout(() => {
+      try {
+        old.osc.stop();
+      } catch {
+        // Already stopped.
+      }
+    }, 600);
+    holdSession(false);
+  }
+
   /* Wrong answers vibrate on touch devices that support it (not iPhone or
      iPad) and otherwise play the buzzer. */
   function wrong() {
@@ -333,9 +434,13 @@ const sound = (() => {
   addEventListener('pointerdown', warm, { capture: true, once: true });
   addEventListener('keydown', warm, { capture: true, once: true });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stop();
+    if (document.hidden) {
+      stop();
+      ambience(null);
+      engineOff();
+    }
     else wake();
   });
 
-  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, tick, click, honk, pop, wrong };
+  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, tick, click, honk, pop, ambience, engine, engineOff, wrong };
 })();

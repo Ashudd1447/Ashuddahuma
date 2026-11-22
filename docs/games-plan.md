@@ -56,12 +56,12 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 1. The things picked up on the way to the masjid: miswak, a small bottle of perfume, clean socks. Keep, change or add (a kufi, a prayer mat)?
 2. The hero art: Recraft (`docs/recraft-images.md` has the prompt for the two boys) or a simple figure drawn in code for the first playable version? I recommend code first to tune the jump with him, then Recraft.
 
-## 2. The driving game: `السَّيَّارَةُ` (built)
+## 2. The driving games: `قِيَادَةُ الْمَرْكَبَاتِ` (built)
 
 **What was built** (`drive.html`, `js/drive.js`, 2026-11-21; reworked the same day after Kareem tried it). Two roads: `الْحَيُّ` (two red lights, to the masjid) and `كُورْنِيشُ النِّيلِ` (two crossings and a red light, to the grandmother's house). Before every drive the child drags the seat belt to the buckle (an empty seat, no figure) and sees the du'a of riding; then he drives. The road is seen straight from above. Steering is by turning the tablet like a wheel, level always straight; a finger or the arrow keys steer where there is no sensor. Two pedals, either one. Stars lie on the road to drive over. The car follows traffic by itself, a touch is a soft bump and a horn, and it stops itself at a red light and for people crossing, the pedals turning red with a raised hand. At the end the car turns into a side street and stops at the door; the place's name shows; at the masjid the opening of the adhan plays, and at her house the grandmother comes out and waves. A ✕ button leaves the drive.
 
 **Decided** (2026-11-21, after trying it)
-1. The du'a is `الْحَمْدُ لِلَّهِ` and then the verses, nothing else.
+1. The du'a is `بِسْمِ اللَّهِ` and then the verses, nothing else.
 2. A way out of the game from inside it.
 3. The tilted view made him dizzy: the road is now flat, from above, at one size.
 4. A faster car, and traffic there is always a way past.
@@ -69,6 +69,12 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 6. Arriving means pulling off the road to the place itself, with its name written.
 7. At the masjid, only `اللَّهُ أَكْبَرُ اللَّهُ أَكْبَرُ` of the adhan, three recordings in turn. He likes Ali Mulla's and al-Surayhi's and the Egyptian adhan; none of those is free to use, so three free recordings stand in until he says otherwise.
 8. At the grandmother's house she walks out and waves.
+
+**Decided** (2026-11-22)
+1. The set is named `قِيَادَةُ الْمَرْكَبَاتِ`. Of the three adhan recordings only the third (KLCC) is kept. The grandmother is `أنَّه` in the family's Egyptian.
+2. A ✕ leaves every game and section of the site, not only this one.
+3. A third vehicle game, `الصَّحْرَاءُ`: an all-terrain bike in a mountainous desert, the sand not flat, little flights over inclines, mountains as the obstacles, daylight with the sun behind moving clouds, the takbir going up a hill and the tasbih coming down (he will record both), a light motor sound, and background sound for all three drives (wind, birds), made in code.
+4. Built as a side view, Claude's choice, since hills, flights and sky need one; pedal only, no steering. Still to hear from him whether that is what he pictured.
 
 **For the parents to check**
 1. The three adhan recordings: listen to each on arriving at the masjid, and say if one is not good enough or its cut is wrong.

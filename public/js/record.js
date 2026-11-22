@@ -57,6 +57,10 @@ const STATIC_SLOTS = [
   { group: 'Driving game', file: 'place-masjid-masri', text: 'المسجد', note: 'The masjid (Egyptian, spoken only)' },
   { group: 'Driving game', file: 'place-grandma', text: 'بَيْتُ جَدَّتِي', note: "Said on arriving at the grandmother's house (Fusha)" },
   { group: 'Driving game', file: 'place-grandma-masri', text: 'بيت أنَّه', note: "Grandmother's house (Egyptian, spoken only)" },
+  { group: 'Driving game', file: 'place-oasis', text: 'الْوَاحَةُ', note: 'Said on arriving at the oasis, the end of the desert ride (Fusha)' },
+  { group: 'Driving game', file: 'place-oasis-masri', text: 'الواحة', note: 'The oasis (Egyptian, spoken only)' },
+  { group: 'Driving game', file: 'allahu-akbar', text: 'اللَّهُ أَكْبَرُ', note: 'Desert ride: said going up a mountain. One recording for both dialect settings' },
+  { group: 'Driving game', file: 'subhanallah', text: 'سُبْحَانَ اللَّهِ', note: 'Desert ride: said coming down a mountain. One recording for both dialect settings' },
   { group: 'Driving game', file: 'alhamdulillah', text: 'الْحَمْدُ لِلَّهِ', note: 'Said on arriving. One recording for both dialect settings' },
   { group: 'Obstacle course', file: 'masjid-dua', text: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ', note: "The du'a for entering the masjid (Sahih Muslim 713), at the end of the walk to the masjid. One recording for both dialect settings" },
 ];

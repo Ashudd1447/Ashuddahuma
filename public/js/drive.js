@@ -65,6 +65,8 @@ const ROADS = [
     right: { row: ['tower', 'house-c', 'house-b', 'tree', 'house-a', 'tower', 'cart'], specials: [{ y: 280, name: 'bakery' }, { y: 450, name: 'masjid' }] },
     stops: [{ y: 180, kind: 'crossing' }, { y: 340, kind: 'light' }, { y: 500, kind: 'crossing' }],
   },
+  // The desert ride is a game of its own, in desert.js: a bike seen from the side, to an oasis.
+  { id: 'sahra', name: 'الصَّحْرَاءُ', desert: true, goal: 'palm', goalName: 'الْوَاحَةُ', goalClip: 'place-oasis', length: 760, seed: 47 },
 ];
 
 const root = $('drive');
@@ -249,8 +251,8 @@ async function askMotion() {
 
 /* The sounds this game added. An older saved copy of sound.js may not
    have them yet on the first launch after an update. */
-const beep = (name, value) => {
-  if (typeof sound[name] === 'function') sound[name](value);
+const beep = (name, ...values) => {
+  if (typeof sound[name] === 'function') sound[name](...values);
 };
 
 const tilting = () => steerBy === 'tilt' && tilt.seen;
@@ -342,7 +344,8 @@ function layout() {
   near = (height - carY) / lane + 0.5;
   cx = width / 2 - (trip ? trip.pan : 0) * lane;
   rasters.clear();
-  if (trip) trip.scenery = buildScenery(trip.road);
+  if (trip && trip.desert) desert.layout();
+  else if (trip) trip.scenery = buildScenery(trip.road);
 }
 
 const images = {};
@@ -734,7 +737,7 @@ function seedPickups(which, random) {
 
 function startTrip() {
   const random = rng(road.seed + 100 + Math.floor(performance.now() % 1000));
-  trip = {
+  trip = road.desert ? desert.make(road, random) : {
     road, t: 0, x: 0, y: 0, v: 0, yaw: 0, pan: 0, braking: false, held: false,
     phase: 'drive', angle: 0, out: 0, parked: false, done: false,
     earned: 0, streak: 0, picked: -9, bumped: -9, random,
@@ -752,7 +755,12 @@ function startTrip() {
   finger.id = null;
   tilt.latched = null;
   tilt.level = 0;
+  root.classList.toggle('ride', Boolean(road.desert));
+  $('zikr').hidden = true;
   show('trip');
+  // Light wind, with birds in town and by the river.
+  trip.ambience = road.desert ? 'desert' : road.left.river ? 'river' : 'town';
+  beep('ambience', trip.ambience);
   if (screen.orientation && screen.orientation.lock) screen.orientation.lock(screen.orientation.type).catch(() => {});
   running = true;
   last = performance.now();
@@ -992,15 +1000,20 @@ function frame(now) {
   if (!running || !trip) return;
   const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
   last = now;
-  update(dt);
-  draw();
+  if (trip.desert) {
+    desert.update(dt);
+    desert.draw();
+  } else {
+    update(dt);
+    draw();
+  }
   if (running) raf = requestAnimationFrame(frame);
 }
 
 /* Arrived: the place's name is shown and said, then the praise; at the masjid
    the first words of the adhan follow, a different recording each time; at
    her house the grandmother comes out and waves. Then the buttons come. */
-async function arrive() {
+async function arrive(starX, starY) {
   const mine = trip;
   trip.parked = true;
   trip.done = true;
@@ -1008,7 +1021,7 @@ async function arrive() {
   stars += 5;
   save();
   sound.chime();
-  flyStar(cx + trip.x * lane, carY - lane);
+  flyStar(starX === undefined ? cx + trip.x * lane : starX, starY === undefined ? carY - lane : starY);
   $('arrived-name').textContent = road.goalName;
   $('arrived-stars').innerHTML = `${STAR}<span>${arabic(trip.earned)}</span>`;
   $('arrived-controls').hidden = true;
@@ -1037,6 +1050,9 @@ function leave() {
   cancelAnimationFrame(raf);
   duaRun += 1;
   sound.stop();
+  beep('ambience', null);
+  beep('engineOff');
+  $('zikr').hidden = true;
   clearInterval(belt.timer);
   if (trip) save();
   trip = null;
@@ -1239,7 +1255,9 @@ function buildRoads() {
     card.innerHTML = `<span class="road-art road-${item.id}"><img src="images/drive/${item.goal}.svg" alt=""></span><span class="road-name">${item.name}</span>`;
     card.addEventListener('click', () => {
       road = item;
-      showBelt();
+      // A bike has no seat belt: the desert ride goes straight to the du'a.
+      if (item.desert) showDua();
+      else showBelt();
     });
     list.append(card);
   }
@@ -1296,11 +1314,13 @@ document.addEventListener('visibilitychange', () => {
     last = performance.now();
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);
+    beep('ambience', trip.ambience);
   }
 });
 addEventListener('resize', () => {
   layout();
-  if (trip) draw();
+  if (trip && trip.desert) desert.draw();
+  else if (trip) draw();
 });
 
 /* Start */
