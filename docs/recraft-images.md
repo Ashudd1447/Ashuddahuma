@@ -69,4 +69,6 @@ Each raw file is then run through `clean-svg.py` (in the `recraft` folder, besid
 
     python clean-svg.py drive-raw/palm.svg ../Ashuddahuma/public/images/drive/palm.svg
 
+The desert's drawings (a camel, a gazelle, a fox, an eagle seen from above, an acacia, a boulder, a tent, a shrub) were made the same way on 2026-11-21, 4 credits each, with their raw files in `recraft/desert-raw/`. Animals are asked for "seen exactly from the side, facing right", always with: "Its head is completely plain and smooth: no eye, no nostril, no mouth." All eight came back without faces at the first try. Their heights are in `TALL` in `js/desert.js`, not in `SIZE`.
+
 It cuts the drawing out of its background, fills what Recraft leaves unpainted (white walls, a thobe, a sail) so nothing is see-through, drops the embedded metadata, and crops to the drawing. A fourth argument drops the tiniest shapes of a heavy drawing. A new sprite also needs its width-to-height ratio in `SPRITES` and its height in `SIZE` in `js/drive.js`, and a line in `FILES` in `sw.js`.

@@ -330,9 +330,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .road-card{display:block;width:min(100%,42svh,360px);padding:0;border:0;border-radius:24px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow);transition:transform .18s ease}
 .road-card:active{transform:scale(.98)}
 .road-art{display:block;position:relative;aspect-ratio:4/3;background:linear-gradient(#8CC4EA 0 62%,#EBD9B4 62% 86%,#5B5F66 86%)}
-.road-sahra{background:linear-gradient(#9CC3E0 0 58%,#EACB93 58%)}
+.road-waha{background:linear-gradient(#9CC3E0 0 46%,#EACB93 46%)}
 .zikr{position:absolute;top:36px;left:50%;transform:translateX(-50%);margin:0;padding:.02em .7em .12em;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:var(--shadow);color:var(--deep);font-weight:700;font-size:clamp(1.8rem,min(8vmin,7svh),3.6rem);line-height:1.6;white-space:nowrap;pointer-events:none}
-.drive.ride .wheel,.drive.ride .finger-hint{display:none}
 .road-nile{background:linear-gradient(#F3C98B 0 30%,#62B2DE 30% 62%,#EBD9B4 62% 86%,#5B5F66 86%)}
 .road-art img{position:absolute;left:10%;top:8%;width:80%;height:83%;object-fit:contain;object-position:50% 100%}
 .road-name{display:block;padding:.2em .5em .3em;text-align:center;font-weight:700;color:var(--deep);font-size:clamp(1.6rem,5.4vw,2.2rem);line-height:1.6}
@@ -391,6 +390,27 @@ button{font:inherit;color:inherit;cursor:pointer}
   .dua-line.quran{font-size:clamp(1.25rem,min(6vh,3.8vw),2.7rem)}
   .road-card{width:min(40vw,62svh,360px)}
 }
+
+/* Building game: it borrows the driving games' shell */
+#view-site{position:relative;justify-content:flex-start}
+#view-done{position:relative;z-index:2;justify-content:flex-start;padding-top:8svh}
+.build-steps{margin-top:14px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.75);box-shadow:var(--shadow)}
+.gear-item{cursor:grab}
+.gear-item.worn{cursor:default}
+.gear-item:not(.worn) .gear-art{transform-box:fill-box;transform-origin:center;animation:breathe 1.6s ease-in-out infinite}
+.gear-item[data-gear="vest"] .gear-art{animation-delay:.25s}
+.gear-item[data-gear="gloves"] .gear-art{animation-delay:.5s}
+.ctl{--ctl:clamp(72px,15vmin,112px);width:var(--ctl);height:var(--ctl)}
+.ctl[data-ctl="left"]{left:0}
+.ctl[data-ctl="right"]{left:calc(var(--ctl) + 10px)}
+.ctl[data-ctl="up"]{right:0}
+.ctl[data-ctl="down"]{right:calc(var(--ctl) + 10px)}
+.ctl-lift{background:#3E76C2}
+.ctl:active{transform:scale(.92)}
+.ctl-drive:active{background:#2C8C4B}
+.ctl-lift:active{background:#2F5E9E}
+.build[data-stage="dozer"] .ctl-lift,.build[data-stage="tools"] .ctl,.build[data-stage="done"] .ctl{display:none}
+.build[data-hint="left"] [data-ctl="left"],.build[data-hint="right"] [data-ctl="right"],.build[data-hint="up"] [data-ctl="up"],.build[data-hint="down"] [data-ctl="down"]{animation:breathe 1s ease-in-out infinite;box-shadow:0 0 0 6px rgba(242,184,75,.75),var(--shadow)}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}

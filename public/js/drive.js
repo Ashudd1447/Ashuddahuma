@@ -1,11 +1,12 @@
-/* السَّيَّارَةُ: the driving game. Pick a road, drag the seat belt across until
+/* قِيَادَةُ الْمَرْكَبَاتِ: the driving games. Pick a road, drag the seat belt across until
    it clicks, see the du'a of riding, then drive to the end of the road, where
    the car turns off into a side street and stops at the place it was going.
    Steering is by turning the tablet like a steering wheel: level is straight,
    whatever way it was held when the drive began. Either pedal makes the car go
    faster; letting go slows it down. Nothing is ever lost: the car slows behind
    traffic by itself, a touch is a soft bump, and it stops by itself at a red
-   light or for people crossing. Stars lie along the road to be driven over.
+   light or for people crossing. Stars lie along the road to be driven over,
+   in a lane traffic keeps out of. Near the end the right turn signal blinks.
    The road is drawn on a canvas, seen straight from above, and scrolls at one
    size. Lengths are in lanes: the road is three lanes wide, x from -1.5 to
    1.5, and y grows along it. */
@@ -41,6 +42,8 @@ const SPRITES = {
   bakery: 0.997, boy: 0.447, cart: 1, felucca: 0.746, 'grand-house': 1.713, grandma: 0.41, 'house-a': 0.786,
   'house-b': 1.649, 'house-c': 0.691, lamp: 0.272, man: 0.405, 'masjid-big': 0.888, masjid: 0.553, palm: 0.598,
   tower: 0.423, tree: 0.73, woman: 0.385,
+  // The desert's own, sized in desert.js.
+  acacia: 1.088, boulder: 1.051, camel: 1.229, eagle: 1.598, fox: 0.685, gazelle: 0.738, shrub: 1.153, tent: 2.046,
 };
 const SIZE = {
   'house-a': 2.7, 'house-b': 2, 'house-c': 3.1, bakery: 2.1, masjid: 3.7, tower: 4.4, palm: 3.1, tree: 2.1,
@@ -65,8 +68,8 @@ const ROADS = [
     right: { row: ['tower', 'house-c', 'house-b', 'tree', 'house-a', 'tower', 'cart'], specials: [{ y: 280, name: 'bakery' }, { y: 450, name: 'masjid' }] },
     stops: [{ y: 180, kind: 'crossing' }, { y: 340, kind: 'light' }, { y: 500, kind: 'crossing' }],
   },
-  // The desert ride is a game of its own, in desert.js: a bike seen from the side, to an oasis.
-  { id: 'sahra', name: 'الصَّحْرَاءُ', desert: true, goal: 'palm', goalName: 'الْوَاحَةُ', goalClip: 'place-oasis', length: 760, seed: 47 },
+  // The ride to the oasis is a game of its own, in desert.js: a bike steered across the desert.
+  { id: 'waha', name: 'الْوَاحَةُ', desert: true, goal: 'palm', goalName: 'الْوَاحَةُ', goalClip: 'place-oasis', seed: 47 },
 ];
 
 const root = $('drive');
@@ -318,15 +321,16 @@ addEventListener('blur', () => {
 });
 root.addEventListener('contextmenu', (event) => event.preventDefault());
 
-/* How hard to steer, from -1 (left) to 1 (right). */
-function steering(dt) {
+/* How hard to steer, from -1 (left) to 1 (right). pointed turns a place
+   across the screen into a place across the road, for the finger. */
+function steering(dt, pointed = (px) => (px - cx) / lane) {
   if (tilt.seen) tilt.angle += (readTilt(performance.now()) - tilt.angle) * (1 - Math.exp(-dt / 0.09));
   if (keys.left !== keys.right) return keys.left ? -1 : 1;
   if (tilting()) {
     const size = Math.abs(tilt.angle);
     return size < STEER.dead ? 0 : Math.sign(tilt.angle) * Math.min(1, (size - STEER.dead) / (STEER.full - STEER.dead));
   }
-  if (finger.id !== null) return clamp(((finger.x - cx) / lane - trip.x) * 4, -1, 1);
+  if (finger.id !== null) return clamp((pointed(finger.x) - trip.x) * 4, -1, 1);
   return 0;
 }
 
@@ -366,7 +370,7 @@ function raster(name) {
   const hit = rasters.get(name);
   if (hit) return hit;
   const image = images[name];
-  if (!image || !image.naturalWidth) return null;
+  if (!image || !image.naturalWidth || !(name in WALKERS || name in SIZE)) return null;
   const tall = name in WALKERS ? WALKERS[name] * lane : Math.max(SIZE[name] * su, name in ON_WALK ? ON_WALK[name].tall * lane : 0);
   const h = Math.ceil(tall * dpr);
   const w = Math.ceil(h * SPRITES[name]);
@@ -517,7 +521,46 @@ function drawCar(car, x, y, s) {
       ctx.fill();
     }
   }
+  // The turn signal: amber lamps at both corners of that side, blinking.
+  if (car.signal && blinkOn()) {
+    for (const end of [-0.46, 0.46]) {
+      ctx.fillStyle = 'rgba(255,181,46,.4)';
+      ctx.beginPath();
+      ctx.arc(car.signal * w * 0.44, end * l, w * 0.34, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#FFB52E';
+      ctx.beginPath();
+      ctx.arc(car.signal * w * 0.42, end * l, w * 0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
   ctx.restore();
+}
+
+/* The turn signals blink together, on for a part of each beat. */
+const blinkOn = () => (trip.t * 1.4) % 1 < 0.55;
+
+/* Two amber arrowheads beside the child's car, pointing the way it is about to turn. */
+function drawTurnArrow(X, Y, dir) {
+  const s = lane * 0.3;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, lane * 0.05);
+  ctx.strokeStyle = INK;
+  ctx.fillStyle = '#FFB52E';
+  for (let i = 0; i < 2; i++) {
+    const x = X + dir * i * s * 0.95;
+    ctx.beginPath();
+    ctx.moveTo(x, Y - s);
+    ctx.lineTo(x + dir * s * 0.5, Y - s);
+    ctx.lineTo(x + dir * s * 1.3, Y);
+    ctx.lineTo(x + dir * s * 0.5, Y + s);
+    ctx.lineTo(x, Y + s);
+    ctx.lineTo(x + dir * s * 0.8, Y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
 }
 
 /* Something that stands up from the ground at X, Y. */
@@ -647,7 +690,7 @@ function draw() {
   // Cars, the furthest first.
   const cars = trip.cars.filter((car) => car.y > from - 2 && car.y < to + 2).sort((a, b) => b.y - a.y);
   let drawn = false;
-  const me = { w: CAR.w, l: CAR.l, color: '#D4533A', roof: '#E8765E', yaw: trip.yaw, braking: trip.braking };
+  const me = { w: CAR.w, l: CAR.l, color: '#D4533A', roof: '#E8765E', yaw: trip.yaw, braking: trip.braking, signal: trip.signal };
   for (const car of cars) {
     if (!drawn && car.y < trip.y) {
       drawCar(me, cx + trip.x * lane, carY, 1);
@@ -656,6 +699,7 @@ function draw() {
     drawCar(car, cx + car.x * lane, rowY(car.y), 1);
   }
   if (!drawn) drawCar(me, cx + trip.x * lane, carY, 1);
+  if (trip.signal && trip.phase === 'drive' && blinkOn()) drawTurnArrow(cx + (trip.x + CAR.w / 2 + 0.16) * lane, carY, trip.signal);
 
   // Everything that stands up, the furthest first. A thing is drawn while
   // any part of it is on the screen.
@@ -724,15 +768,57 @@ function seedTraffic(which, random) {
 }
 
 /* Stars lie on the road in short lines, each line in one lane, away from the
-   lights, the crossings and the end. */
+   lights, the crossings and the end. A line's lane is settled only as it
+   comes into view (see placeLines), and traffic keeps out of it. */
 function seedPickups(which, random) {
-  const list = [];
-  for (let y = 18; y < which.length - 34; y += 22 + random() * 10) {
+  const lines = [];
+  for (let y = 18; y < which.length - 40; y += 22 + random() * 10) {
     if (which.stops.some((stop) => Math.abs(stop.y - y - 2) < 10)) continue;
-    const x = LANES[Math.floor(random() * 3)];
-    for (let i = 0; i < 4; i++) list.push({ x, y: y + i * 1.5, got: 0 });
+    const line = { lane: Math.floor(random() * 3), from: y, to: y + 4.5, placed: false, stars: [] };
+    for (let i = 0; i < 4; i++) line.stars.push({ x: LANES[line.lane], y: y + i * 1.5, got: 0 });
+    lines.push(line);
   }
-  return list;
+  return lines;
+}
+
+/* How much of a lane a line of stars keeps clear of traffic: from well before
+   its first star, so there is room to pull in, to just past its last. */
+const CLEAR = { before: 10, after: 2.5 };
+const claims = (line, car) => car.y + car.l / 2 > line.from - CLEAR.before && car.y - car.l / 2 < line.to + CLEAR.after;
+const waiting = (line) => line.to > trip.y - 1 && line.stars.some((star) => !star.got);
+
+/* As a line of stars is about to come into view, it takes the lane with the
+   fewest cars between the child's car and its end. */
+function placeLines() {
+  for (const line of trip.lines) {
+    if (line.placed || line.from - trip.y > far + 6) continue;
+    line.placed = true;
+    const busy = [0, 0, 0];
+    for (const car of trip.cars) {
+      if (car.y > trip.y - 1.5 && car.y < line.to + CLEAR.after + 2) busy[car.lane] += 1;
+    }
+    const least = Math.min(...busy);
+    if (busy[line.lane] === least) continue;
+    line.lane = busy.indexOf(least);
+    for (const star of line.stars) star.x = LANES[line.lane];
+  }
+}
+
+/* A car in a lane that a line of stars has taken moves over to another lane,
+   signaling, when there is room beside it; until then it holds back. So the
+   stars are never behind slow traffic. Returns the most it may drive. */
+function yieldToStars(car) {
+  const taken = (laneIndex) => trip.lines.some((line) => line.lane === laneIndex && waiting(line) && claims(line, car));
+  if (!taken(car.lane)) return Infinity;
+  const free = (laneIndex) => laneIndex >= 0 && laneIndex <= 2
+    && !trip.cars.some((other) => other !== car && other.lane === laneIndex && Math.abs(other.y - car.y) < (other.l + car.l) / 2 + 1.1)
+    && !(Math.abs(trip.x - LANES[laneIndex]) < 0.85 && trip.y > car.y - 7.5 && trip.y < car.y + 2.8);
+  const sides = car.lane === 1 ? (car.x < 0 ? [0, 2] : [2, 0]) : [1];
+  const next = sides.find((laneIndex) => free(laneIndex) && !taken(laneIndex)) ?? sides.find(free);
+  if (next === undefined) return 1.2;
+  car.signal = Math.sign(next - car.lane);
+  car.lane = next;
+  return Infinity;
 }
 
 function startTrip() {
@@ -740,11 +826,12 @@ function startTrip() {
   trip = road.desert ? desert.make(road, random) : {
     road, t: 0, x: 0, y: 0, v: 0, yaw: 0, pan: 0, braking: false, held: false,
     phase: 'drive', angle: 0, out: 0, parked: false, done: false,
-    earned: 0, streak: 0, picked: -9, bumped: -9, random,
-    cars: seedTraffic(road, random), pickups: seedPickups(road, random),
+    earned: 0, streak: 0, picked: -9, bumped: -9, random, signal: 0, lit: false,
+    cars: seedTraffic(road, random), lines: seedPickups(road, random),
     stops: road.stops.map((stop) => ({ ...stop, state: 'open', clock: 0, waited: 0, people: [] })),
     scenery: [], shown: -1,
   };
+  if (!road.desert) trip.pickups = trip.lines.flatMap((line) => line.stars);
   layout();
   for (const name of Object.keys(SPRITES)) raster(name);
   $('trip-goal').src = `images/drive/${road.goal}.svg`;
@@ -755,10 +842,9 @@ function startTrip() {
   finger.id = null;
   tilt.latched = null;
   tilt.level = 0;
-  root.classList.toggle('ride', Boolean(road.desert));
   $('zikr').hidden = true;
   show('trip');
-  // Light wind, with birds in town and by the river.
+  // Birds in town, wind over the water by the river, an eagle and small birds in the desert.
   trip.ambience = road.desert ? 'desert' : road.left.river ? 'river' : 'town';
   beep('ambience', trip.ambience);
   if (screen.orientation && screen.orientation.lock) screen.orientation.lock(screen.orientation.type).catch(() => {});
@@ -905,7 +991,11 @@ function moveTraffic(dt) {
   for (let i = 0; i < sorted.length; i++) {
     const car = sorted[i];
     const nose = car.y + car.l / 2;
-    let most = stopLimit(nose, car.lane);
+    let most = Math.min(stopLimit(nose, car.lane), yieldToStars(car));
+    // Changing lanes: it slides over, and the signal goes off once it is there.
+    const aside = LANES[car.lane] - car.x;
+    car.x += clamp(aside, -1.3 * dt, 1.3 * dt);
+    if (Math.abs(aside) < 0.03) car.signal = 0;
     for (let j = i + 1; j < sorted.length; j++) {
       if (sorted[j].lane !== car.lane) continue;
       most = Math.min(most, behind(sorted[j].y - sorted[j].l / 2 - nose, sorted[j].v));
@@ -978,19 +1068,32 @@ function update(dt) {
   const turn = trip.phase === 'drive' ? driveOn(dt, steer) : 0;
   if (trip.phase !== 'drive') turnOff(dt);
   cx = width / 2 - trip.pan * lane;
+  placeLines();
   moveTraffic(dt);
   if (trip.phase === 'drive') touchCars();
   pickUp(dt);
 
-  // The bar along the top, the pedals, the little wheel.
-  const ending = trip.phase !== 'drive' || trip.y > trip.road.length - 26;
-  const part = Math.round(clamp(trip.y / trip.road.length, 0, 1) * 200) / 2;
+  // Near the end the right turn signal comes on, a little before the car
+  // takes itself to the right lane, and ticks until it has turned and stopped.
+  trip.signal = !trip.parked && trip.y > trip.road.length - 38 ? 1 : 0;
+  const lit = Boolean(trip.signal) && blinkOn();
+  if (lit !== trip.lit) {
+    trip.lit = lit;
+    if (trip.signal) beep('blink', lit);
+  }
+  dash(trip.y / trip.road.length, turn, trip.phase !== 'drive' || trip.y > trip.road.length - 26);
+}
+
+/* The bar along the top, the pedals, the little wheel and the finger's hint,
+   for the roads and the desert alike. */
+function dash(done, turn, ending) {
+  const part = Math.round(clamp(done, 0, 1) * 200) / 2;
   if (part !== trip.shown) {
     trip.shown = part;
     $('trip').style.setProperty('--part', `${part}%`);
   }
   root.classList.toggle('wait', trip.held);
-  root.classList.toggle('gas', pedalDown() && !trip.held);
+  root.classList.toggle('gas', pedalDown() && !trip.held && !trip.parked);
   $('wheel').style.transform = `rotate(${(tilting() && !ending ? clamp(tilt.angle, -50, 50) : turn * 30).toFixed(1)}deg)`;
   // With no tilt to read, a hand shows for a few seconds how to steer by finger.
   $('finger-hint').hidden = tilting() || finger.id !== null || keys.left || keys.right || trip.t < 1.5 || trip.t > 7 || ending;
@@ -1017,6 +1120,7 @@ async function arrive(starX, starY) {
   const mine = trip;
   trip.parked = true;
   trip.done = true;
+  trip.signal = 0;
   trip.earned += 5;
   stars += 5;
   save();
@@ -1244,6 +1348,13 @@ $('go').addEventListener('click', async () => {
   startTrip();
 });
 
+/* A drive begins with the seat belt. A bike has none: the desert ride goes
+   straight to the du'a. */
+function begin() {
+  if (road.desert) showDua();
+  else showBelt();
+}
+
 /* The roads to pick from. */
 function buildRoads() {
   const list = $('road-cards');
@@ -1255,9 +1366,7 @@ function buildRoads() {
     card.innerHTML = `<span class="road-art road-${item.id}"><img src="images/drive/${item.goal}.svg" alt=""></span><span class="road-name">${item.name}</span>`;
     card.addEventListener('click', () => {
       road = item;
-      // A bike has no seat belt: the desert ride goes straight to the du'a.
-      if (item.desert) showDua();
-      else showBelt();
+      begin();
     });
     list.append(card);
   }
@@ -1265,7 +1374,7 @@ function buildRoads() {
 
 $('again').addEventListener('click', () => {
   leave();
-  showBelt();
+  begin();
 });
 // The ✕ leaves a drive for the list of roads; from the list it is a link to the games.
 $('exit').addEventListener('click', (event) => {
@@ -1337,4 +1446,4 @@ fetch('dua/riding.json').then((response) => response.json()).then((data) => {
 }).catch(() => {});
 sound.preloadPrompts(['belt']);
 sound.preload(['riding-dua', 'alhamdulillah']);
-if (LOCAL) window.driveGame = { get trip() { return trip; }, update, draw, tilt, steerAngle, onOrientation, keys, startTrip, show };
+if (LOCAL) window.driveGame = { get trip() { return trip; }, set road(id) { road = ROADS.find((item) => item.id === id); }, update, draw, tilt, steerAngle, onOrientation, keys, pedals, startTrip, show };

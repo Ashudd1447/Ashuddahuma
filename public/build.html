@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بِنَاءُ الْمَسْجِدِ</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="drive-page">
+<canvas class="road-canvas" id="site" aria-hidden="true" hidden></canvas>
+<div class="drive build" id="build" data-view="gear">
+  <header class="head">
+    <a href="games.html" aria-label="أَلْعَاب"><img class="logo" src="images/logo.webp" alt=""></a>
+    <div class="score" id="score"><span id="score-star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg></span><span id="count">٠</span></div>
+  </header>
+
+  <section class="drive-view" id="view-gear">
+    <p class="prompt" id="gear-prompt">اِلْبَسْ مُعَدَّاتِ السَّلَامَةِ</p>
+    <svg class="belt-scene gear-scene" id="gear" viewBox="0 0 400 400" role="img" tabindex="0" aria-label="مُعَدَّاتُ السَّلَامَةِ">
+      <rect width="400" height="400" rx="28" fill="#E9DCC8"/>
+      <path d="M0 322H400V372a28 28 0 0 1-28 28H28a28 28 0 0 1-28-28z" fill="#D3C2A8"/>
+      <path d="M0 322H400" stroke="#4A3424" stroke-width="5"/>
+      <rect x="18" y="26" width="114" height="318" rx="16" fill="#C9A77A" stroke="#4A3424" stroke-width="5"/>
+      <g fill="#DDBF95"><circle cx="75" cy="84" r="42"/><circle cx="75" cy="186" r="42"/><circle cx="75" cy="288" r="42"/></g>
+      <g id="gear-boy" stroke="#4A3424" stroke-width="5" stroke-linejoin="round">
+        <ellipse cx="250" cy="346" rx="74" ry="9" fill="#C7B596" stroke="none"/>
+        <ellipse cx="231" cy="338" rx="19" ry="10" fill="#6E533B"/>
+        <ellipse cx="269" cy="338" rx="19" ry="10" fill="#6E533B"/>
+        <path d="M222 258h26v76h-26zM252 258h26v76h-26z" fill="#2F4B7C"/>
+        <path d="M216 166q-24 12-32 72l18 6q8-42 20-52zM284 166q24 12 32 72l-18 6q-8-42-20-52z" fill="#9CC7E8"/>
+        <circle cx="192" cy="248" r="12" fill="#E3B78E"/>
+        <circle cx="308" cy="248" r="12" fill="#E3B78E"/>
+        <path d="M214 162q36-14 72 0l4 104h-80z" fill="#9CC7E8"/>
+        <rect x="241" y="138" width="18" height="26" fill="#E3B78E"/>
+        <circle cx="214" cy="116" r="7" fill="#E3B78E"/>
+        <circle cx="286" cy="116" r="7" fill="#E3B78E"/>
+        <circle cx="250" cy="112" r="36" fill="#E3B78E"/>
+        <path d="M214.6 106A36 36 0 0 1 285.4 106Q270 88 250 93T214.6 106Z" fill="#4A3424"/>
+      </g>
+      <circle id="gear-glow" r="46" fill="none" stroke="#F2B84B" stroke-width="6" hidden/>
+      <g class="gear-item" data-gear="vest" transform="translate(75 186)">
+        <circle r="50" fill="transparent"/>
+        <g class="gear-art" stroke="#4A3424" stroke-width="5" stroke-linejoin="round">
+          <path d="M-37 -52h17q20 18 40 0h17l5 104h-84z" fill="#F2742B"/>
+          <path d="M-41 14h82v13h-82z" fill="#F7E26B" stroke-width="3"/>
+          <path d="M-27 -50h10v102h-10zM17 -50h10v102h-10z" fill="#F7E26B" stroke-width="3"/>
+        </g>
+      </g>
+      <g class="gear-item" data-gear="gloves" transform="translate(75 288)">
+        <circle r="50" fill="transparent"/>
+        <g class="gear-art" stroke="#4A3424" stroke-width="4" stroke-linejoin="round">
+          <g id="glove-a" transform="translate(-20 0)"><path d="M-13 -18h26v20a13 15 0 0 1-26 0z" fill="#8C6A4C"/><path d="M-15 -26h30v10h-30z" fill="#F2B84B"/></g>
+          <g id="glove-b" transform="translate(20 0)"><path d="M-13 -18h26v20a13 15 0 0 1-26 0z" fill="#8C6A4C"/><path d="M-15 -26h30v10h-30z" fill="#F2B84B"/></g>
+        </g>
+      </g>
+      <g class="gear-item" data-gear="helmet" transform="translate(75 84)">
+        <circle r="50" fill="transparent"/>
+        <g class="gear-art" stroke="#4A3424" stroke-width="5" stroke-linejoin="round">
+          <path d="M-36 12a36 36 0 0 1 72 0z" fill="#F2B84B"/>
+          <path d="M-7 -23h14v35h-14z" fill="#E9A43C" stroke-width="3"/>
+          <rect x="-45" y="10" width="90" height="12" rx="6" fill="#E9A43C"/>
+        </g>
+      </g>
+    </svg>
+  </section>
+
+  <section class="drive-view" id="view-site" hidden>
+    <div class="dots build-steps" id="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <p class="zikr" id="word" hidden></p>
+    <button class="pedal ctl ctl-drive" type="button" data-ctl="left" aria-label="إِلَى الْيَسَارِ"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 24L28 8V18H40V30H28V40z"/></svg></button>
+    <button class="pedal ctl ctl-drive" type="button" data-ctl="right" aria-label="إِلَى الْيَمِينِ"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M40 24L20 8V18H8V30H20V40z"/></svg></button>
+    <button class="pedal ctl ctl-lift" type="button" data-ctl="down" aria-label="إِلَى الْأَسْفَلِ"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 40L8 20H18V8H30V20H40z"/></svg></button>
+    <button class="pedal ctl ctl-lift" type="button" data-ctl="up" aria-label="إِلَى الْأَعْلَى"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8L40 28H30V40H18V28H8z"/></svg></button>
+  </section>
+
+  <section class="drive-view" id="view-done" hidden>
+    <p class="praise arrived-name">اللَّهُ أَكْبَرُ</p>
+    <div class="arrived-stars" id="done-stars" aria-hidden="true"></div>
+    <div class="controls" id="done-controls" hidden>
+      <button class="round" id="again" type="button" aria-label="مَسْجِدٌ جَدِيدٌ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </section>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/build.js"></script>
+</body>
+</html>

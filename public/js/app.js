@@ -142,7 +142,7 @@ function buildExit() {
   const link = document.createElement('a');
   link.className = 'exit-button';
   link.id = 'exit';
-  link.href = ['blocks', 'clock', 'drive'].includes(page) ? 'games.html' : '/';
+  link.href = ['blocks', 'clock', 'drive', 'build'].includes(page) ? 'games.html' : '/';
   link.setAttribute('aria-label', 'خُرُوجٌ');
   link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
   document.body.append(link);

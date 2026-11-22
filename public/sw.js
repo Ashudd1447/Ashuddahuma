@@ -4,7 +4,7 @@
    reload.
    Every page, photo, recording and font the pages use belongs in FILES. One
    that is missing still gets saved the first time it is used. */
-const CACHE = 'ashudd-v11';
+const CACHE = 'ashudd-v12';
 const FILES = [
   '/',
   '/reading.html',
@@ -13,6 +13,7 @@ const FILES = [
   '/blocks.html',
   '/clock.html',
   '/drive.html',
+  '/build.html',
   '/credits.html',
   '/404.html',
   '/css/style.css',
@@ -26,6 +27,7 @@ const FILES = [
   '/js/clock.js',
   '/js/drive.js',
   '/js/desert.js',
+  '/js/build.js',
   '/quran/fatihah.json',
   '/dua/riding.json',
   '/audio/fatihah.timings.json',
@@ -39,10 +41,16 @@ const FILES = [
   '/images/house.jpg',
   '/images/mosque.jpg',
   '/images/kaaba.jpg',
+  '/images/drive/acacia.svg',
   '/images/drive/bakery.svg',
+  '/images/drive/boulder.svg',
   '/images/drive/boy.svg',
+  '/images/drive/camel.svg',
   '/images/drive/cart.svg',
+  '/images/drive/eagle.svg',
   '/images/drive/felucca.svg',
+  '/images/drive/fox.svg',
+  '/images/drive/gazelle.svg',
   '/images/drive/grand-house.svg',
   '/images/drive/grandma.svg',
   '/images/drive/house-a.svg',
@@ -53,6 +61,8 @@ const FILES = [
   '/images/drive/masjid.svg',
   '/images/drive/masjid-big.svg',
   '/images/drive/palm.svg',
+  '/images/drive/shrub.svg',
+  '/images/drive/tent.svg',
   '/images/drive/tower.svg',
   '/images/drive/tree.svg',
   '/images/drive/woman.svg',

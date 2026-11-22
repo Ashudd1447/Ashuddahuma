@@ -2,7 +2,7 @@
 
 Draft 2, 2026-11-19. Kareem answered draft 1's questions the same night; his answers are under **Decided** in each game. Everything else is still a proposal: every name, phrase, picture and sound the child would see or hear is for the parents to approve, change or drop. Open questions come last in each game, my recommendation first.
 
-The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاعَةُ`) and the driving game (`السَّيَّارَةُ`, two roads) are built and described in `CLAUDE.md`. Pictures are made in Recraft following `docs/recraft-images.md`.
+The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاعَةُ`), the driving games (`قِيَادَةُ الْمَرْكَبَاتِ`: two roads and the ride to the oasis) and the building game (`بِنَاءُ الْمَسْجِدِ`, section 5) are built and described in `CLAUDE.md`. Pictures are made in Recraft following `docs/recraft-images.md`.
 
 ## Rules that apply to every game
 
@@ -75,6 +75,13 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 2. A ✕ leaves every game and section of the site, not only this one.
 3. A third vehicle game, `الصَّحْرَاءُ`: an all-terrain bike in a mountainous desert, the sand not flat, little flights over inclines, mountains as the obstacles, daylight with the sun behind moving clouds, the takbir going up a hill and the tasbih coming down (he will record both), a light motor sound, and background sound for all three drives (wind, birds), made in code.
 4. Built as a side view, Claude's choice, since hills, flights and sky need one; pedal only, no steering. Still to hear from him whether that is what he pictured.
+
+**Decided** (2026-11-21, after trying the three drives; built the same day, not yet seen by him)
+1. Sounds: the wind is kept for the corniche only, where it sounds like waves. The neighborhood has birds alone. The desert has an eagle's cry and small birds now and then, and animals in the picture.
+2. A right turn signal as the car nears its destination, so the child knows the stop is coming.
+3. Stars are never behind slow traffic: he should never have to slow down behind a car to collect them.
+4. Every star hung over a jump must be within reach of the jump.
+5. The desert ride is named `الْوَاحَةُ`. The child steers it right and left, so it is seen from above like the roads (the view from behind is the tilted one that made him dizzy, and no way to steer was found for the side view). The course is never the same twice: the stretches are shuffled for every ride and the time of day changes.
 
 **For the parents to check**
 1. The three adhan recordings: listen to each on arriving at the masjid, and say if one is not good enough or its cut is wrong.
@@ -156,13 +163,30 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 1. Which scenes, and at which hour does each happen in his day? The game can only use whole hours for now.
 2. A caption under each picture (`أَسْتَيْقِظُ`, `أُفْطِرُ`) to read, or the picture alone with its name spoken? Captions need recordings too.
 
+## 5. Building the masjid: `بِنَاءُ الْمَسْجِدِ` (built)
+
+**What he asked for** (2026-11-21). A game about construction and tools: the child drives construction machines one at a time (dig with a bulldozer, lift with a forklift, lift with a crane), moving from one to the next by itself rather than as separate small games; he puts on his protective gear first (a helmet, gloves), the way the seat belt is fastened; the site is where a masjid is being built (dome, minaret, walls), and the game is done when the masjid is; hand tools somewhere, used to get something done (a power drill, a screwdriver, a hammer); perhaps levels that build on each other; soft construction noise behind; `اللَّهُ أَكْبَرُ` at the end. He left the rest to Claude.
+
+**What was built** (`build.html`, `js/build.js`, the same day). The gear: a helmet, a vest and gloves dragged onto a boy with a plain face. Then the site, seen from the side, four stages in a row: the bulldozer clears three mounds in three passes and the foundation is laid; the forklift lifts three pallets of stone, each a course higher; the hammer, the screwdriver and the drill fix the door (nails, screws, the handle's holes); the crane lifts the minaret's shaft, its top and the dome. Two buttons drive, two lift; the helpful one breathes. The names of the machines, the tools and the parts show and are said. At the end `اللَّهُ أَكْبَرُ`, then the opening of the adhan. The masjid is kept between visits.
+
+**For the parents to check**
+1. The words, all drafts: `بِنَاءُ الْمَسْجِدِ`, `اِلْبَسْ مُعَدَّاتِ السَّلَامَةِ`, `الْجَرَّافَةُ`, `الرَّافِعَةُ الشَّوْكِيَّةُ`, `الرَّافِعَةُ`, `الْمِطْرَقَةُ`, `الْمِفَكُّ`, `الْمِثْقَابُ`, `الْأَسَاسُ`, `الْجُدْرَانُ`, `الْبَابُ`, `الْمِئْذَنَةُ`, `الْقُبَّةُ`, `مَسْجِدٌ جَدِيدٌ` (in the menu). Egyptian for the recordings, also drafts: `البس لبس الأمان`, `البلدوزر`, `الكلارك`, `الونش`, `الشاكوش`, `الشنيور`, `الحيطان`, `المدنة`.
+2. Whether the names should show at all, or only some of them: they add twenty recordings.
+3. The boy in the gear scene and the workers in the machines: plain faces, drawn in code. The child is shown as the one at the controls, as he asked.
+4. The adhan's opening after `اللَّهُ أَكْبَرُ` at the end: keep it, or the takbir alone?
+5. `بِسْمِ اللَّهِ` before the work starts, shown and said after the gear: wanted?
+6. The sounds, all made in code and none heard by anyone yet: the site noise, the hammer, the screwdriver, the drill, a load set down, the beep of a machine backing up.
+
+**Ideas for later:** a cement mixer pouring the foundation, a dump truck taking the earth away, painting the walls, a second building (a school, a house), a tool bench of its own.
+
 ## Order and size
 
 | Game | Size | Waits on |
 |---|---|---|
 | Telling the time | Built; "my day" next | Recordings of the hours; the "my day" pictures and hours |
-| Driving | Built: two roads; three more roads later | The parents' check of the du'a wording and the art; the recordings; a try on the real tablet |
+| Driving | Built: two roads and the ride to the oasis; more roads later | The parents' check of the du'a wording and the art; the recordings; a try on the real tablet |
 | Obstacle course | Large: the hero, a course's art, the ending scene | The hero, the first course's art, more rounds of design |
 | Archery | Medium: reuses the hero and the engine | The hero |
+| Building the masjid | Built | The parents' check of the words, the sounds and the play; the recordings |
 
 Next: the obstacle course's first playable version with simple shapes, then archery once the hero exists.

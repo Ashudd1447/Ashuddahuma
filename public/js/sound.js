@@ -19,7 +19,8 @@ const sound = (() => {
   let sessionTimer = null;
   const clips = new Map();
   let air = null; // the background sound now playing
-  let motor = null; // the desert bike's engine
+  let motor = null; // a vehicle's engine
+  let whirr = null; // the power drill
 
   function ctx() {
     const Context = window.AudioContext || window.webkitAudioContext;
@@ -121,7 +122,7 @@ const sound = (() => {
         const started = a.play();
         if (started) started.catch(() => {});
       }
-    } else if (!active && !air && !motor) {
+    } else if (!active && !air && !motor && !whirr) {
       a.loop = false;
       a.pause();
     }
@@ -270,13 +271,18 @@ const sound = (() => {
     for (const name of names) for (const variant of variants(name)) load(variant);
   }
 
+  /* Keeps the page's sound session open for a made sound of this many seconds. */
+  function hold(seconds) {
+    holdSession(true);
+    clearTimeout(sessionTimer);
+    sessionTimer = setTimeout(() => holdSession(false), seconds * 1000 + 150);
+  }
+
   function tone(frequency, startsIn, length, volume, type = 'sine', slideTo = 0) {
     const c = ctx();
     if (!c) return;
     wake();
-    holdSession(true);
-    clearTimeout(sessionTimer);
-    sessionTimer = setTimeout(() => holdSession(false), (startsIn + length) * 1000 + 150);
+    hold(startsIn + length);
     const start = c.currentTime + startsIn;
     const osc = c.createOscillator();
     const gain = c.createGain();
@@ -324,64 +330,206 @@ const sound = (() => {
     }
   }
 
-  /* Background sound for the driving games, made here and not recorded: wind
-     is hiss through a filter that swells and fades, and birds are a few short
-     rising whistles now and then. kind is 'town', 'river' or 'desert' (wind
-     alone, a little stronger); nothing, or a page gone to the background,
-     stops it. */
+  /* The turn signal's tick and tock. */
+  function blink(on) {
+    tone(on ? 1500 : 1150, 0, 0.025, 0.035, 'square');
+  }
+
+  /* Two seconds of hiss, made once: the river's wind, a saw, a splash. */
+  let hissing = null;
+  function hiss(c) {
+    if (!hissing) {
+      hissing = c.createBuffer(1, c.sampleRate * 2, c.sampleRate);
+      const data = hissing.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    }
+    return hissing;
+  }
+
+  /* A short rush of hiss through a filter that may slide. */
+  function rush(frequency, startsIn, length, volume, q = 1, slideTo = 0) {
+    const c = ctx();
+    if (!c) return;
+    wake();
+    hold(startsIn + length);
+    const start = c.currentTime + startsIn;
+    const source = c.createBufferSource();
+    source.buffer = hiss(c);
+    source.loop = true;
+    const filter = c.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.Q.value = q;
+    filter.frequency.setValueAtTime(frequency, start);
+    if (slideTo) filter.frequency.exponentialRampToValueAtTime(slideTo, start + length);
+    const gain = c.createGain();
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(volume, start + Math.min(0.04, length * 0.3));
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
+    source.connect(filter).connect(gain).connect(c.destination);
+    source.start(start, Math.random());
+    source.stop(start + length + 0.05);
+  }
+
+  /* A bird of prey's cry: a hoarse whistle that rises a little, then falls away. */
+  function eagle(volume = 0.03, startsIn = 0) {
+    const c = ctx();
+    if (!c) return;
+    wake();
+    const length = 1.05;
+    hold(startsIn + length);
+    const start = c.currentTime + startsIn;
+    const osc = c.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueCurveAtTime(new Float32Array([2500, 3250, 3150, 2950, 2650, 2300, 2050]), start, length);
+    const shake = c.createOscillator();
+    shake.frequency.value = 31;
+    const depth = c.createGain();
+    depth.gain.value = 70;
+    shake.connect(depth).connect(osc.frequency);
+    const filter = c.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 2800;
+    filter.Q.value = 1.4;
+    const gain = c.createGain();
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(volume, start + 0.07);
+    gain.gain.setValueAtTime(volume, start + length * 0.55);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
+    osc.connect(filter).connect(gain).connect(c.destination);
+    for (const node of [osc, shake]) {
+      node.start(start);
+      node.stop(start + length + 0.05);
+    }
+  }
+
+  /* The building game's own sounds: a hammer's blow, a screw's turn, a load
+     set down, and water under a wheel for the desert. */
+  function knock() {
+    tone(300, 0, 0.07, 0.12, 'triangle', 150);
+    rush(2200, 0, 0.04, 0.05);
+  }
+
+  function ratchet() {
+    tone(1800, 0, 0.03, 0.045, 'square', 900);
+  }
+
+  function thud() {
+    tone(140, 0, 0.16, 0.14, 'sine', 70);
+    rush(500, 0, 0.08, 0.04);
+  }
+
+  function splash() {
+    rush(1800, 0, 0.4, 0.05, 0.7, 600);
+  }
+
+  /* A machine backing up: one soft beep. */
+  function backup() {
+    tone(980, 0, 0.2, 0.022);
+  }
+
+  /* What sounds now and then in each place. */
+  const VOICES = {
+    // Small birds: a few short rising whistles.
+    birds: () => {
+      const notes = 2 + Math.floor(Math.random() * 3);
+      const pitch = 2300 + Math.random() * 1500;
+      for (let i = 0; i < notes; i++) tone(pitch * (1 + i * 0.04), i * 0.13, 0.1, 0.022, 'sine', pitch * 1.25);
+    },
+    // The desert: a far eagle, or a lark's quick run of notes.
+    wild: () => {
+      if (Math.random() < 0.4) {
+        eagle(0.014);
+        if (Math.random() < 0.5) eagle(0.011, 1.3);
+        return;
+      }
+      const notes = 3 + Math.floor(Math.random() * 4);
+      const pitch = 3000 + Math.random() * 900;
+      for (let i = 0; i < notes; i++) tone(pitch * (1 + (i % 2) * 0.12), i * 0.09, 0.07, 0.013, 'sine', pitch * 1.1);
+    },
+    // A building site, far off: a hammer, a saw, a truck backing up, a clank.
+    works: () => {
+      const pick = Math.random();
+      if (pick < 0.4) {
+        const blows = 3 + Math.floor(Math.random() * 4);
+        const pitch = 440 + Math.random() * 160;
+        for (let i = 0; i < blows; i++) tone(pitch, i * 0.27, 0.05, 0.018, 'triangle', pitch / 2);
+      } else if (pick < 0.65) {
+        for (let i = 0; i < 4; i++) rush(i % 2 ? 1500 : 1900, i * 0.3, 0.24, 0.011, 2.5);
+      } else if (pick < 0.85) {
+        for (let i = 0; i < 3; i++) tone(980, i * 0.62, 0.28, 0.008);
+      } else {
+        tone(1500, 0, 0.14, 0.012, 'triangle', 1150);
+        tone(2250, 0.01, 0.1, 0.007, 'triangle', 1700);
+      }
+    },
+  };
+  /* Each place: its bed of hiss, if it has one (the filter's pitch, how loud,
+     how fast it swells), and what sounds now and then, how often (seconds). */
+  const PLACES = {
+    town: { voice: 'birds', every: [2, 5.5] },
+    river: { bed: [640, 0.02, 0.09], voice: 'birds', every: [2.5, 8.5] },
+    desert: { voice: 'wild', every: [5, 13] },
+    site: { bed: [230, 0.016, 0.07], voice: 'works', every: [2.2, 5.5] },
+  };
+
+  /* Background sound for the games, made here and not recorded. kind is
+     'town' (birds), 'river' (wind over water, and birds), 'desert' (an eagle
+     and small birds, far off) or 'site' (soft building noise); nothing, or a
+     page gone to the background, stops it. */
   function ambience(kind) {
     const c = ctx();
     if (air) {
       const old = air;
       air = null;
       clearTimeout(old.timer);
-      old.gain.gain.setTargetAtTime(0.0001, c.currentTime, 0.15);
-      setTimeout(() => {
-        try {
-          old.source.stop();
-          old.swell.stop();
-        } catch {
-          // Already stopped.
-        }
-      }, 800);
+      if (old.gain) {
+        old.gain.gain.setTargetAtTime(0.0001, c.currentTime, 0.15);
+        setTimeout(() => {
+          try {
+            old.source.stop();
+            old.swell.stop();
+          } catch {
+            // Already stopped.
+          }
+        }, 800);
+      }
     }
-    if (!kind || !c) {
+    const place = PLACES[kind];
+    if (!place || !c) {
       holdSession(false);
       return;
     }
     wake();
-    const hiss = c.createBuffer(1, c.sampleRate * 2, c.sampleRate);
-    const data = hiss.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-    const source = c.createBufferSource();
-    source.buffer = hiss;
-    source.loop = true;
-    const filter = c.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = kind === 'desert' ? 420 : 640;
-    filter.Q.value = 0.6;
-    const level = kind === 'desert' ? 0.05 : 0.02;
-    const gain = c.createGain();
-    gain.gain.value = 0.0001;
-    gain.gain.setTargetAtTime(level, c.currentTime, 0.8);
-    const swell = c.createOscillator();
-    swell.frequency.value = kind === 'desert' ? 0.13 : 0.09;
-    const depth = c.createGain();
-    depth.gain.value = level * 0.6;
-    swell.connect(depth).connect(gain.gain);
-    source.connect(filter).connect(gain).connect(c.destination);
-    source.start();
-    swell.start();
-    const mine = { source, gain, swell, timer: null };
+    const mine = { timer: null };
+    if (place.bed) {
+      const [pitch, level, pace] = place.bed;
+      const source = c.createBufferSource();
+      source.buffer = hiss(c);
+      source.loop = true;
+      const filter = c.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = pitch;
+      filter.Q.value = 0.6;
+      const gain = c.createGain();
+      gain.gain.value = 0.0001;
+      gain.gain.setTargetAtTime(level, c.currentTime, 0.8);
+      const swell = c.createOscillator();
+      swell.frequency.value = pace;
+      const depth = c.createGain();
+      depth.gain.value = level * 0.6;
+      swell.connect(depth).connect(gain.gain);
+      source.connect(filter).connect(gain).connect(c.destination);
+      source.start();
+      swell.start();
+      Object.assign(mine, { source, gain, swell });
+    }
     air = mine;
     holdSession(true);
-    if (kind === 'desert') return;
+    const [least, most] = place.every;
     const sing = () => {
       if (air !== mine) return;
-      const notes = 2 + Math.floor(Math.random() * 3);
-      const pitch = 2300 + Math.random() * 1500;
-      for (let i = 0; i < notes; i++) tone(pitch * (1 + i * 0.04), i * 0.13, 0.1, 0.022, 'sine', pitch * 1.25);
-      mine.timer = setTimeout(sing, 2500 + Math.random() * 6000);
+      VOICES[place.voice]();
+      mine.timer = setTimeout(sing, (least + Math.random() * (most - least)) * 1000);
     };
     mine.timer = setTimeout(sing, 1500);
   }
@@ -423,6 +571,52 @@ const sound = (() => {
     holdSession(false);
   }
 
+  /* The power drill: a whirr while level is above zero. */
+  function drill(level) {
+    const c = ctx();
+    if (!c || (!whirr && level <= 0)) return;
+    if (level <= 0) {
+      const old = whirr;
+      whirr = null;
+      old.gain.gain.setTargetAtTime(0.0001, c.currentTime, 0.05);
+      setTimeout(() => {
+        try {
+          old.osc.stop();
+          old.source.stop();
+        } catch {
+          // Already stopped.
+        }
+      }, 400);
+      holdSession(false);
+      return;
+    }
+    if (!whirr) {
+      wake();
+      const osc = c.createOscillator();
+      osc.type = 'sawtooth';
+      const source = c.createBufferSource();
+      source.buffer = hiss(c);
+      source.loop = true;
+      const grit = c.createGain();
+      grit.gain.value = 0.25;
+      const filter = c.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1100;
+      filter.Q.value = 1.2;
+      const gain = c.createGain();
+      gain.gain.value = 0.0001;
+      osc.connect(filter);
+      source.connect(grit).connect(filter);
+      filter.connect(gain).connect(c.destination);
+      osc.start();
+      source.start();
+      whirr = { osc, source, gain };
+      holdSession(true);
+    }
+    whirr.osc.frequency.setTargetAtTime(150 + 90 * level, c.currentTime, 0.06);
+    whirr.gain.gain.setTargetAtTime(0.05 * level, c.currentTime, 0.05);
+  }
+
   /* Wrong answers vibrate on touch devices that support it (not iPhone or
      iPad) and otherwise play the buzzer. */
   function wrong() {
@@ -438,9 +632,13 @@ const sound = (() => {
       stop();
       ambience(null);
       engineOff();
+      drill(0);
     }
     else wake();
   });
 
-  return { preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm, chime, buzz, tick, click, honk, pop, ambience, engine, engineOff, wrong };
+  return {
+    preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm,
+    chime, buzz, tick, click, honk, pop, blink, eagle, knock, ratchet, thud, splash, backup, drill, ambience, engine, engineOff, wrong,
+  };
 })();
