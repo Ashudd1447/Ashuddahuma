@@ -4,7 +4,7 @@
    reload.
    Every page, photo, recording and font the pages use belongs in FILES. One
    that is missing still gets saved the first time it is used. */
-const CACHE = 'ashudd-v9';
+const CACHE = 'ashudd-v10';
 const FILES = [
   '/',
   '/reading.html',
@@ -76,8 +76,6 @@ const FILES = [
   '/audio/match.m4a',
   '/audio/well-done.m4a',
   '/audio/adhan-1.mp3',
-  '/audio/adhan-2.mp3',
-  '/audio/adhan-3.mp3',
 ];
 const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 

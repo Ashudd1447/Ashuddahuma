@@ -4,10 +4,10 @@
   "quran": "Quran.com API v4, text_uthmani words of 43:13 (from its 12th word) and 43:14, fetched 2026-11-21.",
   "parts": [
     {
-      "id": "hamd",
+      "id": "bismillah",
       "words": [
-        "الْحَمْدُ",
-        "لِلَّهِ"
+        "بِسْمِ",
+        "اللَّهِ"
       ]
     },
     {

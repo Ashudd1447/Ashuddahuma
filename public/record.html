@@ -23,6 +23,7 @@
 .takes .kept{font-weight:700;color:var(--deep)}
 .takes .bad{color:#C0392B}
 .takes .warn{color:#B9770E}
+.only-todo .have{display:none}
 #status{position:sticky;bottom:0;background:var(--bg);padding:8px 0;color:var(--deep);font-weight:600;min-height:1.6em}
 </style>
 </head>
@@ -41,7 +42,8 @@
     <button id="write" type="button">Write to folder</button>
     <span id="written" class="note"></span>
   </div>
-  <div id="slots"></div>
+  <p><label><input id="todo" type="checkbox" checked> Show only the clips still to record</label> <span id="todo-count" class="note"></span></p>
+  <div id="slots" class="only-todo"></div>
   <p id="status"></p>
 </main>
 <script src="js/app.js"></script>

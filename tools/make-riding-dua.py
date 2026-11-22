@@ -49,8 +49,8 @@ def main():
     changed = []
     parts = []
     # The parents chose (2026-11-21) to keep two parts of the hadith's du'a: the
-    # praise said on sitting, then the verses. The source file holds the rest.
-    for name, times in [('hamd', 1), ('verses', 1)]:
+    # bismillah, then the verses. The source file holds the rest.
+    for name, times in [('bismillah', 1), ('verses', 1)]:
         if name == 'verses':
             parts.append({'id': name, 'quran': True, 'words': quote})
             continue

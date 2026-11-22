@@ -29,7 +29,7 @@ const STEER = { dead: 3, full: 26, rate: 4.2 }; // degrees of tilt; lanes per se
 const CAR = { w: 0.62, l: 1.16 };
 const TURN = 1.25; // the radius of the turn into the side street
 const GOAL_X = 4.5; // how far along the side street the car stops, in lanes from the middle of the road
-const ADHANS = 3; // audio/adhan-1.mp3 to adhan-3.mp3 take turns
+const ADHANS = 1; // audio/adhan-1.mp3; with more files and a higher number here, they take turns
 const CAR_COLORS = ['#3E76C2', '#5E9E45', '#E9A43C', '#8C6A4C', '#B05A8C', '#F4F1EA', '#2A9D8F', '#7C8A99'];
 const WALKERS = { man: 0.92, woman: 0.88, boy: 0.66 }; // heights in lanes
 const FACING = { man: 1, woman: 1, boy: -1 }; // the way each drawing walks: 1 is to the right
@@ -99,7 +99,6 @@ function show(next) {
   root.dataset.view = next;
   for (const section of root.querySelectorAll('.drive-view')) section.hidden = section.id !== `view-${next}`;
   canvas.hidden = next !== 'trip' && next !== 'arrived';
-  $('exit').hidden = next === 'roads';
 }
 
 /* Saved on the device: the stars, the way of steering, and which adhan played last. */
@@ -1250,7 +1249,10 @@ $('again').addEventListener('click', () => {
   leave();
   showBelt();
 });
-$('exit').addEventListener('click', () => {
+// The ✕ leaves a drive for the list of roads; from the list it is a link to the games.
+$('exit').addEventListener('click', (event) => {
+  if (view === 'roads') return;
+  event.preventDefault();
   leave();
   show('roads');
 });

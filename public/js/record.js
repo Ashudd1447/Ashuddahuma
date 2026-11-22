@@ -56,7 +56,7 @@ const STATIC_SLOTS = [
   { group: 'Driving game', file: 'place-masjid', text: 'الْمَسْجِدُ', note: 'Said on arriving at the masjid (Fusha)' },
   { group: 'Driving game', file: 'place-masjid-masri', text: 'المسجد', note: 'The masjid (Egyptian, spoken only)' },
   { group: 'Driving game', file: 'place-grandma', text: 'بَيْتُ جَدَّتِي', note: "Said on arriving at the grandmother's house (Fusha)" },
-  { group: 'Driving game', file: 'place-grandma-masri', text: 'بيت تيتة', note: "Grandmother's house (Egyptian, spoken only)" },
+  { group: 'Driving game', file: 'place-grandma-masri', text: 'بيت أنَّه', note: "Grandmother's house (Egyptian, spoken only)" },
   { group: 'Driving game', file: 'alhamdulillah', text: 'الْحَمْدُ لِلَّهِ', note: 'Said on arriving. One recording for both dialect settings' },
   { group: 'Obstacle course', file: 'masjid-dua', text: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ', note: "The du'a for entering the masjid (Sahih Muslim 713), at the end of the walk to the masjid. One recording for both dialect settings" },
 ];
@@ -389,10 +389,11 @@ function render() {
       group = slot.group;
       const h = document.createElement('h2');
       h.textContent = group;
+      if (slots.filter((other) => other.group === group).every((other) => other.have)) h.className = 'have';
       root.append(h);
     }
     const card = document.createElement('section');
-    card.className = `slot${selected && selected.file === slot.file ? ' selected' : ''}`;
+    card.className = `slot${selected && selected.file === slot.file ? ' selected' : ''}${slot.have ? ' have' : ''}`;
     card.dataset.file = slot.file;
     const list = takes.get(slot.file) || [];
     card.innerHTML = `
@@ -437,6 +438,20 @@ async function listMicrophones() {
   }
 }
 
+/* Which clips already have a recording on the site, so the page can show
+   only what is still to be recorded. Asked once, when the page opens. */
+async function markRecorded() {
+  await Promise.all(slots.map(async (slot) => {
+    const found = await Promise.all(['m4a', 'wav'].map((ext) => fetch(`audio/${slot.file}.${ext}`, { method: 'HEAD' })
+      .then((response) => response.ok && (response.headers.get('content-type') || '').startsWith('audio/'))
+      .catch(() => false)));
+    slot.have = found.some(Boolean);
+  }));
+  const left = slots.filter((slot) => !slot.have).length;
+  $('todo-count').textContent = `${left} of ${slots.length} clips are still to record`;
+  render();
+}
+
 async function init() {
   const surah = await fetch('quran/fatihah.json').then((response) => response.json());
   slots = [
@@ -453,10 +468,12 @@ async function init() {
     const at = slots.findIndex((slot) => slot.file === 'alhamdulillah');
     slots.splice(at, 0, {
       group: 'Driving game', file: 'riding-dua', text,
-      note: "The du'a of riding in one recording: the praise, then the verses (from Sunan Abi Dawud 2602). Pause briefly between the two lines so the words light up in step. One recording for both dialect settings",
+      note: "The du'a of riding in one recording: the bismillah, then the verses (from Sunan Abi Dawud 2602). Pause briefly between the two lines so the words light up in step. One recording for both dialect settings",
     });
   }
   render();
+  markRecorded();
+  $('todo').addEventListener('change', () => $('slots').classList.toggle('only-todo', $('todo').checked));
   listMicrophones();
   $('write').addEventListener('click', writeAll);
   addEventListener('keydown', (event) => {
