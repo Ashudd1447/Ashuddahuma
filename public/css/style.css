@@ -395,11 +395,22 @@ button{font:inherit;color:inherit;cursor:pointer}
 #view-site{position:relative;justify-content:flex-start}
 #view-done{position:relative;z-index:2;justify-content:flex-start;padding-top:8svh}
 .build-steps{margin-top:14px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.75);box-shadow:var(--shadow)}
+/* The safety gear (gear.js): بِسْمِ اللَّهِ and its button, then the scene */
+#view-gear[data-step="begin"]>:not(.bismillah):not(.go),#view-gear[data-step="saying"]>:not(.bismillah):not(.go),#view-gear[data-step="gear"]>.bismillah,#view-gear[data-step="gear"]>.go{display:none}
+/* While the words are said the button only hides and keeps its room, so the words stay where they are */
+#view-gear[data-step="saying"]>.go{visibility:hidden;animation:none}
+.bismillah{font-size:clamp(3.2rem,15vmin,7rem);line-height:1.7}
+.gear-scene{width:min(100%,56svh,520px)}
+.gear-hint{margin-top:-.4em;color:var(--ink);font-size:clamp(1.1rem,min(3.8vh,5.4vw),2rem)}
+.gear-hint.off{visibility:hidden}
 .gear-item{cursor:grab}
 .gear-item.worn{cursor:default}
 .gear-item:not(.worn) .gear-art{transform-box:fill-box;transform-origin:center;animation:breathe 1.6s ease-in-out infinite}
 .gear-item[data-gear="vest"] .gear-art{animation-delay:.25s}
-.gear-item[data-gear="gloves"] .gear-art{animation-delay:.5s}
+.gear-item[data-gear="glove-right"] .gear-art{animation-delay:.5s}
+#view-gear:not(.right-on) .gear-item[data-gear="glove-left"] .gear-art{animation:none;opacity:.55}
+.gear-item.no{animation:gear-no .4s ease-in-out}
+@keyframes gear-no{25%{translate:-5px 0}75%{translate:5px 0}}
 .ctl{--ctl:clamp(72px,15vmin,112px);width:var(--ctl);height:var(--ctl)}
 .ctl[data-ctl="left"]{left:0}
 .ctl[data-ctl="right"]{left:calc(var(--ctl) + 10px)}
@@ -412,7 +423,222 @@ button{font:inherit;color:inherit;cursor:pointer}
 .build[data-stage="dozer"] .ctl-lift,.build[data-stage="tools"] .ctl,.build[data-stage="done"] .ctl{display:none}
 .build[data-hint="left"] [data-ctl="left"],.build[data-hint="right"] [data-ctl="right"],.build[data-hint="up"] [data-ctl="up"],.build[data-hint="down"] [data-ctl="down"]{animation:breathe 1s ease-in-out infinite;box-shadow:0 0 0 6px rgba(242,184,75,.75),var(--shadow)}
 
+/* Building game: stages (marker for edits under way; keep this line) */
+/* The foundation: the two drive buttons back the mixer up, move the pump's hose and draw the board; the one button that pours shows only during the pour */
+.build[data-stage="mixer"] [data-ctl="up"],.build[data-stage="mixer"]:not([data-pour]) [data-ctl="down"]{display:none}
+
+/* Car factory (marker for edits under way; keep this line) */
+#view-floor{position:relative;justify-content:flex-start}
+.factory-steps{gap:7px;margin-top:14px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.75);box-shadow:var(--shadow)}
+.factory-steps i{width:10px;height:10px}
+.factory[data-buttons=""] .ctl,.factory[data-buttons="right"] .ctl:not([data-ctl="right"]){display:none}
+.factory[data-buttons="right"] [data-ctl="right"]{left:0}
+.factory[data-hint="left"] [data-ctl="left"],.factory[data-hint="right"] [data-ctl="right"],.factory[data-hint="up"] [data-ctl="up"],.factory[data-hint="down"] [data-ctl="down"]{animation:breathe 1s ease-in-out infinite;box-shadow:0 0 0 6px rgba(242,184,75,.75),var(--shadow)}
+
+/* Oasis ride, seen from behind (marker for edits under way; keep this line) */
+/* The bike is in the middle of the picture: the finger's hint slides on the sand ahead of it. The ride is known by its goal, the palm. */
+.drive-view:has(.trip-goal[src$="palm.svg"]) .finger-hint{bottom:42%}
+
+/* Roads seen from behind the car (marker for edits under way; keep this line) */
+.road-behind{background:linear-gradient(#8FC3E8 0 22%,#E9F0EE 40%,#EBD9B4 40%)}
+.road-nile-chase{background:linear-gradient(to bottom left,transparent 50%,#62B2DE 50.5%) 0 100%/42% 60% no-repeat,linear-gradient(#8FC3E8 0 22%,#E9F0EE 40%,#EBD9B4 40%)}
+.road-behind::before{content:"";position:absolute;inset:40% 0 0;background:linear-gradient(90deg,transparent 33%,rgba(255,255,255,.5) 33% 34%,transparent 34% 66%,rgba(255,255,255,.5) 66% 67%,transparent 67%),linear-gradient(#C9CED0,#878B90 55%);clip-path:polygon(48% 0,52% 0,88% 100%,12% 100%)}
+.road-behind::after{content:"";position:absolute;left:38%;bottom:4%;width:24%;aspect-ratio:6/5;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100'%3E%3Cellipse cx='60' cy='94' rx='56' ry='5' fill='rgba(0,0,0,.22)'/%3E%3Crect x='10' y='68' width='22' height='28' rx='6' fill='%232B2622'/%3E%3Crect x='88' y='68' width='22' height='28' rx='6' fill='%232B2622'/%3E%3Crect x='1' y='35' width='14' height='9' rx='3' fill='%23C44A32' stroke='%232B1F16' stroke-width='2.5'/%3E%3Crect x='105' y='35' width='14' height='9' rx='3' fill='%23C44A32' stroke='%232B1F16' stroke-width='2.5'/%3E%3Cpath d='M18 44L28 16Q31 10 38 10H82Q89 10 92 16L102 44Z' fill='%23C44A32' stroke='%232B1F16' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M29 40L36 20Q37.5 16 42 16H78Q82.5 16 84 20L91 40Z' fill='%2324323F'/%3E%3Cpath d='M42 19L35 37H42L49 19Z' fill='rgba(255,255,255,.2)'/%3E%3Cpath d='M6 76V52Q6 44 14 42H106Q114 44 114 52V76Q114 82 108 82H12Q6 82 6 76Z' fill='%23D4533A' stroke='%232B1F16' stroke-width='3' stroke-linejoin='round'/%3E%3Crect x='10' y='49' width='25' height='10' rx='3' fill='%23E8453C' stroke='%232B1F16' stroke-width='2'/%3E%3Crect x='85' y='49' width='25' height='10' rx='3' fill='%23E8453C' stroke='%232B1F16' stroke-width='2'/%3E%3Crect x='13' y='51.5' width='9' height='4' rx='2' fill='%23FFB3A3'/%3E%3Crect x='98' y='51.5' width='9' height='4' rx='2' fill='%23FFB3A3'/%3E%3Crect x='47' y='51' width='26' height='12' rx='2' fill='%23F4F1EA' stroke='%232B1F16' stroke-width='2'/%3E%3Crect x='8' y='69' width='104' height='10' rx='4' fill='%23A8402C' stroke='%232B1F16' stroke-width='2.5'/%3E%3C/svg%3E") center/contain no-repeat}
+.road-behind img{left:56%;top:8%;width:42%;height:50%}
+.drive.behind .finger-hint{bottom:9%}
+
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* The mazes (marker for edits under way; keep this line) */
+.mazes-page{overscroll-behavior:none}
+.mazes{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
+.mazes .head{display:flex;justify-content:center}
+.mazes .head .logo{width:56px;height:56px}
+/* The list: two cards across on a phone; on a wide screen four, sized so that both rows fit the height */
+.maze-list{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.maze-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:520px}
+.maze-card{display:flex;flex-direction:column;align-items:center;min-width:0;padding:10px 10px 4px;border:0;border-radius:20px;background:var(--surface);box-shadow:var(--shadow);transition:transform .18s ease}
+.maze-card:active{transform:scale(.98)}
+.maze-card>svg{display:block;width:100%;aspect-ratio:1}
+.maze-card-title{font-weight:700;color:var(--deep);font-size:clamp(1.1rem,2.5vw,1.55rem);line-height:1.7}
+.maze-card-mark{min-height:1.6em;color:#1854B0;font-weight:700;font-size:clamp(1.15rem,2.7vw,1.65rem);line-height:1.6}
+.maze-card-mark svg{display:block;width:1.3em;height:1.3em;margin-top:.1em;fill:var(--gold)}
+@media (min-width:700px){.maze-cards{grid-template-columns:repeat(4,minmax(0,1fr));max-width:min(1100px,max(640px,calc(200svh - 700px)))}}
+/* A maze: the page does not scroll or zoom under the drawing finger */
+.mazes[data-view="maze"]{position:fixed;inset:0;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.maze-play{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:6px}
+.maze-text{text-align:center}
+.maze-title{margin:0;color:var(--deep);font-size:clamp(1.4rem,min(4.6vh,6vw),2.4rem);line-height:1.6}
+.maze-line{margin:0;font-weight:700;color:var(--ink);font-size:clamp(1.05rem,min(3.4vh,4.6vw),1.7rem);line-height:1.7}
+/* The sheet of paper is sized and placed by mazes.js inside this box, as large as it allows */
+.maze-board{position:relative;flex:1;min-height:0;align-self:stretch}
+.maze-paper{position:absolute;border-radius:18px;background:#fff;box-shadow:var(--shadow);touch-action:none}
+.maze-paper canvas{display:block;width:100%;height:100%}
+.maze-ring{position:absolute;width:var(--ring,64px);height:var(--ring,64px);margin:calc(var(--ring,64px) / -2) 0 0 calc(var(--ring,64px) / -2);border:4px solid #2F86DE;border-radius:50%;pointer-events:none;animation:maze-ring 1.2s ease-in-out infinite}
+@keyframes maze-ring{50%{transform:scale(.7);opacity:.4}}
+/* The name and the buttons keep their room from the start, so the maze does not move when they come */
+.maze-after{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:calc(clamp(2.2rem,9vmin,4.2rem) * 1.6 + 78px)}
+.maze-name{margin:0;font-weight:700;color:#1854B0;font-size:clamp(2.2rem,9vmin,4.2rem);line-height:1.6;animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+.maze-buttons{display:flex;gap:18px;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.round.maze-next{background:#35A85A;color:#fff}
+/* Wide screens: the title, the instruction, the name and the buttons in a column beside the maze, under the menu, so the maze takes the full height */
+@media (min-aspect-ratio:5/4){
+  .mazes[data-view="maze"]{display:grid;grid-template-columns:clamp(220px,calc(100vw - 100svh - 20px),400px) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"head board" "text board" "after board";gap:clamp(4px,2vh,18px) 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  .mazes[data-view="maze"] .maze-play{display:contents}
+  .mazes[data-view="maze"] .head{grid-area:head;justify-self:stretch;justify-content:flex-end}
+  .maze-text{grid-area:text}
+  .maze-board{grid-area:board;height:100%}
+  .maze-after{grid-area:after;align-self:start;min-height:0}
+}
+@media (min-aspect-ratio:5/4) and (max-height:480px){
+  .mazes[data-view="maze"] .head .logo{width:44px;height:44px}
+  .maze-after .round{width:56px;height:56px;padding:12px}
+}
+
+/* The typing game (marker for edits under way; keep this line) */
+.typing-page{overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+.typing{--top:clamp(104px,24vh,200px);height:100svh;display:flex;flex-direction:column;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom));overflow:hidden}
+.typing[data-view="who"]{height:auto;min-height:100svh;overflow:visible}
+.typing[data-player="child"]{--top:clamp(110px,30vh,270px)}
+.typing .head{display:flex;justify-content:center;flex:none}
+.typing .head .logo{width:56px;height:56px}
+.type-gear{position:fixed;top:10px;left:10px;z-index:40;width:46px;height:46px;padding:8px;border:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow)}
+.type-gear svg{display:block;width:100%;height:100%}
+/* Who plays: two large cards */
+.type-who{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,3vh,28px);padding-bottom:16px}
+.type-players{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(14px,4vw,40px)}
+.type-player{display:flex;flex-direction:column;align-items:center;gap:6px;width:min(42vw,280px);padding:clamp(14px,3vh,28px) 10px clamp(8px,2vh,18px);border:0;border-radius:28px;background:var(--surface);box-shadow:var(--shadow);color:var(--deep);font-weight:700;font-size:clamp(1.8rem,6vmin,3rem);line-height:1.6}
+.type-player:active{transform:scale(.97)}
+.type-art{display:flex;align-items:center;justify-content:center;gap:6px;height:clamp(72px,17vmin,128px)}
+.type-art i{display:flex;align-items:center;justify-content:center;width:clamp(34px,8vmin,60px);height:clamp(34px,8vmin,60px);border-radius:22%;background:#F9E4C3;box-shadow:0 3px 0 rgba(74,52,36,.22);color:var(--ink);font-style:normal;font-size:clamp(1.2rem,4.4vmin,2.1rem);line-height:1.3}
+.type-art i.big{width:clamp(68px,16vmin,120px);height:clamp(68px,16vmin,120px);background:#FFDC7A;box-shadow:0 0 0 4px var(--gold),0 0 22px rgba(201,138,69,.6);font-size:clamp(2.4rem,9vmin,4.4rem)}
+/* A round: what to type on top, the keyboard under it, the strip of letters last */
+.type-play{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1.2vh,12px)}
+.type-top{flex:none;width:100%;max-width:1080px;height:var(--top);display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,24px)}
+.typing[data-end] .type-top{height:auto;min-height:var(--top)}
+.type-side{flex:none;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.type-card{flex:0 1 auto;min-height:0;height:min(100%,160px);aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:22%;background:var(--surface);box-shadow:var(--shadow);color:var(--deep);font-weight:700;font-size:clamp(2.6rem,10.5vh,4.6rem);line-height:1.3}
+.typing[data-player="child"] .type-card{height:min(100%,270px);font-size:clamp(3.4rem,15vh,8.5rem)}
+.type-bar{display:block;width:1.1em;height:.3em;border:.08em solid currentColor;border-top:0;border-radius:0 0 .1em .1em}
+/* The words: typed letters dark, the next one marked, the rest quiet. Each letter is its own element inside a word that never breaks */
+.type-line{flex:1;min-width:0;position:relative;overflow:hidden;color:#B9AA98;font-weight:700;font-size:clamp(1.45rem,min(5vh,3.2vw),2.4rem);line-height:1.9}
+.type-line .wd{display:inline-block;white-space:nowrap}
+.type-line .sp{display:inline-block;width:.42em;height:1.25em;vertical-align:middle;border-radius:5px}
+.type-line .done{color:var(--ink)}
+.type-line .cur{color:var(--deep);background:#F8E3BD;border-radius:6px;box-shadow:inset 0 -3px var(--gold)}
+.type-line .bad{color:#9B2C1A;background:#F4B5A8;box-shadow:inset 0 -3px #C4472F}
+.typing[data-player="child"] .type-line,.typing[data-end] .type-side,.typing[data-end] .type-line{display:none}
+/* The end of a round */
+.type-result{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(6px,1.5vh,16px) clamp(14px,4vw,44px)}
+.type-num{display:flex;flex-direction:column;align-items:center;line-height:1.4}
+.type-num b{color:var(--deep);font-size:clamp(1.9rem,7vh,3.4rem)}
+.type-num span{color:var(--muted);font-size:clamp(.95rem,2.6vh,1.25rem)}
+.type-num i{min-height:1.5em;color:var(--muted);font-style:normal;font-weight:700;font-size:clamp(.9rem,2.4vh,1.15rem)}
+.type-num i.up{color:#2E8B4F}
+.type-new{display:flex;flex-direction:column;align-items:center;color:var(--muted);font-size:clamp(.95rem,2.6vh,1.25rem);line-height:1.4}
+.type-new b{color:var(--gold);font-size:clamp(2.4rem,9vh,4.6rem);line-height:1.3}
+.praise.type-praise{font-size:clamp(2.2rem,min(13vh,10vw),6rem);line-height:1.4}
+.type-big{color:var(--gold);font-size:clamp(2.8rem,min(16vh,13vw),7.5rem);line-height:1.3}
+.round.type-next{flex:none;background:#35A85A;color:#fff}
+.round.type-leave{flex:none;display:block}
+/* The drawn keyboard: every key is placed by its column, row and width, in key widths; typing.js gives the width of one key */
+.type-board{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+/* A guide sits close under the words; a keyboard to tap sits low, where the hands are */
+.typing[data-way="keys"] .type-board{align-items:flex-start}
+.typing[data-way="touch"] .type-board{align-items:flex-end}
+.type-kbd{--u:40px;--gap:calc(var(--u)*.045);position:relative;flex:none;direction:ltr;width:calc(var(--u)*var(--cols,15));height:calc(var(--u)*var(--tall,1)*var(--rows,4));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.type-kbd .key{position:absolute;left:calc(var(--u)*var(--x) + var(--gap));top:calc(var(--u)*var(--tall,1)*var(--y) + var(--gap));width:calc(var(--u)*var(--w) - 2*var(--gap));height:calc(var(--u)*var(--tall,1) - 2*var(--gap));margin:0;padding:0;border:0;border-radius:calc(var(--u)*.17);background:var(--zone,#F1E8D8);box-shadow:0 calc(var(--u)*.045) 0 rgba(74,52,36,.22);display:flex;align-items:center;justify-content:center;color:var(--ink);font-weight:700;font-size:calc(var(--u)*.46);line-height:1.3;touch-action:none;cursor:default;outline:0}
+.type-kbd .kb{display:block;transform:translateY(-5%)}
+.type-kbd .ks{position:absolute;top:3%;left:9%;color:var(--muted);font-size:calc(var(--u)*.25);line-height:1.3}
+.type-kbd .ks.off{opacity:.4}
+.typing[data-player="child"] .type-kbd .ks.off{display:none}
+.type-kbd .bump{position:absolute;left:38%;right:38%;bottom:17%;height:max(2px,calc(var(--u)*.045));border-radius:2px;background:rgba(74,52,36,.5)}
+.type-kbd .key.key::after,.type-kbd .key.space::after{content:"";position:absolute;left:16%;right:16%;bottom:6%;height:max(3px,calc(var(--u)*.06));border-radius:3px;background:var(--know,transparent)}
+.type-kbd .key.space::after{left:38%;right:38%}
+.typing[data-player="child"] .type-kbd .key::after,.typing[data-way="small"] .type-kbd .key::after{display:none}
+.type-kbd .shift svg{width:calc(var(--u)*.44);height:calc(var(--u)*.44);color:var(--muted)}
+.type-kbd .key.quiet{background:#EEE5D5;box-shadow:none;opacity:.55}
+.type-kbd .key.off{opacity:.34;box-shadow:none}
+.type-kbd .key.good{background:#BFE6C4}
+.type-kbd .key.lit{z-index:2;opacity:1;background:#FFDC7A;box-shadow:0 0 0 calc(var(--u)*.07) var(--gold),0 0 calc(var(--u)*.45) rgba(201,138,69,.8);animation:type-breathe 1.3s ease-in-out infinite}
+.type-kbd .key.lit svg,.type-kbd .key.held svg{color:inherit}
+.type-kbd .key.hard{box-shadow:0 0 0 calc(var(--u)*.1) var(--deep),0 0 calc(var(--u)*.6) rgba(201,138,69,.95);animation-duration:.55s}
+.type-kbd .key.held{background:var(--gold);color:#fff}
+.type-kbd .key.fresh{z-index:2;opacity:1;box-shadow:0 0 0 calc(var(--u)*.07) var(--gold);animation:type-breathe .8s ease-in-out infinite}
+.type-kbd .key.bad{opacity:1;background:#F0998A}
+.type-kbd .key.dip{transform:translateY(calc(var(--u)*.05)) scale(.93);filter:grayscale(1);opacity:.55}
+@keyframes type-breathe{50%{transform:scale(1.09)}}
+.type-spark{position:absolute;inset:-35%;z-index:3;color:#F2B632;pointer-events:none;animation:type-spark .65s ease-out forwards}
+.type-spark svg{display:block;width:100%;height:100%}
+@keyframes type-spark{from{transform:scale(.3) rotate(-30deg)}to{transform:scale(1.15) rotate(20deg);opacity:0}}
+/* The fingers' zones: eight soft tints for the grown-up, one for each hand for the child */
+.key[data-zone="left-little"]{--zone:#F7DAD3}
+.key[data-zone="left-ring"]{--zone:#F9E4C3}
+.key[data-zone="left-middle"]{--zone:#F2EDBE}
+.key[data-zone="left-index"]{--zone:#DAECC7}
+.key[data-zone="right-index"]{--zone:#CBEADF}
+.key[data-zone="right-middle"]{--zone:#CFE4F3}
+.key[data-zone="right-ring"]{--zone:#DDD9F3}
+.key[data-zone="right-little"]{--zone:#F1D6E8}
+.key[data-zone="left"]{--zone:#CFE4F3}
+.key[data-zone="right"]{--zone:#F9E4C3}
+/* The strip of letters in the order they come */
+.type-letters{flex:none;max-width:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:4px;padding:2px 0}
+.type-letters i{display:flex;align-items:center;justify-content:center;min-width:1.75em;height:1.75em;padding:0 .2em;border-radius:8px;background:#F1E8D8;color:#BDAF9D;font-style:normal;font-weight:700;font-size:clamp(.9rem,2.5vh,1.25rem);line-height:1.2}
+.type-letters i.in{background:var(--know,#F9E4C3);color:var(--ink)}
+.type-letters i.aim{box-shadow:0 0 0 2.5px var(--gold)}
+/* In the small version the strip is one row that slides, so the six keys keep their room */
+.typing[data-way="small"] .type-letters{position:relative;width:100%;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;padding:3px}
+.typing[data-way="small"] .type-letters::-webkit-scrollbar{display:none}
+.typing[data-way="small"] .type-letters i{flex:none}
+.typing[data-player="child"] .type-letters i{font-size:clamp(1rem,3.2vh,1.6rem)}
+.typing[data-player="child"] .type-letters i.in{background:#F9E4C3}
+.typing[data-player="child"] .type-letters i.ok{background:linear-gradient(155deg,#63C7AE,#2F9D88);color:#fff;box-shadow:inset 0 2px 0 rgba(255,255,255,.45),0 2px 0 rgba(74,52,36,.2)}
+/* The small version: what it is, and the map that shows where its six keys sit */
+.type-small{flex:none;max-width:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0 10px;padding:2px 14px;border-radius:16px;background:#F8E9CF;color:var(--ink);font-size:clamp(.9rem,2.4vh,1.1rem);line-height:1.7;text-align:center}
+.type-small strong{color:var(--deep)}
+.type-turn{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+.type-turn svg{width:1.7em;height:1.7em;color:var(--deep)}
+.type-mini{--m:clamp(6px,1.7vw,11px);position:relative;flex:none;direction:ltr;width:calc(var(--m)*var(--cols,15));height:calc(var(--m)*var(--rows,4))}
+.type-mini i{position:absolute;left:calc(var(--m)*var(--x));top:calc(var(--m)*var(--y));width:calc(var(--m)*var(--w) - 1px);height:calc(var(--m) - 1px);border-radius:2px;background:#E6DAC6}
+.type-mini i.in{background:var(--gold)}
+.type-mini i.at{background:var(--deep)}
+.type-note{position:fixed;top:64px;left:50%;z-index:45;transform:translateX(-50%);max-width:calc(100% - 24px);margin:0;padding:.15em 1.1em;border-radius:999px;background:var(--deep);color:#fff;box-shadow:var(--shadow);font-weight:700;font-size:clamp(1rem,2.6vh,1.2rem);line-height:1.8;text-align:center}
+/* The settings */
+.type-scrim{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(74,52,36,.35)}
+.type-panel{width:min(100%,600px);max-height:100%;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 16px 16px;border-radius:24px;background:var(--surface);box-shadow:var(--shadow);text-align:center}
+.type-panel h2{margin:0;color:var(--deep);font-size:1.5rem;line-height:1.7}
+.type-panel h3{margin:4px 0 0;color:var(--muted);font-weight:400;font-size:1.05rem;line-height:1.6}
+.type-opts{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.type-opt,.type-switch{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:44px;padding:.15em .9em;border:2px solid var(--line);border-radius:22px;background:var(--surface);color:var(--deep);font-weight:700;font-size:1.1rem;line-height:1.7}
+.type-opt.on{border-color:var(--deep);background:var(--deep);color:#fff}
+.type-opt small{font-size:.85rem;line-height:1.2;opacity:.85}
+.type-switch{flex-direction:row;gap:10px}
+.type-switch i{position:relative;flex:none;width:44px;height:24px;border-radius:12px;background:var(--line)}
+.type-switch i::after{content:"";position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(74,52,36,.35)}
+.type-switch.on i{background:#35A85A}
+.type-switch.on i::after{right:23px}
+.type-ask{margin:0;color:var(--ink);font-weight:700;font-size:1.1rem;line-height:1.7}
+.type-panel .menu-rule{margin:6px 0}
+.button.type-done{margin-top:6px;font-size:1.25rem}
+@media (max-width:560px){
+  .type-top{gap:8px}
+  .type-card{height:min(100%,92px);font-size:2.6rem}
+  .typing[data-player="child"] .type-card{height:min(100%,170px)}
+  .type-result .round{width:56px;height:56px;padding:12px}
+}
+/* A low, wide screen (a phone on its side): the six keys beside the words, and no logo */
+@media (max-height:480px) and (min-aspect-ratio:5/4){
+  .typing{--top:clamp(84px,34vh,150px);padding-top:calc(60px + env(safe-area-inset-top))}
+  .typing[data-player="child"]{--top:clamp(90px,42vh,180px)}
+  .typing .head{display:none}
+  .typing[data-way="small"] .type-play{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"small board" "top board" "letters board";gap:4px 12px}
+  .typing[data-way="small"] .type-small{grid-area:small;justify-self:center}
+  .typing[data-way="small"] .type-top{grid-area:top}
+  .typing[data-way="small"] .type-board{grid-area:board;height:100%}
+  .typing[data-way="small"] .type-letters{grid-area:letters;align-self:start}
+  .type-result .round{width:56px;height:56px;padding:12px}
 }

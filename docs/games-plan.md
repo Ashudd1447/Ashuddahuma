@@ -2,7 +2,7 @@
 
 Draft 2, 2026-11-19. Kareem answered draft 1's questions the same night; his answers are under **Decided** in each game. Everything else is still a proposal: every name, phrase, picture and sound the child would see or hear is for the parents to approve, change or drop. Open questions come last in each game, my recommendation first.
 
-The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاعَةُ`), the driving games (`قِيَادَةُ الْمَرْكَبَاتِ`: two roads and the ride to the oasis) and the building game (`بِنَاءُ الْمَسْجِدِ`, section 5) are built and described in `CLAUDE.md`. Pictures are made in Recraft following `docs/recraft-images.md`.
+The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاعَةُ`), the driving games (`قِيَادَةُ الْمَرْكَبَاتِ`: two roads, each also seen from behind for comparison, and the ride to the oasis), the building game (`بِنَاءُ الْمَسْجِدِ`, section 5) and the car factory (`مَصْنَعُ السَّيَّارَاتِ`, section 6) are built and described in `CLAUDE.md`. The last two sit behind one door on the hub, `الْبِنَاءُ وَالتَّصْنِيعُ`. Pictures are made in Recraft following `docs/recraft-images.md`.
 
 ## Rules that apply to every game
 
@@ -82,6 +82,26 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 3. Stars are never behind slow traffic: he should never have to slow down behind a car to collect them.
 4. Every star hung over a jump must be within reach of the jump.
 5. The desert ride is named `الْوَاحَةُ`. The child steers it right and left, so it is seen from above like the roads (the view from behind is the tilted one that made him dizzy, and no way to steer was found for the side view). The course is never the same twice: the stretches are shuffled for every ride and the time of day changes.
+
+**Decided** (2026-11-22, after the tablet; built the same day, not yet seen by him)
+1. The two roads still make him a little dizzy. A motorcycle game seen from the rider's seat does not (he sent a picture and a video): its horizon and sky never move, its camera never turns, a third of the screen is fixed to it, and only the road flows, out of one point. The two roads are cloned and shown that way, from low behind the car: `الْحَيُّ الْجَدِيدُ` and `الْكُورْنِيشُ الْجَدِيدُ`. Four road games for now; he compares and the losers are deleted.
+2. The oasis ride "doesn't work at all" from above: the inclines do not show and the bike crosses water by magic. It is rebuilt seen from just behind the bike, from the back left, with hills that show, dust on the slopes, rocks and wells as obstacles, no road (flags, old tire tracks and the stars show the way), no water to cross and no stopping for camels, and better graphics.
+
+**Decided** (2026-11-22, later that night, after he tried the roads from behind and the new oasis ride on the PC; rebuilt and reviewed the same night, not yet seen by him)
+1. The roads from behind cure the dizziness. What he sent back, all changed: the car looked "way too slow" (the road is now drawn two and a half times longer, so the same speed covers the ground fast); "way too much traffic", cars too close and see-through (one car to a row, rows far apart, every car solid); a car beside him vanished when he steered into it (a car alongside is now a wall); the stars piled up on each other (further apart, smaller, facing the camera); no side road, and the grandmother small in the distance (a side street now leaves the right lane and ends at the place itself, big, with the grandmother beside the car).
+2. The oasis ride is "doing better". The bike looked as if it pointed left while it went straight: it is now a drawing seen from straight behind, in the middle of the picture. It "simply jumps": it now leaves the ground only off a jump ramp, a real rise in the sand with two posts at its lip.
+
+**Decided** (2026-11-23, after trying them on the PC; done the same day)
+1. The roads from behind were still too slow, "I want this to be exciting. He needs to feel some rush steering as well. Quicker and narrower swerves", with traffic between the two extremes. Top speed 15 lanes a second there (12 on the roads seen from above, which he asked to change the same way), steering a lane in about a sixth of a second, traffic a little denser and moving, now and then two cars side by side.
+2. The ping for every star was annoying: stars are taken silently, on all five rides.
+3. The car on the two cards did not look like a car: it is drawn as a car's back (cabin, rear window, lights, plate, bumper, tires).
+4. On the oasis ride `اللَّهُ أَكْبَرُ` and `سُبْحَانَ اللَّهِ` came at the wrong times: they now show on every climb and every descent, only while on it.
+
+**For the parents to check after trying them** (the reviewers' questions)
+1. The roads from behind: is the speed right, and is it still easy on the eyes (lamps pass the screen's edges about twice a second, and at the end the picture slides sideways onto the side street)? Are the stars too small? One number each: `STRETCH`, `SLIP`, `STAR.r`.
+2. A car he has just passed holds its lane against him for about half a second, with a horn, so his car is never hidden behind it. Sticky?
+3. Up a ramp the motor takes the bike to one speed by itself, pedal or not, so that every flight reaches its stars. Wanted, or should only a bike with the pedal held fly?
+4. The ramp is a dark band with a bright lip and two posts: clear enough from far away? The three stars of a flight hang over the middle of the way, so a bike that takes off near the edge misses them.
 
 **For the parents to check**
 1. The three adhan recordings: listen to each on arriving at the masjid, and say if one is not good enough or its cut is wrong.
@@ -177,7 +197,95 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 5. `بِسْمِ اللَّهِ` before the work starts, shown and said after the gear: wanted?
 6. The sounds, all made in code and none heard by anyone yet: the site noise, the hammer, the screwdriver, the drill, a load set down, the beep of a machine backing up.
 
+**Decided** (2026-11-22, after his son played it on the tablet and loved it)
+1. The blade must be real, up and down: a curved plate hollow toward the earth, lowered to cut and raised to back up.
+2. The base must be built, not appear: the bulldozer digs the pit, and a concrete mixer pours it (the mixer and the worker who smooths the concrete are Claude's answer; the word `خَلَّاطَةُ الْخَرَسَانَةِ` is a draft).
+3. The hand tools must point the real way and the nails and screws must look real: the door now lies flat on sawhorses and the tools work downward. A glow shows only when the right tool comes near the right thing.
+4. The drill must not buzz: its sound is remade as a motor that whines up to speed.
+5. The gloves are a right one and a left one, the right first, with `اِبْدَأْ بِالْيَمِينِ`.
+6. `بِسْمِ اللَّهِ` before the gear: he asked for it in the car factory; the building game shares the scene and has it too, unless he says otherwise.
+
+**Decided** (2026-11-22, later that night, after trying the second round; rebuilt and reviewed the same night, not yet seen by him)
+1. `بِسْمِ اللَّهِ` showed twice in a row: after the tap the words now stay where they are while they are said.
+2. The gloves were mixed up: "Thumb is away from the body if palm is facing forward". The boy's hands now have fingers, and on hands and gloves alike the thumb is on the outer side.
+3. The minaret stood apart from the masjid: it now stands against the hall's end wall.
+4. The stone "just appear from thin air": a flatbed truck with a loading arm brings the pallets, and (the reviewer's addition, the same complaint waiting to happen) the same truck brings the minaret's shaft, its top and the dome for the crane.
+5. "The cement base still shows when the Masjid is complete": once the foundation has set, the bulldozer pushes the spoil heap back in and the cut in the ground closes for good.
+6. "you don't simply pour cement from a mixer into a pit": the foundation is now laid as it really is: steel mesh, a concrete pump fed by the mixer, the hose moved along the pit, the heaps struck level with a board, a float, and time to set.
+
+**For the parents to check after trying it**
+1. The new words, all drafts: `الشَّاحِنَةُ` (Egyptian for the recording: `عربية النقل`), `مِضَخَّةُ الْخَرَسَانَةِ`, `حَدِيدُ التَّسْلِيحِ` (the last two the same in Egyptian: one recording each, or two?).
+2. The bulldozer pushing earth along the front of the fresh foundation: does it read as closing the ground, or as burying the concrete?
+3. One pallet still becomes a whole course of stone. The first eleven seconds of the foundation stage are watched (steel, pump, mixer arriving) with the drive buttons showing. The picture slides left for the two trucks and back. Any of these to change?
+4. `اِبْدَأْ بِالْيَمِينِ` stays on screen while the left glove goes on; the gloves are drawn large so the thumbs show. Keep both?
+
 **Ideas for later:** a cement mixer pouring the foundation, a dump truck taking the earth away, painting the walls, a second building (a school, a house), a tool bench of its own.
+
+## 6. The car factory: `مَصْنَعُ السَّيَّارَاتِ` (built)
+
+**What he asked for** (2026-11-22). A game in a car factory, assembling parts with the tools used for it that a toddler can understand; the wheels as the hand tool part, their bolts put on with the L-shaped wrench; the engine, the chassis, the seats, the doors, the wheels; `بِسْمِ اللَّهِ` before beginning and before the gear; protective gear first; a blue sport SUV like a Porsche Cayenne with no brand or logo, shown from several angles as it is completed; three engine revs when it is done, then `الْحَمْدُ لِلَّهِ`. Both building games under one door, `الْبِنَاءُ وَالتَّصْنِيعُ`.
+
+**What was built** (`factory.html`, `js/factory.js`, the same day). Ten jobs in a row: the chassis on the line, the engine by the hoist, the seats from above, the body sprayed blue, the body lowered on, the doors and wheels of one side, the car turned, the doors and wheels of the other side, the headlights from the front; then the car turns through its views, revs three times, and `الْحَمْدُ لِلَّهِ`.
+
+**For the parents to check**
+1. The words, all drafts: `مَصْنَعُ السَّيَّارَاتِ`, `الْبِنَاءُ وَالتَّصْنِيعُ`, `الْهَيْكَلُ`, `الْمُحَرِّكُ`, `الْمَقَاعِدُ`, `الطِّلَاءُ`, `جِسْمُ السَّيَّارَةِ`, `الْأَبْوَابُ`, `الْعَجَلَاتُ`, `مِفْتَاحُ الْعَجَلَاتِ`, `الْمَصَابِيحُ`, `سَيَّارَةٌ جَدِيدَةٌ` (in the menu), `اِبْدَأْ بِالْيَمِينِ`. Egyptian for the recordings, also drafts: `الشاسيه`, `الموتور`, `الكراسي`, `الدهان`, `جسم العربية`, `البيبان`, `العجل`, `مفتاح العجل`, `الفوانيس`.
+2. Twenty wheel bolts in all (five a wheel, about a second each): too many for him? The second side can be shortened.
+3. The car's turn on the table was a flip between drawn views; he found it funny, and it is now a turn (see below).
+4. The sounds, made in code and unheard: the paint gun, the wheel wrench's clicks, the three revs, the factory hum.
+
+**Decided** (2026-11-22, later that night, after trying it; rebuilt and reviewed the same night, not yet seen by him)
+1. "the rotation looks very funny. Fix somehow so it's real": the car now turns on a round plate as one solid thing, the two faces that show drawn at every angle, a half turn in about four seconds.
+2. On the second side the wrench "turns in a spot away from the actual bolt": the bolts were drawn mirrored and worked on unmirrored. One function now places each bolt for the drawing, the glow and the wrench.
+3. The reviewer also found that a finished car was thrown away if the page was left during the ending: it now opens on the ending.
+
+**For the parents to check after trying it**
+1. During the turn the wheels stand on the plate's far edge, because the hall is seen exactly side on. Does it read as a car on a turntable?
+2. Loose wheels already show their five bolts before they are hung; the hoist's trolley, the wrench mats and the paint gun are simply there when their job starts. Bring them in by something, as with the stone?
+
+## 7. The mazes: `الْمَتَاهَاتُ` (built)
+
+**What he asked for** (2026-11-22, late). A maze game from the seven mazes made for paper printing in another chat, used as they are; mistakes allowed, but at a dead end a vibration and a buzz and he starts over; a chime at the exit; in the mazes with hidden pictures, the child's uneven line straightened at the end, morphing into the picture, with the picture's name, which he will record.
+
+**What was built** (`mazes.html`, `js/mazes.js`, `tools/make-mazes.py`, the same night). The walls are read out of the PDF's own drawing by a script, so the mazes are exactly the printed ones: 6 by 7, 11 by 13, and five of 16 by 16, each with one way through. The child draws his line with a finger; it never crosses a wall, un-draws when he goes back, and is lost only at the very end of a dead end. In mazes 3 to 7 the walls fade, `مَاذَا رَسَمْتَ؟` is asked, his line morphs into a clean outline, and the name shows. Finished mazes show on their cards; there is no star counter.
+
+**For the parents to check**
+1. The pictures' names. Nobody could see the chat that made the mazes, so these are Claude's reading of the shapes: 3 `مُثَلَّجَات` (a scoop on a cone; `بُوظَة`? Egyptian for the recording: `آيس كريم`), 4 `تُفَّاحَة`, 5 `فَانُوس` (a pointed cap, a glass, a base; it could also be read as a house on a boat), 6 `هِلَال`, 7 `مَسْجِد`.
+2. The dead end: it counts once the finger is 0.3 of a cell into the last cell of a dead end. Too soon, too late? One number (`MIDDLE`).
+3. The five 16 by 16 mazes have cells of about 7 mm on the tablet, narrower than a fingertip: the walls hold the line, but it is dense. Enough for him, or only for later?
+4. The colors (his line blue, the picture a deeper blue), the tablet's back button leaving the page from inside a maze, and whether a menu entry should clear the finished marks.
+5. The recordings: `maze-draw`, `maze-find`, `maze-what` and the four names (cards are on the Record page).
+
+## 8. Touch typing: `الطِّبَاعَةُ` (built)
+
+**What he asked for** (2026-11-22, before going to bed). A touch-typing game that also trains quick reflexes ("the kid quickly taps the button when he sees the letter"); like keybr.com, whose order of letters and combinations made him proficient in under a month; "Research which letters are tapped together/successively frequently and build the algorithm accordingly"; for a kid and for adults; "Use the Arabic 102 keyboard format"; tablets and PCs; a keyboard on screen with the next key lit; on tablets, tap the lit key; diacritics on PC; a choice of "all the very popular Arabic keyboards" with the algorithm adjusted for each; and his questions: a version for small screens with a few options, what size, one app or two? "Give me your suggestions. Build what you are confident is a good idea, and I can adjust later."
+
+**What the research found** (three researchers, 2026-11-23; their sources are in `docs/sources/typing/`).
+- His computer has Windows Arabic (102), not the default (101), so 102 is the default here. The two differ in four characters: ذ, shadda, kasra, kasratan.
+- The commonest letters: ا 14.3%, ل 11.2%, ي 7.9%, م 6.1%, ن 5.9%, و 4.9%, ت 4.5%, ر 4.5%, ب 3.4%; ا then ل is 7.2% of all pairs, five times the next. On the Arabic PC keyboards the home row holds seven of the nine commonest letters, so keybr's order (commonest first) and a school's order (home row first) nearly agree for Arabic.
+- keybr teaches six letters at once, measures each key's speed, and unlocks the next when all are fast enough; it does not teach ة ى أ إ آ ؤ ئ, the lam-alef key or the marks in Arabic. A 4-year-old cannot touch type with ten fingers; what he can learn is which letter is which, where its key lives, and to be quick.
+- A web page cannot ask the system which Arabic keyboard is active, and Chrome on Windows misreports some Arabic keys, so the game reads keys by their place and lets the user choose the keyboard (and changes it by itself when the presses show another).
+
+**What was built** (`typing.html`, `js/typing.js`, `js/typing-engine.js`). His questions answered by doing: one app; three ways to play that the page picks by itself (real keys with the drawn keyboard as a guide; tapping the drawn keyboard from 760 by 500 CSS pixels, and from 1000 wide for the child; below that a small version that says it is the small version and shows the target's key with its real neighbors); a child's way (one letter at a time, no numbers) and a grown-up's way (real words, a mistake stops the line, speed in characters a minute); the order of teaching worked out for each keyboard from letter frequency and key effort; the lam-alef keys; the marks as a switch on real keys. The builders were cut off by server failures in the night; the page was written and tested by one agent and looked over by Claude, and the engine was reviewed and repaired by another (a simulated child had been stuck at four letters).
+
+**For the parents to check**
+1. Is a letter-and-reflex game the right aim for him now, with ten-finger typing for older children and adults?
+2. His letters follow the keyboard (ا ل ي ن م ت و ع ب ...). Would you rather they follow his reading lessons (أ ب م خ)? The child's course also has the Shift letters (أ is 17th), which are two taps on glass.
+3. The practice words: 3,840 common words found in Wikipedia, film subtitles and news, read twice by Claude's agents, never by a parent. Held back on purpose: the name of Allah, the Quran, the prophets' names, death, music and film words. Left in: words such as النار, الدم, الجيش, الحب, حفل, and adjectives that are also among the names of Allah (الكريم, العزيز). `docs/sources/typing/blocked-words.txt` is yours to add to.
+4. The marks: words show only the marks learned so far, so they look partly voweled at first; the 495 voweled words come from classical books (some readings are not the modern sense). Keep, or wait for a better source?
+5. The pace: a new letter at the latest every ten rounds for a grown-up (six for the child), two new letters a day for the child, a beginner's target of 120 characters a minute.
+6. On his tablet: is the page 1000 CSS pixels wide in landscape? If not, he gets the six-key version unless `لَمْسُ الشَّاشَةِ` is chosen for him in the settings.
+7. The wording, all drafts: the game's name, `مَنْ يَلْعَبُ؟`, `طِفْل` / `كَبِير`, the settings' words, the keyboards' names, the small version's notice, `حَرْفًا فِي الدَّقِيقَةِ`, `الدِّقَّةُ`, `حَرْفٌ جَدِيدٌ`, `حَرَكَةٌ جَدِيدَةٌ`, `مِفْتَاحٌ جَدِيدٌ`, the fresh start's two questions.
+8. Would you record the letters' names for the child's way (28 or more clips)? Digits and punctuation later?
+
+## What the stars are for (open, 2026-11-22)
+
+The father: the counter never ends ("If he plays this long enough, it will be a million? He's not really winning anything"), and should there be some competing, and some losing? Ideas were given, and no code changes until he chooses:
+1. Stars for a round, not for ever: what he caught against what was there, and one to three big stars for the round; the lifetime counter goes.
+2. Something to finish: stars fill a picture tile by tile; a finished picture goes on a shelf and a new one starts. The mazes already work this way in small: seven cards, each showing its picture once found.
+3. Stakes without a game over: things he can miss (a star for stopping at the red light by himself, for a ride with no bumps, for the right tool at the first try). Firmer: a bump drops one of the round's stars. The mazes are the first game with a real setback; see how he takes it.
+4. Competing: against himself first ("your best on this road"), then turns with a parent; no boards.
+5. A jar for the day that fills and is then full: a natural stopping point.
+Claude's suggestion: 1, 2 and the mild form of 3; "beat your best" later; no game over at four.
 
 ## Order and size
 
@@ -187,6 +295,9 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 | Driving | Built: two roads and the ride to the oasis; more roads later | The parents' check of the du'a wording and the art; the recordings; a try on the real tablet |
 | Obstacle course | Large: the hero, a course's art, the ending scene | The hero, the first course's art, more rounds of design |
 | Archery | Medium: reuses the hero and the engine | The hero |
-| Building the masjid | Built | The parents' check of the words, the sounds and the play; the recordings |
+| Building the masjid | Built; second round built | The parents' check of the words, the sounds and the play; the recordings |
+| The car factory | Built | The same |
+| The mazes | Built | The parents' check of the pictures' names; a try on the tablet; the recordings |
+| Touch typing | Built | A try at the computer and on the tablet; the parents' check of the words and the wording |
 
 Next: the obstacle course's first playable version with simple shapes, then archery once the hero exists.

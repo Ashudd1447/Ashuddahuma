@@ -1,0 +1,78 @@
+Sources of the typing game's letter statistics and practice words
+================================================================
+
+Read by tools/make-typing-data.py, which writes public/typing/stats.json and
+public/typing/words.json. All retrieved on 2026-11-23 (UTC) with curl. The
+keyboard files in this folder have their own record, keyboards-SOURCES.txt.
+
+Fetched by the script into cache/ (not kept in the repository)
+--------------------------------------------------------------
+
+The four files below were first kept in this folder and were then moved to
+cache/, which git ignores: they are large, the subtitles list holds words
+that do not belong in this repository, and the Quran files are needed only
+for counting. tools/make-typing-data.py downloads each again when it is
+missing, from the address given, and the checksums below let it be checked.
+
+arwiki-2022-08-29-top100k.txt
+  What:    the first 100,000 lines ("word count") of the word-frequency list
+           made from the Arabic Wikipedia dump of 2022-08-29. The whole file
+           has 789,639 lines and 12.7 MB; only its head is kept, uncut inside.
+  From:    https://raw.githubusercontent.com/IlyaSemenov/wikipedia-word-frequency/master/results/arwiki-2022-08-29.txt
+  License: MIT, Copyright (c) 2015 Ilya Semenov
+           (wikipedia-word-frequency-LICENSE.txt). The words themselves come
+           from Wikipedia, CC BY-SA.
+  sha256:  c23ea93740d6580adda94bf7326d788dcbc1f1a827fe459f0e3c3bae12002d68
+           (whole file: c98ae500aa256bd36943677f395ae2457ea5c19576354139319db9833f74713c)
+
+ar_50k.txt
+  What:    the 50,000 commonest words of Arabic subtitles, OpenSubtitles 2018
+           (opus.nlpl.eu/OpenSubtitles2018.php), "word count" a line.
+  From:    https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/ar/ar_50k.txt
+  License: the repository's README says "MIT License for code. CC-by-sa-4.0
+           for content." (FrequencyWords-LICENSE.txt is the MIT text,
+           Copyright (c) 2016 Hermit Dave.)
+  sha256:  bbe98b4b92902b392bdefa2e555a108fdb42a5dd79d261674be5ab666229e19f
+
+quran-simple-clean.txt, quran-simple.txt
+  What:    Tanzil Quran Text, Simple Clean (no marks) and Simple (with
+           marks), version 1.1, one ayah a line as surah|ayah|text.
+  From:    https://tanzil.net/download/ (quranType=simple-clean and simple,
+           outType=txt-2)
+  License: Creative Commons Attribution 3.0, with Tanzil's terms, which are
+           at the end of each file: verbatim copies only, the source named
+           and linked, the notice kept. The files here are byte for byte as
+           downloaded and must stay so. They are used for counting only.
+  sha256:  228df2a717671aeb9d2ff573002bd28d6b3f973f4bc7153554e3a81663d67610
+           f3268cfe7a400add8a8024fe23368d66f58cc8baa51773fe94e323625c66344b
+
+blocked-words.txt
+  Written for this site by Claude on 2026-11-23; the parents own it.
+
+Downloaded by the script into cache/ (too large for the repository)
+--------------------------------------------------------------------
+
+cache/ara_news_2020_100K.tar.gz   (34 MB)
+  What:    Leipzig Corpora Collection, Arabic news of 2020, 100,000
+           sentences. The script reads ara_news_2020_100K-sentences.txt
+           inside the archive and unpacks nothing.
+  From:    https://downloads.wortschatz-leipzig.de/corpora/ara_news_2020_100K.tar.gz
+  License: CC BY 4.0. The terms page (https://wortschatz.uni-leipzig.de/en/usage)
+           says the corpora offered for download are under CC BY, the
+           project's other data under CC BY-NC. Cite: D. Goldhahn, T. Eckart
+           and U. Quasthoff, "Building Large Monolingual Dictionaries at the
+           Leipzig Corpora Collection: From 100 to 200 Languages", LREC 2012.
+  sha256:  ad4eaa54154c4cf4e9ec0f5da42e0528fcd35badcc40fd31f6c0c39a68f3f37d
+
+cache/tashkeela-fadel-train.txt   (34 MB)
+  What:    dataset/train.txt of "Arabic Text Diacritization Using Deep Neural
+           Networks" (Ali Fadel and others, 2019): 50,000
+           lines of fully voweled Arabic, a cleaned extract of the Tashkeela
+           corpus of Taha Zerrouki and Amar Balla (2017).
+  From:    https://raw.githubusercontent.com/AliOsm/arabic-text-diacritization/master/dataset/train.txt
+  License: the repository is MIT, Copyright (c) 2019 Arabic Text
+           Diacritization Using Deep Neural Networks. Tashkeela itself is
+           GPL version 2 (sourceforge.net/projects/tashkeela). The file is
+           not kept here; only counts and 495 single words taken from it are
+           in the site's files.
+  sha256:  f8ce279b6788f6a4fd756075a087616c36d7803de46e48938e81c7d79cfcfcb5

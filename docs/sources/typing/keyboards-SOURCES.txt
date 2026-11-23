@@ -1,0 +1,52 @@
+Sources of the keyboard layouts of the typing game (public/typing/layouts.json).
+All fetched on 2026-11-23. tools/make-typing-layouts.py reads them; nothing here is run.
+
+Kept in this folder (their licenses allow copying)
+
+cldr43-ar-t-k0-windows.xml, -windows-102key.xml, -windows-azerty.xml,
+cldr43-ar-t-k0-osx.xml, -osx-qwerty-var.xml, -osx-qwerty.xml, -osx-azerty.xml, -osx-var.xml,
+cldr43-ar-t-k0-android.xml, -android-600dpi.xml, -android-768dpi.xml
+  Unicode CLDR, release 43 (the last one with keyboard data), keyboards/windows, keyboards/osx, keyboards/android.
+  https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/<folder>/<name without "cldr43-">
+  License: Unicode License (cldr-unicode-license.txt, from the same release).
+  CLDR has no ChromeOS file for Arabic and no file for iOS.
+
+xkb-2.48-symbols-ara.txt, xkb-2.48-COPYING.txt
+  xkeyboard-config 2.48, the files symbols/ara and COPYING, taken out of
+  https://www.x.org/releases/individual/data/xkeyboard-config/xkeyboard-config-2.48.tar.xz
+  License: MIT-style (X11) notices, in xkb-2.48-COPYING.txt.
+
+google-input-tools-ar.js
+  The Arabic keyboard of ChromeOS ("vkd_ar"), chrome/os/keyboard/layouts/ar.js, last changed 2014-11-20.
+  https://raw.githubusercontent.com/google/google-input-tools/master/chrome/os/keyboard/layouts/ar.js
+  License: Apache License 2.0 (https://github.com/google/google-input-tools/blob/master/LICENSE).
+  One line of it is flawed: six Shift keys (H J K L ; ') are given four characters.
+
+aosp-keyboard_layout_arabic.kcm
+  Android Open Source Project, the layout "Arabic" for a keyboard that is plugged in.
+  https://raw.githubusercontent.com/aosp-mirror/platform_frameworks_base/main/packages/InputDevices/res/raw/keyboard_layout_arabic.kcm
+  License: Apache License 2.0 (in the file's header).
+
+aosp-latinime-rowkeys_arabic1.xml, -rowkeys_arabic2.xml, -rowkeys_arabic3.xml,
+aosp-latinime-keys_arabic3_left.xml, aosp-latinime-sw600dp-keys_arabic3_left.xml
+  Android Open Source Project keyboard (LatinIME), branch main, java/res/xml and java/res/xml-sw600dp.
+  https://android.googlesource.com/platform/packages/inputmethods/LatinIME/+/refs/heads/main/java/res/xml/rowkeys_arabic1.xml
+  (add ?format=TEXT for the file itself, in base64). License: Apache License 2.0.
+
+Not kept (not ours to pass on): only the address
+
+Microsoft's own tables of Arabic (101), Arabic (102) and Arabic (102) AZERTY (kbda1.dll, kbda2.dll, kbda3.dll,
+version 10.0.29667.1000), as published by kbdlayout.info:
+  https://kbdlayout.info/kbda1/download/xml   https://kbdlayout.info/kbda2/download/xml   https://kbdlayout.info/kbda3/download/xml
+  Copyright Microsoft. "python tools/make-typing-layouts.py --microsoft <folder> --download" fetches them and checks
+  the three Windows layouts against them.
+
+Microsoft, the default keyboard of every Windows language:
+  https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs
+
+How browsers report keys (read, not copied): Chromium, ui/events/keycodes/platform_key_map_win.cc,
+ui/events/keycodes/keyboard_code_conversion_mac.mm, ui/events/keycodes/dom/dom_keyboard_layout_map_base.cc and
+chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json (https://github.com/chromium/chromium, BSD);
+WebKit, Source/WebCore/platform/mac/PlatformEventFactoryMac.mm and platform/ios/PlatformEventFactoryIOS.mm
+(https://github.com/WebKit/WebKit, BSD/LGPL); Firefox, widget/windows/KeyboardLayout.cpp
+(https://github.com/mozilla-firefox/firefox, MPL 2.0); MDN browser-compat-data, api/Keyboard.json (CC0).

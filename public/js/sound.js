@@ -122,7 +122,7 @@ const sound = (() => {
         const started = a.play();
         if (started) started.catch(() => {});
       }
-    } else if (!active && !air && !motor && !whirr) {
+    } else if (!active && !air && !motor && !whirr && !Object.keys(flows).length) {
       a.loop = false;
       a.pause();
     }
@@ -462,6 +462,19 @@ const sound = (() => {
         tone(2250, 0.01, 0.1, 0.007, 'triangle', 1700);
       }
     },
+    // A car factory, far off: a power wrench, a hiss of air, a clank.
+    plant: () => {
+      const pick = Math.random();
+      if (pick < 0.45) {
+        for (let i = 0; i < 6; i++) tone(118, i * 0.035, 0.03, 0.012, 'square');
+        rush(1900, 0, 0.24, 0.008, 1.2);
+      } else if (pick < 0.75) {
+        rush(4200, 0, 0.5, 0.008, 0.6, 2600);
+      } else {
+        tone(1500, 0, 0.14, 0.01, 'triangle', 1150);
+        tone(2250, 0.01, 0.1, 0.006, 'triangle', 1700);
+      }
+    },
   };
   /* Each place: its bed of hiss, if it has one (the filter's pitch, how loud,
      how fast it swells), and what sounds now and then, how often (seconds). */
@@ -470,11 +483,13 @@ const sound = (() => {
     river: { bed: [640, 0.02, 0.09], voice: 'birds', every: [2.5, 8.5] },
     desert: { voice: 'wild', every: [5, 13] },
     site: { bed: [230, 0.016, 0.07], voice: 'works', every: [2.2, 5.5] },
+    factory: { bed: [300, 0.012, 0.05], voice: 'plant', every: [3, 7] },
   };
 
   /* Background sound for the games, made here and not recorded. kind is
      'town' (birds), 'river' (wind over water, and birds), 'desert' (an eagle
-     and small birds, far off) or 'site' (soft building noise); nothing, or a
+     and small birds, far off), 'site' (soft building noise) or 'factory' (a
+     hum, a power wrench now and then); nothing, or a
      page gone to the background, stops it. */
   function ambience(kind) {
     const c = ctx();
@@ -571,50 +586,189 @@ const sound = (() => {
     holdSession(false);
   }
 
-  /* The power drill: a whirr while level is above zero. */
-  function drill(level) {
+  /* The power drill. A level above zero runs it: the motor whines up to speed,
+     and falls away when the level goes back to zero. load, 0 to 1, is the bit
+     cutting: the motor drops a little and a rough hiss joins it. An earlier
+     drill, a low saw wave through a filter, sounded like a buzzer. */
+  const DRILL = 430; // the motor's note at full speed
+  function drill(level, load = 0) {
     const c = ctx();
     if (!c || (!whirr && level <= 0)) return;
+    const now = c.currentTime;
     if (level <= 0) {
       const old = whirr;
       whirr = null;
-      old.gain.gain.setTargetAtTime(0.0001, c.currentTime, 0.05);
+      for (const [osc, ratio] of old.oscs) osc.frequency.setTargetAtTime(DRILL * 0.3 * ratio, now, 0.09);
+      old.gain.gain.setTargetAtTime(0.0001, now + 0.04, 0.08);
       setTimeout(() => {
-        try {
-          old.osc.stop();
-          old.source.stop();
-        } catch {
-          // Already stopped.
+        for (const node of old.nodes) {
+          try {
+            node.stop();
+          } catch {
+            // Already stopped.
+          }
         }
-      }, 400);
+      }, 700);
       holdSession(false);
       return;
     }
     if (!whirr) {
       wake();
-      const osc = c.createOscillator();
-      osc.type = 'sawtooth';
+      const gain = c.createGain();
+      gain.gain.value = 0.0001;
+      gain.connect(c.destination);
+      // The whine: three voices through a band that keeps the motor's song
+      // and drops its buzz, over a little of the lowest voice for body.
+      const band = c.createBiquadFilter();
+      band.type = 'bandpass';
+      band.frequency.value = 2300;
+      band.Q.value = 0.8;
+      const body = c.createBiquadFilter();
+      body.type = 'lowpass';
+      body.frequency.value = 700;
+      const low = c.createGain();
+      low.gain.value = 0.12;
+      const voice = c.createGain();
+      voice.gain.value = 0.8;
+      band.connect(voice);
+      body.connect(low).connect(voice);
+      voice.connect(gain);
+      const oscs = [['sawtooth', 1], ['square', 2.02], ['sawtooth', 3.03]].map(([type, ratio]) => {
+        const osc = c.createOscillator();
+        osc.type = type;
+        osc.frequency.value = DRILL * 0.3 * ratio;
+        osc.connect(band);
+        if (ratio === 1) osc.connect(body);
+        osc.start();
+        return [osc, ratio];
+      });
+      // The gears' rattle: the whine wavers quickly.
+      const rattle = c.createOscillator();
+      rattle.frequency.value = 37;
+      const depth = c.createGain();
+      depth.gain.value = 0.16;
+      rattle.connect(depth).connect(voice.gain);
+      rattle.start();
+      // The bit in the wood: hiss, let in by the load.
       const source = c.createBufferSource();
       source.buffer = hiss(c);
       source.loop = true;
-      const grit = c.createGain();
-      grit.gain.value = 0.25;
-      const filter = c.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.value = 1100;
-      filter.Q.value = 1.2;
-      const gain = c.createGain();
-      gain.gain.value = 0.0001;
-      osc.connect(filter);
-      source.connect(grit).connect(filter);
-      filter.connect(gain).connect(c.destination);
-      osc.start();
+      const cut = c.createBiquadFilter();
+      cut.type = 'bandpass';
+      cut.frequency.value = 3400;
+      cut.Q.value = 0.6;
+      const bite = c.createGain();
+      bite.gain.value = 0;
+      source.connect(cut).connect(bite).connect(gain);
       source.start();
-      whirr = { osc, source, gain };
+      whirr = { gain, oscs, bite, nodes: [...oscs.map(([osc]) => osc), rattle, source] };
       holdSession(true);
     }
-    whirr.osc.frequency.setTargetAtTime(150 + 90 * level, c.currentTime, 0.06);
-    whirr.gain.gain.setTargetAtTime(0.05 * level, c.currentTime, 0.05);
+    const speed = DRILL * (1 - 0.18 * clampUnit(load));
+    for (const [osc, ratio] of whirr.oscs) osc.frequency.setTargetAtTime(speed * ratio, now, 0.07);
+    whirr.bite.gain.setTargetAtTime(0.5 * clampUnit(load), now, 0.05);
+    whirr.gain.gain.setTargetAtTime(0.05 * clampUnit(level), now, 0.04);
+  }
+  const clampUnit = (value) => Math.max(0, Math.min(1, value || 0));
+
+  /* Rushes of hiss that last while their level is above zero: paint from a
+     spray gun, concrete down a chute. */
+  const flows = {};
+  function flow(name, level, pitch, q, loud, wobble) {
+    const c = ctx();
+    if (!c || (!flows[name] && level <= 0)) return;
+    const now = c.currentTime;
+    if (level <= 0) {
+      const old = flows[name];
+      delete flows[name];
+      old.gain.gain.setTargetAtTime(0.0001, now, 0.08);
+      setTimeout(() => {
+        for (const node of old.nodes) {
+          try {
+            node.stop();
+          } catch {
+            // Already stopped.
+          }
+        }
+      }, 500);
+      holdSession(false);
+      return;
+    }
+    if (!flows[name]) {
+      wake();
+      const source = c.createBufferSource();
+      source.buffer = hiss(c);
+      source.loop = true;
+      const filter = c.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = pitch;
+      filter.Q.value = q;
+      const gain = c.createGain();
+      gain.gain.value = 0.0001;
+      source.connect(filter).connect(gain).connect(c.destination);
+      source.start(0, Math.random());
+      const nodes = [source];
+      if (wobble) {
+        const swell = c.createOscillator();
+        swell.frequency.value = wobble;
+        const depth = c.createGain();
+        depth.gain.value = loud * 0.45;
+        swell.connect(depth).connect(gain.gain);
+        swell.start();
+        nodes.push(swell);
+      }
+      flows[name] = { gain, nodes };
+      holdSession(true);
+    }
+    flows[name].gain.gain.setTargetAtTime(loud * clampUnit(level), now, 0.06);
+  }
+  const spray = (level) => flow('spray', level, 5200, 0.5, 0.035, 0);
+  const pour = (level) => flow('pour', level, 420, 0.7, 0.07, 3.1);
+
+  /* A car's engine revved: the note climbs and falls back, `count` times.
+     Returns how long it lasts, in seconds. */
+  function rev(count = 1) {
+    const c = ctx();
+    if (!c) return 0;
+    wake();
+    const each = 1.05;
+    hold(count * each + 0.3);
+    for (let i = 0; i < count; i++) {
+      const start = c.currentTime + 0.05 + i * each;
+      const filter = c.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.Q.value = 2;
+      filter.frequency.setValueAtTime(320, start);
+      filter.frequency.exponentialRampToValueAtTime(1500, start + 0.32);
+      filter.frequency.exponentialRampToValueAtTime(360, start + 0.9);
+      const gain = c.createGain();
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.16, start + 0.25);
+      gain.gain.exponentialRampToValueAtTime(0.05, start + 0.85);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 1);
+      filter.connect(gain).connect(c.destination);
+      for (const [type, ratio] of [['sawtooth', 1], ['square', 0.5]]) {
+        const osc = c.createOscillator();
+        osc.type = type;
+        osc.frequency.setValueAtTime(58 * ratio, start);
+        osc.frequency.exponentialRampToValueAtTime(196 * ratio, start + 0.32);
+        osc.frequency.exponentialRampToValueAtTime(64 * ratio, start + 0.9);
+        osc.connect(filter);
+        osc.start(start);
+        osc.stop(start + 1.05);
+      }
+    }
+    return count * each;
+  }
+
+  /* The factory's own: a power wrench's short burst, and a welder's crackle. */
+  function zip() {
+    for (let i = 0; i < 7; i++) tone(118, i * 0.035, 0.03, 0.06, 'square');
+    rush(1900, 0, 0.26, 0.035, 1.2);
+  }
+
+  function spark() {
+    for (let i = 0; i < 4; i++) rush(5200 + Math.random() * 2500, i * 0.04 + Math.random() * 0.02, 0.03, 0.03, 0.8);
   }
 
   /* Wrong answers vibrate on touch devices that support it (not iPhone or
@@ -633,12 +787,14 @@ const sound = (() => {
       ambience(null);
       engineOff();
       drill(0);
+      spray(0);
+      pour(0);
     }
     else wake();
   });
 
   return {
     preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm,
-    chime, buzz, tick, click, honk, pop, blink, eagle, knock, ratchet, thud, splash, backup, drill, ambience, engine, engineOff, wrong,
+    chime, buzz, tick, click, honk, pop, blink, eagle, knock, ratchet, thud, splash, backup, drill, spray, pour, rev, zip, spark, ambience, engine, engineOff, wrong,
   };
 })();

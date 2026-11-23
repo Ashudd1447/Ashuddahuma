@@ -133,8 +133,9 @@ function buildMenu() {
 buildMenu();
 
 /* The ✕ at the top of every page but the home page leaves it: a game for the
-   games hub, anything else for the home page. A page may take the click
-   first: the driving games leave a drive before they leave the page. */
+   games hub (the building game and the car factory for their own door, and
+   that door for the hub), anything else for the home page. A page may take
+   the click first: the driving games leave a drive before they leave the page. */
 function buildExit() {
   if (document.documentElement.lang !== 'ar') return;
   const page = location.pathname.split('/').pop().replace(/\.html$/, '');
@@ -142,7 +143,7 @@ function buildExit() {
   const link = document.createElement('a');
   link.className = 'exit-button';
   link.id = 'exit';
-  link.href = ['blocks', 'clock', 'drive', 'build'].includes(page) ? 'games.html' : '/';
+  link.href = { blocks: 'games.html', clock: 'games.html', drive: 'games.html', making: 'games.html', mazes: 'games.html', typing: 'games.html', build: 'making.html', factory: 'making.html' }[page] || '/';
   link.setAttribute('aria-label', 'خُرُوجٌ');
   link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>';
   document.body.append(link);

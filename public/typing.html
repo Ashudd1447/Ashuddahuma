@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الطِّبَاعَةُ</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="typing-page">
+<div class="typing" id="typing" data-view="load">
+  <header class="head">
+    <a href="games.html" aria-label="أَلْعَاب"><img class="logo" src="images/logo.webp" alt=""></a>
+  </header>
+  <button class="type-gear" id="gear" type="button" aria-label="الْإِعْدَادَاتُ" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="12" cy="12" r="6.2" stroke-width="2.2"/><circle cx="12" cy="12" r="2.4" stroke-width="2"/><path d="M12 2.6v3.2M12 18.2v3.2M2.6 12h3.2M18.2 12h3.2M5.4 5.4l2.2 2.2M16.4 16.4l2.2 2.2M5.4 18.6l2.2-2.2M16.4 7.6l2.2-2.2" stroke-width="2.8" stroke-linecap="round"/></g></svg></button>
+
+  <section class="type-who" id="view-who" hidden>
+    <h1 class="hub-title">الطِّبَاعَةُ</h1>
+    <p class="prompt">مَنْ يَلْعَبُ؟</p>
+    <div class="type-players">
+      <button class="type-player" type="button" data-player="child">
+        <span class="type-art" aria-hidden="true"><i class="big">ا</i></span>
+        <span>طِفْل</span>
+      </button>
+      <button class="type-player" type="button" data-player="grown">
+        <span class="type-art" aria-hidden="true"><i>ك</i><i>ت</i><i>ب</i></span>
+        <span>كَبِير</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="type-play" id="view-play" hidden>
+    <div class="type-small" id="small" hidden>
+      <strong>النُّسْخَةُ الصَّغِيرَةُ</strong>
+      <span id="small-more">لِلَوْحَةِ الْمَفَاتِيحِ الْكَامِلَةِ اسْتَعْمِلْ حَاسُوبًا أَوْ جِهَازًا لَوْحِيًّا</span>
+      <span class="type-turn" id="small-turn" hidden><svg viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="17" y="5" width="16" height="27" rx="3"/><path d="M7 27a17 17 0 0 0 17 16h14M33 38l5 5l-5 4"/></g></svg>أَدِرِ الْجِهَازَ</span>
+    </div>
+    <div class="type-top" id="top">
+      <div class="type-side">
+        <div class="type-card" id="card"></div>
+        <div class="type-mini" id="mini" aria-hidden="true" hidden></div>
+      </div>
+      <div class="type-line" id="line"></div>
+      <div class="type-result" id="result" hidden></div>
+    </div>
+    <div class="type-board" id="board"><div class="type-kbd" id="kbd"></div></div>
+    <div class="type-letters" id="letters" aria-hidden="true"></div>
+  </section>
+
+  <p class="type-note" id="note" role="status" hidden></p>
+  <div class="type-scrim" id="scrim" hidden>
+    <div class="type-panel" id="panel" role="dialog" aria-label="الْإِعْدَادَاتُ"></div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/typing-engine.js"></script>
+<script src="js/typing.js"></script>
+</body>
+</html>

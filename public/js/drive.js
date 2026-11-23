@@ -9,7 +9,11 @@
    in a lane traffic keeps out of. Near the end the right turn signal blinks.
    The road is drawn on a canvas, seen straight from above, and scrolls at one
    size. Lengths are in lanes: the road is three lanes wide, x from -1.5 to
-   1.5, and y grows along it. */
+   1.5, and y grows along it.
+   Two roads are in the list twice: their second copies (chase: true) are the
+   same drives seen from behind the car, drawn by chase.js, and at their end
+   the side street leaves the road at a slant, so that nothing has to turn.
+   The ride to the oasis is a game of its own, in desert.js. */
 const $ = (id) => document.getElementById(id);
 
 const KEY = 'drive';
@@ -24,12 +28,30 @@ const INK = '#2B1F16';
 const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 
 const LANES = [-1, 0, 1];
-const TRAFFIC = 3; // every car in traffic keeps this speed, so the gaps between them stay open
-const SPEED = { crawl: 2.2, max: 9, gain: 5, drop: 5.5, brake: 20 }; // lanes per second
-const STEER = { dead: 3, full: 26, rate: 4.2 }; // degrees of tilt; lanes per second
+/* Speeds in lanes per second, for the roads seen from above and the roads
+   seen from behind (whose picture is drawn STRETCH times longer along the
+   road, so the same number covers more of it). The father found both too
+   slow: a drive should be a little exciting. Traffic keeps one speed of its
+   own, so the gaps between cars stay open. Steering is in degrees of tilt,
+   and its rate is how many lanes a second the car crosses at full lock. */
+const SPEED = {
+  above: { crawl: 2.2, max: 12, gain: 6, drop: 5.5, brake: 20 },
+  behind: { crawl: 2.2, max: 15, gain: 7, drop: 5.5, brake: 20 },
+};
+const STEER = { dead: 3, full: 26, rate: { above: 5.5, behind: 6.5 } };
+const TRAFFIC = { above: 3, behind: 4.5 };
+const pace = () => (trip.chase ? SPEED.behind : SPEED.above);
 const CAR = { w: 0.62, l: 1.16 };
 const TURN = 1.25; // the radius of the turn into the side street
 const GOAL_X = 4.5; // how far along the side street the car stops, in lanes from the middle of the road
+/* Seen from behind, the side street leaves the right lane at a gentle slant,
+   straightens beside the road and ends at the door of the place. Lengths are
+   lanes of the picture, which chase.js draws stretched along the road: the
+   slant, the straight after it, how far from the middle of the road the
+   street ends up, and the speed the car takes it at, in the road's own lanes
+   a second. */
+const SLIP = { slant: 22, straight: 8, x: 4.2, speed: 2.6 };
+const STARS_APART = { above: 1.5, behind: 3.2 }; // lanes between the stars of a line: seen from behind they stand end on, and need more room
 const ADHANS = 1; // audio/adhan-1.mp3; with more files and a higher number here, they take turns
 const CAR_COLORS = ['#3E76C2', '#5E9E45', '#E9A43C', '#8C6A4C', '#B05A8C', '#F4F1EA', '#2A9D8F', '#7C8A99'];
 const WALKERS = { man: 0.92, woman: 0.88, boy: 0.66 }; // heights in lanes
@@ -43,7 +65,8 @@ const SPRITES = {
   'house-b': 1.649, 'house-c': 0.691, lamp: 0.272, man: 0.405, 'masjid-big': 0.888, masjid: 0.553, palm: 0.598,
   tower: 0.423, tree: 0.73, woman: 0.385,
   // The desert's own, sized in desert.js.
-  acacia: 1.088, boulder: 1.051, camel: 1.229, eagle: 1.598, fox: 0.685, gazelle: 0.738, shrub: 1.153, tent: 2.046,
+  acacia: 1.088, atv: 0.569, boulder: 1.051, camel: 1.229, eagle: 1.598, fox: 0.685, gazelle: 0.738, rocks: 0.693, shrub: 1.153, tent: 2.046,
+  well: 0.763,
 };
 const SIZE = {
   'house-a': 2.7, 'house-b': 2, 'house-c': 3.1, bakery: 2.1, masjid: 3.7, tower: 4.4, palm: 3.1, tree: 2.1,
@@ -71,6 +94,20 @@ const ROADS = [
   // The ride to the oasis is a game of its own, in desert.js: a bike steered across the desert.
   { id: 'waha', name: 'الْوَاحَةُ', desert: true, goal: 'palm', goalName: 'الْوَاحَةُ', goalClip: 'place-oasis', seed: 47 },
 ];
+
+/* Each street is also offered seen from behind the car: the same drive with
+   the same rules, drawn by chase.js, its card right after the original's.
+   That picture shows far more road at once, so chase.js draws the road
+   stretched along its length, and a few numbers here follow it: cars are
+   shorter in the road's lanes, so that they keep their true length in the
+   picture; traffic and the stars of a line stand further apart; and a car
+   beside the child's car is a wall, because one pushed back behind him
+   would be out of the picture. */
+const BEHIND = { hayy: 'الْحَيُّ الْجَدِيدُ', nile: 'الْكُورْنِيشُ الْجَدِيدُ' };
+for (const [id, name] of Object.entries(BEHIND)) {
+  const at = ROADS.findIndex((item) => item.id === id);
+  ROADS.splice(at + 1, 0, { ...ROADS[at], id: `${id}-chase`, name, chase: true });
+}
 
 const root = $('drive');
 const canvas = $('road');
@@ -349,7 +386,10 @@ function layout() {
   cx = width / 2 - (trip ? trip.pan : 0) * lane;
   rasters.clear();
   if (trip && trip.desert) desert.layout();
-  else if (trip) trip.scenery = buildScenery(trip.road);
+  else if (trip) {
+    if (trip.chase) chase.layout();
+    trip.scenery = buildScenery(trip.road);
+  }
 }
 
 const images = {};
@@ -399,16 +439,19 @@ function buildScenery(which) {
   const items = [];
   const end = which.length + far + 8;
   const goalTall = (SIZE[which.goal] * su) / lane;
-  const kept = (side, y, tall) => !(side > 0 && y + tall > which.length - 3 && y < which.length + goalTall + 3);
+  // Seen from behind, chase.js clears its own side street, and the street is
+  // laid out closer along the road, to stand as close in the stretched picture.
+  const kept = (side, y, tall) => which.chase || !(side > 0 && y + tall > which.length - 3 && y < which.length + goalTall + 3);
+  const step = which.chase ? 1 / chase.STRETCH : 1;
   const open = (y) => which.stops.some((stop) => y > stop.y - 2.2 && y < stop.y + (stop.kind === 'crossing' ? 3.6 : 1.4));
   for (const side of [-1, 1]) {
     const spec = side < 0 ? which.left : which.right;
     const random = rng(which.seed * (side < 0 ? 3 : 5));
-    for (let y = side < 0 ? 6 : 11, i = 0; y < end; y += 10, i++) {
+    for (let y = side < 0 ? 6 : 11, i = 0; y < end; y += 10 * step, i++) {
       if (!open(y) && kept(side, y, 3)) items.push({ name: i % 2 ? 'palm' : 'lamp', side, y, walk: true });
     }
     if (spec.river) {
-      for (let y = 9; y < end; y += 12 + random() * 10) items.push({ name: 'felucca', side, y, off: 0.6 + random() * 2.6, flip: random() < 0.5, bob: random() * 6, water: true });
+      for (let y = 9; y < end; y += (12 + random() * 10) * step) items.push({ name: 'felucca', side, y, off: 0.6 + random() * 2.6, flip: random() < 0.5, bob: random() * 6, water: true });
       continue;
     }
     const specials = (spec.specials || []).slice();
@@ -420,7 +463,7 @@ function buildScenery(which) {
       previous = name;
       const tall = (SIZE[name] * su) / lane;
       if (kept(side, y, tall)) items.push({ name, side, y });
-      y += tall + 0.5 + random() * 0.8;
+      y += (tall + 0.5 + random() * 0.8) * step;
     }
   }
   return items.sort((a, b) => b.y - a.y);
@@ -744,21 +787,31 @@ function draw() {
 }
 
 /* The drive. */
-function makeCar(laneIndex, y, random) {
+function makeCar(laneIndex, y, random, long = 1, speed = TRAFFIC.above) {
   const kind = random() < 0.16 ? 'pickup' : random() < 0.2 ? 'taxi' : 'car';
   const color = kind === 'taxi' ? '#F4F1EA' : CAR_COLORS[Math.floor(random() * CAR_COLORS.length)];
   return {
-    lane: laneIndex, x: LANES[laneIndex], y, v: TRAFFIC, cruise: TRAFFIC,
-    w: 0.6, l: kind === 'pickup' ? 1.3 : 1.1 + random() * 0.12, color, roof: kind === 'taxi' ? '#2B2622' : '', kind,
+    lane: laneIndex, x: LANES[laneIndex], y, v: speed, cruise: speed,
+    w: 0.6, l: (kind === 'pickup' ? 1.3 : 1.1 + random() * 0.12) * long, color, roof: kind === 'taxi' ? '#2B2622' : '', kind,
     braking: false, flash: 0, honked: -9,
   };
 }
 
 /* Traffic is laid out ahead before the drive starts, in rows well apart: one
    car, or now and then two side by side, so a lane is always open. All of it
-   keeps one speed, so the open lanes stay open and there is always a way past. */
+   keeps one speed, so the open lanes stay open and there is always a way past.
+   Seen from behind, many rows are in sight at once: they are laid out further
+   apart, mostly one car to a row, now and then two to weave between. */
 function seedTraffic(which, random) {
   const cars = [];
+  if (which.chase) {
+    for (let y = 16; y < which.length * 0.62; y += 12 + random() * 6) {
+      const first = Math.floor(random() * 3);
+      cars.push(makeCar(first, y, random, 1 / chase.STRETCH, TRAFFIC.behind));
+      if (random() < 0.15) cars.push(makeCar((first + 1 + Math.floor(random() * 2)) % 3, y + random() * 0.6 - 0.3, random, 1 / chase.STRETCH, TRAFFIC.behind));
+    }
+    return cars;
+  }
   for (let y = 16; y < which.length * 0.62; y += 8 + random() * 5) {
     const first = Math.floor(random() * 3);
     cars.push(makeCar(first, y, random));
@@ -772,10 +825,11 @@ function seedTraffic(which, random) {
    comes into view (see placeLines), and traffic keeps out of it. */
 function seedPickups(which, random) {
   const lines = [];
+  const apart = which.chase ? STARS_APART.behind : STARS_APART.above;
   for (let y = 18; y < which.length - 40; y += 22 + random() * 10) {
-    if (which.stops.some((stop) => Math.abs(stop.y - y - 2) < 10)) continue;
-    const line = { lane: Math.floor(random() * 3), from: y, to: y + 4.5, placed: false, stars: [] };
-    for (let i = 0; i < 4; i++) line.stars.push({ x: LANES[line.lane], y: y + i * 1.5, got: 0 });
+    if (which.stops.some((stop) => Math.abs(stop.y - y - (apart * 1.5 - 0.25)) < 10)) continue;
+    const line = { lane: Math.floor(random() * 3), from: y, to: y + apart * 3, placed: false, stars: [] };
+    for (let i = 0; i < 4; i++) line.stars.push({ x: LANES[line.lane], y: y + i * apart, got: 0 });
     lines.push(line);
   }
   return lines;
@@ -821,10 +875,27 @@ function yieldToStars(car) {
   return Infinity;
 }
 
+/* The side street of a road seen from behind, in the road's own lanes: where
+   it leaves the right lane, how long its slant is, and how far across it
+   ends up. The car stops at the end of the road's length. */
+function slipOf(which) {
+  const long = (SLIP.slant + SLIP.straight) / chase.STRETCH;
+  return { from: which.length - long, slant: SLIP.slant / chase.STRETCH, x: SLIP.x };
+}
+
+/* How far over that side street has gone at y along the road, from 0 where
+   it leaves the lane to 1 where it runs straight. */
+function slipPart(y) {
+  const k = clamp((y - trip.slip.from) / trip.slip.slant, 0, 1);
+  return k * k * (3 - 2 * k);
+}
+
 function startTrip() {
   const random = rng(road.seed + 100 + Math.floor(performance.now() % 1000));
   trip = road.desert ? desert.make(road, random) : {
-    road, t: 0, x: 0, y: 0, v: 0, yaw: 0, pan: 0, braking: false, held: false,
+    road, chase: Boolean(road.chase), t: 0, x: 0, y: 0, v: 0, yaw: 0, pan: 0, braking: false, held: false,
+    // The child's car's length along the road, and, seen from behind, where the side street leaves it.
+    l: road.chase ? CAR.l / chase.STRETCH : CAR.l, was: 0, slip: road.chase ? slipOf(road) : null,
     phase: 'drive', angle: 0, out: 0, parked: false, done: false,
     earned: 0, streak: 0, picked: -9, bumped: -9, random, signal: 0, lit: false,
     cars: seedTraffic(road, random), lines: seedPickups(road, random),
@@ -833,11 +904,12 @@ function startTrip() {
   };
   if (!road.desert) trip.pickups = trip.lines.flatMap((line) => line.stars);
   layout();
-  for (const name of Object.keys(SPRITES)) raster(name);
+  if (!trip.chase) for (const name of Object.keys(SPRITES)) raster(name); // seen from behind, chase.js keeps its own
   $('trip-goal').src = `images/drive/${road.goal}.svg`;
   $('finger-hint').hidden = true;
   root.classList.add('nudge');
   root.classList.remove('wait', 'gas');
+  root.classList.toggle('behind', trip.chase === true); // the finger's hint sits under the car there
   pedals.clear();
   finger.id = null;
   tilt.latched = null;
@@ -855,25 +927,35 @@ function startTrip() {
 }
 
 /* The speed a car may keep with something ahead of it: slower as the gap
-   closes, never into it. */
-const behind = (gap, leadSpeed) => Math.max(0, leadSpeed + (gap - 0.35) * 1.7);
+   closes, never into it. Seen from behind, a car hides most of one close
+   ahead of it in its lane, so that the two look like one: cars keep a
+   longer gap there, KEEP lanes, and one that finds itself closer drops back
+   gently. */
+const KEEP = 2;
+const behind = (gap, leadSpeed) => {
+  if (!trip.chase) return Math.max(0, leadSpeed + (gap - 0.35) * 1.7);
+  return gap > KEEP ? leadSpeed + (gap - KEEP) * 1.7 : leadSpeed * (0.45 + (0.55 * Math.max(0, gap)) / KEEP);
+};
 
 /* True while a stop holds the road. */
 const blocks = (stop) => stop.state === 'red' || stop.state === 'walk';
 
 function stopLimit(front, laneIndex = -1) {
   let limit = Infinity;
+  // Seen from behind, a car hides the road just ahead of it: it stops further
+  // back, so that the line and the crossing show clear of it.
+  const short = trip.chase ? 1 : 0.25;
   for (const stop of trip.stops) {
     // Once a stop clears, traffic pulls away one lane after another, not as a wall.
     const holds = blocks(stop) || (laneIndex >= 0 && stop.state === 'done' && stop.clock < laneIndex * 1.5);
     if (!holds || front > stop.y + 0.3) continue;
-    limit = Math.min(limit, Math.max(0, (stop.y - 0.25 - front) * 1.7));
+    limit = Math.min(limit, Math.max(0, (stop.y - short - front) * 1.7));
   }
   return limit;
 }
 
 function updateStop(stop, dt) {
-  const front = trip.y + CAR.l / 2;
+  const front = trip.y + trip.l / 2;
   const away = stop.y - front;
   stop.clock += dt;
   // People come to the curb as the car nears, and step out when it is close.
@@ -885,7 +967,7 @@ function updateStop(stop, dt) {
       stop.people.push({ name: names[i], dir, x: -dir * (1.74 + i * 0.16), at: 0.6 + i * 0.4, speed: 0.95 + trip.random() * 0.3, phase: trip.random() * 6 });
     }
   }
-  if (stop.state === 'open' && away > 0 && away < (stop.kind === 'light' ? 18 : 11)) {
+  if (stop.state === 'open' && away > 0 && away < (stop.kind === 'light' ? Math.max(18, trip.v * 2.4) : 11)) {
     stop.state = stop.kind === 'light' ? 'amber' : 'walk';
     stop.clock = 0;
   } else if (stop.state === 'amber' && stop.clock > 1.2) {
@@ -917,13 +999,15 @@ function updateStop(stop, dt) {
 
 /* Driving along the road: the pedal, what is in the way, the steering. On
    the last stretch the car takes itself to the right lane and slows for the
-   turn into the side street. */
+   turn into the side street; seen from behind, for where the side street
+   slants off. */
 function driveOn(dt, steer) {
   const L = trip.road.length;
-  const turnAt = L - TURN;
-  const front = trip.y + CAR.l / 2;
+  const turnAt = trip.chase ? trip.slip.from : L - TURN;
+  const front = trip.y + trip.l / 2;
   const ending = trip.y > L - 26;
-  let want = pedalDown() ? SPEED.max : SPEED.crawl;
+  const speed = pace();
+  let want = pedalDown() ? speed.max : speed.crawl;
   let limit = stopLimit(front);
   for (const car of trip.cars) {
     if (car.y <= trip.y || Math.abs(car.x - trip.x) > (car.w + CAR.w) / 2 + 0.06) continue;
@@ -934,19 +1018,22 @@ function driveOn(dt, steer) {
   let turn = steer;
   if (ending) {
     // It waits for a gap rather than push into a car on its right.
-    const beside = trip.cars.some((car) => car.x > trip.x && car.x - trip.x < (car.w + CAR.w) / 2 + 0.3 && Math.abs(car.y - trip.y) < (car.l + CAR.l) / 2 + 0.3);
+    // Seen from behind, that is also a car it has only just passed, still in the picture.
+    const beside = trip.cars.some((car) => car.x > trip.x && car.x - trip.x < (car.w + CAR.w) / 2 + 0.3
+      && (trip.chase ? car.y - car.l / 2 < front + 0.3 : Math.abs(car.y - trip.y) < (car.l + CAR.l) / 2 + 0.3));
     turn = beside ? 0 : clamp((1 - trip.x) * 2.4, -1, 1);
     want = clamp((turnAt - trip.y) * 0.5 + 3, 3, 7);
     if (Math.abs(1 - trip.x) > 0.12) want = Math.min(want, Math.max(0, (turnAt - 0.5 - trip.y) * 1.5));
   }
   const target = Math.min(want, limit);
   trip.braking = target < trip.v - 0.25 || (trip.v < 0.1 && limit < 0.4);
-  if (target > trip.v) trip.v = Math.min(target, trip.v + SPEED.gain * dt);
-  else trip.v = Math.max(target, trip.v - (limit < want ? SPEED.brake : SPEED.drop) * dt);
+  if (target > trip.v) trip.v = Math.min(target, trip.v + speed.gain * dt);
+  else trip.v = Math.max(target, trip.v - (limit < want ? speed.brake : speed.drop) * dt);
   trip.y += trip.v * dt;
   const edge = 1.5 - CAR.w / 2 - 0.05;
-  trip.x = clamp(trip.x + turn * STEER.rate * (0.45 + (0.55 * trip.v) / SPEED.max) * dt, -edge, edge);
-  trip.yaw += (turn * 0.2 * Math.min(1, trip.v / 3 + 0.25) - trip.yaw) * (1 - Math.exp(-dt / 0.12));
+  const rate = trip.chase ? STEER.rate.behind : STEER.rate.above;
+  trip.x = clamp(trip.x + turn * rate * (0.45 + (0.55 * trip.v) / speed.max) * dt, -edge, edge);
+  trip.yaw += (turn * 0.2 * Math.min(1, trip.v / 3 + 0.25) - trip.yaw) * (1 - Math.exp(-dt / 0.08));
   if (ending && trip.y >= turnAt - 0.03 && Math.abs(1 - trip.x) <= 0.12) {
     trip.phase = 'turn';
     trip.x = 1;
@@ -963,6 +1050,10 @@ function driveOn(dt, steer) {
    then along it to the door, the picture sliding over to follow. */
 function turnOff(dt) {
   const L = trip.road.length;
+  if (trip.chase) {
+    slipOff(dt);
+    return;
+  }
   trip.braking = false;
   if (trip.phase === 'turn') {
     trip.v += (3 - trip.v) * Math.min(1, dt * 3);
@@ -985,6 +1076,33 @@ function turnOff(dt) {
   trip.pan = GOAL_X * part * part * (3 - 2 * part);
 }
 
+/* The end of the drive seen from behind: the car follows the side street by
+   itself, slowing, and stops with its nose at the door. The picture moves
+   over with it and never turns; the car shows a few degrees of its slant. */
+function slipOff(dt) {
+  const L = trip.road.length;
+  const from = { x: trip.x, y: trip.y };
+  const want = Math.min(SLIP.speed, (L - trip.y) * 1.6 + 0.15);
+  trip.braking = want < trip.v - 0.05;
+  trip.v += (want - trip.v) * Math.min(1, dt * 3);
+  trip.y = Math.min(L, trip.y + trip.v * dt);
+  const part = slipPart(trip.y);
+  trip.x = 1 + (trip.slip.x - 1) * part;
+  trip.pan = trip.slip.x * part;
+  trip.yaw = Math.min(0.2, ((trip.x - from.x) / Math.max(trip.y - from.y, 1e-4)) * 0.35);
+  if (L - trip.y > 0.01) return;
+  trip.y = L;
+  trip.v = 0;
+  trip.yaw = 0;
+  trip.braking = true;
+  arrive();
+}
+
+/* Seen from behind, a car whose tail has not passed the child's nose is
+   beside him, or in the space between him and the camera: true when, at x
+   across the road, it would be over his car's place there. */
+const walls = (car, x) => car.y - car.l / 2 < trip.y + trip.l / 2 && Math.abs(x - trip.x) < (car.w + CAR.w) / 2;
+
 /* Traffic keeps its lane and its distance, and stops where the child's car must. */
 function moveTraffic(dt) {
   const sorted = trip.cars.slice().sort((a, b) => a.y - b.y);
@@ -993,16 +1111,24 @@ function moveTraffic(dt) {
     const nose = car.y + car.l / 2;
     let most = Math.min(stopLimit(nose, car.lane), yieldToStars(car));
     // Changing lanes: it slides over, and the signal goes off once it is there.
+    // Seen from behind, it waits rather than slide into the child's car or in behind it.
     const aside = LANES[car.lane] - car.x;
-    car.x += clamp(aside, -1.3 * dt, 1.3 * dt);
+    const slide = clamp(aside, -1.3 * dt, 1.3 * dt);
+    if (!trip.chase || !walls(car, car.x + slide) || Math.abs(car.x + slide - trip.x) >= Math.abs(car.x - trip.x)) car.x += slide;
     if (Math.abs(aside) < 0.03) car.signal = 0;
+    // Seen from behind, a car the child has passed drops back out of the
+    // picture and never comes forward again, where it would come between
+    // his car and the camera. On the last stretch, where his car slows for
+    // the side street, the cars beside it drive on.
+    if (trip.chase && nose < trip.y - trip.l / 2 && trip.y <= trip.road.length - 26) most = Math.min(most, Math.max(0, trip.v - 0.8));
     for (let j = i + 1; j < sorted.length; j++) {
       if (sorted[j].lane !== car.lane) continue;
       most = Math.min(most, behind(sorted[j].y - sorted[j].l / 2 - nose, sorted[j].v));
       break;
     }
-    if (trip.y > car.y && Math.abs(car.x - trip.x) < (car.w + CAR.w) / 2 + 0.06) {
-      const gap = trip.y - CAR.l / 2 - nose;
+    // Seen from behind, a car the child's car only leans on from the side drives on as it was.
+    if (trip.y > car.y && Math.abs(car.x - trip.x) < (car.w + CAR.w) / 2 + (trip.chase ? -0.02 : 0.06)) {
+      const gap = trip.y - trip.l / 2 - nose;
       most = Math.min(most, behind(gap, trip.v));
       if (gap < 0.9 && car.v - trip.v > 1.2 && trip.t - car.honked > 3) {
         car.honked = trip.t;
@@ -1011,11 +1137,50 @@ function moveTraffic(dt) {
     }
     const aim = Math.min(car.cruise, most);
     car.braking = aim < car.v - 0.25;
-    car.v = aim > car.v ? Math.min(aim, car.v + 3 * dt) : Math.max(aim, car.v - SPEED.brake * dt);
+    car.v = aim > car.v ? Math.min(aim, car.v + 3 * dt) : Math.max(aim, car.v - pace().brake * dt);
     car.y += car.v * dt;
     car.flash = Math.max(0, car.flash - dt);
   }
-  trip.cars = trip.cars.filter((car) => car.y > trip.y - near - 12 && car.y < trip.road.length + far + 6);
+  // Seen from behind, a car left behind the camera is gone for good.
+  trip.cars = trip.cars.filter((car) => car.y > trip.y - near - (trip.chase ? 0 : 12) && car.y < trip.road.length + far + 6);
+}
+
+/* The soft bump: the child's car slows, the other car's lamps flash, a horn sounds. */
+function bump(car) {
+  if (trip.t - trip.bumped <= 1) return;
+  trip.bumped = trip.t;
+  trip.v *= 0.6;
+  car.flash = 0.6;
+  sound.wrong();
+  setTimeout(() => beep('honk'), 180);
+}
+
+/* Seen from behind, a car beside the child's car is a wall: steered into, his
+   car is put back sideways to where the two touch, with the soft bump, and
+   the other car stays exactly where it is. A car he has only just passed,
+   still between him and the camera, is a wall too, and sounds its horn: let
+   in front of it, his car would be hidden behind it. Only his own car is
+   ever moved along the road, and only when the two were already in line in
+   one lane. */
+function touchBeside() {
+  const edge = 1.5 - CAR.w / 2 - 0.05;
+  for (const car of trip.cars) {
+    if (!walls(car, car.x)) continue;
+    const reach = (car.w + CAR.w) / 2;
+    const touching = car.y + car.l / 2 > trip.y - trip.l / 2;
+    if (Math.abs(car.x - trip.was) < reach - 0.02) {
+      if (!touching) continue;
+      trip.y = car.y + (car.y > trip.y ? -1 : 1) * ((car.l + trip.l) / 2);
+    } else {
+      trip.x = clamp(car.x + (trip.was < car.x ? -reach : reach), -edge, edge);
+    }
+    if (touching) bump(car);
+    else if (trip.t - car.honked > 3) {
+      car.honked = trip.t;
+      beep('honk');
+    }
+  }
+  trip.was = trip.x;
 }
 
 /* A touch is a soft bump: the cars part, the child's car slows, a horn sounds. */
@@ -1028,24 +1193,22 @@ function touchCars() {
     if (overX < overY * 0.7) trip.x = clamp(trip.x + (trip.x < car.x ? -overX : overX), -edge, edge);
     else if (trip.y < car.y) trip.y -= overY;
     else car.y -= overY;
-    if (trip.t - trip.bumped > 1) {
-      trip.bumped = trip.t;
-      trip.v *= 0.6;
-      car.flash = 0.6;
-      sound.wrong();
-      setTimeout(() => beep('honk'), 180);
-    }
+    bump(car);
   }
 }
 
 /* Driving over a star takes it. Stars taken one after another pop higher and higher. */
-function pickUp(dt) {
+/* Driving over a star takes it, with no sound: a ping for every star was
+   too much. Every star passed over since the last frame counts, so that a
+   fast car on a slow tablet does not jump over one. */
+function pickUp(dt, was = trip.y) {
+  const reach = trip.chase ? trip.l / 2 + 0.1 : 0.75; // seen from behind, as the car's nose comes to it
   for (const star of trip.pickups) {
     if (star.got) {
       star.got += dt;
       continue;
     }
-    if (Math.abs(star.x - trip.x) > 0.5 || Math.abs(star.y - trip.y) > 0.75) continue;
+    if (Math.abs(star.x - trip.x) > 0.5 || star.y < Math.min(was, trip.y) - reach || star.y > trip.y + reach) continue;
     star.got = 0.001;
     trip.streak = trip.t - trip.picked < 2.5 ? trip.streak + 1 : 0;
     trip.picked = trip.t;
@@ -1053,29 +1216,33 @@ function pickUp(dt) {
     stars += 1;
     shown = stars;
     showCount();
-    beep('pop', trip.streak);
   }
 }
 
 function update(dt) {
   trip.t += dt;
   if (trip.parked) {
-    trip.out = Math.min(1, trip.out + dt / 1.4);
+    trip.out = Math.min(1, trip.out + dt / (trip.chase ? 2.6 : 1.4)); // seen from behind she walks out to the car, further
+    if (trip.chase) moveTraffic(dt); // the road ahead stays in sight, and the cars on it drive on
     return;
   }
-  const steer = steering(dt);
+  const steer = steering(dt, trip.chase ? chase.pointed : undefined); // seen from behind, a finger points along the road as well as across it
   for (const stop of trip.stops) updateStop(stop, dt);
+  const was = trip.y;
   const turn = trip.phase === 'drive' ? driveOn(dt, steer) : 0;
   if (trip.phase !== 'drive') turnOff(dt);
   cx = width / 2 - trip.pan * lane;
+  // Seen from behind, the wall comes before traffic moves, so that a car leaned on does not brake for it.
+  if (trip.chase && trip.phase === 'drive') touchBeside();
   placeLines();
   moveTraffic(dt);
-  if (trip.phase === 'drive') touchCars();
-  pickUp(dt);
+  if (!trip.chase && trip.phase === 'drive') touchCars();
+  pickUp(dt, was);
 
   // Near the end the right turn signal comes on, a little before the car
   // takes itself to the right lane, and ticks until it has turned and stopped.
-  trip.signal = !trip.parked && trip.y > trip.road.length - 38 ? 1 : 0;
+  // At these speeds it comes on 50 lanes before the end, a few seconds ahead.
+  trip.signal = !trip.parked && trip.y > trip.road.length - 50 ? 1 : 0;
   const lit = Boolean(trip.signal) && blinkOn();
   if (lit !== trip.lit) {
     trip.lit = lit;
@@ -1108,9 +1275,15 @@ function frame(now) {
     desert.draw();
   } else {
     update(dt);
-    draw();
+    render();
   }
   if (running) raf = requestAnimationFrame(frame);
+}
+
+/* A street's picture: from above, or from behind the car. */
+function render() {
+  if (trip.chase) chase.draw();
+  else draw();
 }
 
 /* Arrived: the place's name is shown and said, then the praise; at the masjid
@@ -1360,10 +1533,11 @@ function buildRoads() {
   const list = $('road-cards');
   list.innerHTML = '';
   for (const item of ROADS) {
+    if (item.chase && typeof chase === 'undefined') continue; // an older saved page does not load chase.js
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'road-card';
-    card.innerHTML = `<span class="road-art road-${item.id}"><img src="images/drive/${item.goal}.svg" alt=""></span><span class="road-name">${item.name}</span>`;
+    card.innerHTML = `<span class="road-art road-${item.id}${item.chase ? ' road-behind' : ''}"><img src="images/drive/${item.goal}.svg" alt=""></span><span class="road-name">${item.name}</span>`;
     card.addEventListener('click', () => {
       road = item;
       begin();
@@ -1429,7 +1603,7 @@ document.addEventListener('visibilitychange', () => {
 addEventListener('resize', () => {
   layout();
   if (trip && trip.desert) desert.draw();
-  else if (trip) draw();
+  else if (trip) render();
 });
 
 /* Start */
@@ -1446,4 +1620,4 @@ fetch('dua/riding.json').then((response) => response.json()).then((data) => {
 }).catch(() => {});
 sound.preloadPrompts(['belt']);
 sound.preload(['riding-dua', 'alhamdulillah']);
-if (LOCAL) window.driveGame = { get trip() { return trip; }, set road(id) { road = ROADS.find((item) => item.id === id); }, update, draw, tilt, steerAngle, onOrientation, keys, pedals, startTrip, show };
+if (LOCAL) window.driveGame = { get trip() { return trip; }, set road(id) { road = ROADS.find((item) => item.id === id); }, update, draw, render, tilt, steerAngle, onOrientation, keys, pedals, startTrip, show };

@@ -1,0 +1,2143 @@
+{
+ "about": "Written by tools/make-typing-layouts.py from the files in docs/sources/typing. Do not edit by hand. Physical layouts: rows from the top row to the bottom row, keys from left to right, each named by KeyboardEvent.code, with what it types alone (base) and with Shift (shift). altgr and altgrShift (right Alt on Windows and Linux, Option on macOS) are given only where they type Arabic letters or marks. A level that types nothing is left out. A key that types two characters at once keeps both. IntlBackslash, the key between the left Shift and Z, is listed in every layout, but only keyboards of the European shape have it: \"iso\" says whether the layout was made for that shape. The rows follow the American shape, with Backslash at the end of the top row of letters; on the European shape that key sits at the end of the home row. Touch layouts: rows of what a key types (base) and what a long press offers (more).",
+ "fetched": "2026-11-23",
+ "layouts": [
+  {
+   "id": "win-101",
+   "title": "Windows Arabic (101)",
+   "platform": "windows",
+   "kind": "physical",
+   "iso": false,
+   "sources": [
+    "Unicode CLDR 43, keyboards/windows/ar-t-k0-windows.xml (https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/windows/ar-t-k0-windows.xml), Unicode License, fetched 2026-11-23",
+    "checked against Microsoft's kbda1.dll as published at https://kbdlayout.info/kbda1 (not kept in this repository)"
+   ],
+   "notes": "The default of Windows for every Arabic language except Algeria, Morocco and Tunisia. For the American keyboard, which has no key between the left Shift and Z.",
+   "rows": [
+    [
+     {
+      "code": "Backquote",
+      "base": "ذ",
+      "shift": "ّ"
+     },
+     {
+      "code": "Digit1",
+      "base": "1",
+      "shift": "!"
+     },
+     {
+      "code": "Digit2",
+      "base": "2",
+      "shift": "@"
+     },
+     {
+      "code": "Digit3",
+      "base": "3",
+      "shift": "#"
+     },
+     {
+      "code": "Digit4",
+      "base": "4",
+      "shift": "$"
+     },
+     {
+      "code": "Digit5",
+      "base": "5",
+      "shift": "%"
+     },
+     {
+      "code": "Digit6",
+      "base": "6",
+      "shift": "^"
+     },
+     {
+      "code": "Digit7",
+      "base": "7",
+      "shift": "&"
+     },
+     {
+      "code": "Digit8",
+      "base": "8",
+      "shift": "*"
+     },
+     {
+      "code": "Digit9",
+      "base": "9",
+      "shift": ")"
+     },
+     {
+      "code": "Digit0",
+      "base": "0",
+      "shift": "("
+     },
+     {
+      "code": "Minus",
+      "base": "-",
+      "shift": "_"
+     },
+     {
+      "code": "Equal",
+      "base": "=",
+      "shift": "+"
+     }
+    ],
+    [
+     {
+      "code": "KeyQ",
+      "base": "ض",
+      "shift": "َ"
+     },
+     {
+      "code": "KeyW",
+      "base": "ص",
+      "shift": "ً"
+     },
+     {
+      "code": "KeyE",
+      "base": "ث",
+      "shift": "ُ"
+     },
+     {
+      "code": "KeyR",
+      "base": "ق",
+      "shift": "ٌ"
+     },
+     {
+      "code": "KeyT",
+      "base": "ف",
+      "shift": "لإ"
+     },
+     {
+      "code": "KeyY",
+      "base": "غ",
+      "shift": "إ"
+     },
+     {
+      "code": "KeyU",
+      "base": "ع",
+      "shift": "‘"
+     },
+     {
+      "code": "KeyI",
+      "base": "ه",
+      "shift": "÷"
+     },
+     {
+      "code": "KeyO",
+      "base": "خ",
+      "shift": "×"
+     },
+     {
+      "code": "KeyP",
+      "base": "ح",
+      "shift": "؛"
+     },
+     {
+      "code": "BracketLeft",
+      "base": "ج",
+      "shift": "<"
+     },
+     {
+      "code": "BracketRight",
+      "base": "د",
+      "shift": ">"
+     },
+     {
+      "code": "Backslash",
+      "base": "\\",
+      "shift": "|"
+     }
+    ],
+    [
+     {
+      "code": "KeyA",
+      "base": "ش",
+      "shift": "ِ"
+     },
+     {
+      "code": "KeyS",
+      "base": "س",
+      "shift": "ٍ"
+     },
+     {
+      "code": "KeyD",
+      "base": "ي",
+      "shift": "]"
+     },
+     {
+      "code": "KeyF",
+      "base": "ب",
+      "shift": "["
+     },
+     {
+      "code": "KeyG",
+      "base": "ل",
+      "shift": "لأ"
+     },
+     {
+      "code": "KeyH",
+      "base": "ا",
+      "shift": "أ"
+     },
+     {
+      "code": "KeyJ",
+      "base": "ت",
+      "shift": "ـ"
+     },
+     {
+      "code": "KeyK",
+      "base": "ن",
+      "shift": "،"
+     },
+     {
+      "code": "KeyL",
+      "base": "م",
+      "shift": "/"
+     },
+     {
+      "code": "Semicolon",
+      "base": "ك",
+      "shift": ":"
+     },
+     {
+      "code": "Quote",
+      "base": "ط",
+      "shift": "\""
+     }
+    ],
+    [
+     {
+      "code": "IntlBackslash",
+      "base": "\\",
+      "shift": "|"
+     },
+     {
+      "code": "KeyZ",
+      "base": "ئ",
+      "shift": "~"
+     },
+     {
+      "code": "KeyX",
+      "base": "ء",
+      "shift": "ْ"
+     },
+     {
+      "code": "KeyC",
+      "base": "ؤ",
+      "shift": "}"
+     },
+     {
+      "code": "KeyV",
+      "base": "ر",
+      "shift": "{"
+     },
+     {
+      "code": "KeyB",
+      "base": "لا",
+      "shift": "لآ"
+     },
+     {
+      "code": "KeyN",
+      "base": "ى",
+      "shift": "آ"
+     },
+     {
+      "code": "KeyM",
+      "base": "ة",
+      "shift": "’"
+     },
+     {
+      "code": "Comma",
+      "base": "و",
+      "shift": ","
+     },
+     {
+      "code": "Period",
+      "base": "ز",
+      "shift": "."
+     },
+     {
+      "code": "Slash",
+      "base": "ظ",
+      "shift": "؟"
+     }
+    ],
+    [
+     {
+      "code": "Space",
+      "base": " ",
+      "shift": " "
+     }
+    ]
+   ]
+  },
+  {
+   "id": "win-102",
+   "title": "Windows Arabic (102)",
+   "platform": "windows",
+   "kind": "physical",
+   "iso": true,
+   "sources": [
+    "Unicode CLDR 43, keyboards/windows/ar-t-k0-windows-102key.xml (https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/windows/ar-t-k0-windows-102key.xml), Unicode License, fetched 2026-11-23",
+    "checked against Microsoft's kbda2.dll as published at https://kbdlayout.info/kbda2 (not kept in this repository)"
+   ],
+   "notes": "Made for the European keyboard with the extra key beside the left Shift, and usable on an American one: that extra key carries only the tatweel (also on Shift+KeyJ) and the bar. Never a default of Windows: someone has to choose it. Shift+KeyS types nothing. AltGr on Q, W, E, R, C and V types the shadda and a vowel together.",
+   "rows": [
+    [
+     {
+      "code": "Backquote",
+      "base": ">",
+      "shift": "<"
+     },
+     {
+      "code": "Digit1",
+      "base": "1",
+      "shift": "!"
+     },
+     {
+      "code": "Digit2",
+      "base": "2",
+      "shift": "@"
+     },
+     {
+      "code": "Digit3",
+      "base": "3",
+      "shift": "#"
+     },
+     {
+      "code": "Digit4",
+      "base": "4",
+      "shift": "$"
+     },
+     {
+      "code": "Digit5",
+      "base": "5",
+      "shift": "%"
+     },
+     {
+      "code": "Digit6",
+      "base": "6",
+      "shift": "^"
+     },
+     {
+      "code": "Digit7",
+      "base": "7",
+      "shift": "&"
+     },
+     {
+      "code": "Digit8",
+      "base": "8",
+      "shift": "*"
+     },
+     {
+      "code": "Digit9",
+      "base": "9",
+      "shift": ")"
+     },
+     {
+      "code": "Digit0",
+      "base": "0",
+      "shift": "("
+     },
+     {
+      "code": "Minus",
+      "base": "-",
+      "shift": "_"
+     },
+     {
+      "code": "Equal",
+      "base": "=",
+      "shift": "+"
+     }
+    ],
+    [
+     {
+      "code": "KeyQ",
+      "base": "ض",
+      "shift": "َ",
+      "altgr": "َّ",
+      "altgrShift": "َّ"
+     },
+     {
+      "code": "KeyW",
+      "base": "ص",
+      "shift": "ً",
+      "altgr": "ًّ",
+      "altgrShift": "ًّ"
+     },
+     {
+      "code": "KeyE",
+      "base": "ث",
+      "shift": "ُ",
+      "altgr": "ُّ",
+      "altgrShift": "ُّ"
+     },
+     {
+      "code": "KeyR",
+      "base": "ق",
+      "shift": "ٌ",
+      "altgr": "ٌّ",
+      "altgrShift": "ٌّ"
+     },
+     {
+      "code": "KeyT",
+      "base": "ف",
+      "shift": "لإ"
+     },
+     {
+      "code": "KeyY",
+      "base": "غ",
+      "shift": "إ"
+     },
+     {
+      "code": "KeyU",
+      "base": "ع",
+      "shift": "‘"
+     },
+     {
+      "code": "KeyI",
+      "base": "ه",
+      "shift": "÷"
+     },
+     {
+      "code": "KeyO",
+      "base": "خ",
+      "shift": "×"
+     },
+     {
+      "code": "KeyP",
+      "base": "ح",
+      "shift": "؛"
+     },
+     {
+      "code": "BracketLeft",
+      "base": "ج",
+      "shift": "}"
+     },
+     {
+      "code": "BracketRight",
+      "base": "د",
+      "shift": "{"
+     },
+     {
+      "code": "Backslash",
+      "base": "ذ",
+      "shift": "ّ"
+     }
+    ],
+    [
+     {
+      "code": "KeyA",
+      "base": "ش",
+      "shift": "\\"
+     },
+     {
+      "code": "KeyS",
+      "base": "س"
+     },
+     {
+      "code": "KeyD",
+      "base": "ي",
+      "shift": "]"
+     },
+     {
+      "code": "KeyF",
+      "base": "ب",
+      "shift": "["
+     },
+     {
+      "code": "KeyG",
+      "base": "ل",
+      "shift": "لأ"
+     },
+     {
+      "code": "KeyH",
+      "base": "ا",
+      "shift": "أ"
+     },
+     {
+      "code": "KeyJ",
+      "base": "ت",
+      "shift": "ـ"
+     },
+     {
+      "code": "KeyK",
+      "base": "ن",
+      "shift": "،"
+     },
+     {
+      "code": "KeyL",
+      "base": "م",
+      "shift": "/"
+     },
+     {
+      "code": "Semicolon",
+      "base": "ك",
+      "shift": ":"
+     },
+     {
+      "code": "Quote",
+      "base": "ط",
+      "shift": "\""
+     }
+    ],
+    [
+     {
+      "code": "IntlBackslash",
+      "base": "ـ",
+      "shift": "|"
+     },
+     {
+      "code": "KeyZ",
+      "base": "ئ",
+      "shift": "~"
+     },
+     {
+      "code": "KeyX",
+      "base": "ء",
+      "shift": "ْ"
+     },
+     {
+      "code": "KeyC",
+      "base": "ؤ",
+      "shift": "ِ",
+      "altgr": "ِّ",
+      "altgrShift": "ِّ"
+     },
+     {
+      "code": "KeyV",
+      "base": "ر",
+      "shift": "ٍ",
+      "altgr": "ٍّ",
+      "altgrShift": "ٍّ"
+     },
+     {
+      "code": "KeyB",
+      "base": "لا",
+      "shift": "لآ"
+     },
+     {
+      "code": "KeyN",
+      "base": "ى",
+      "shift": "آ"
+     },
+     {
+      "code": "KeyM",
+      "base": "ة",
+      "shift": "’"
+     },
+     {
+      "code": "Comma",
+      "base": "و",
+      "shift": ","
+     },
+     {
+      "code": "Period",
+      "base": "ز",
+      "shift": "."
+     },
+     {
+      "code": "Slash",
+      "base": "ظ",
+      "shift": "؟"
+     }
+    ],
+    [
+     {
+      "code": "Space",
+      "base": " ",
+      "shift": " "
+     }
+    ]
+   ]
+  },
+  {
+   "id": "win-102-azerty",
+   "title": "Windows Arabic (102) AZERTY",
+   "platform": "windows",
+   "kind": "physical",
+   "iso": true,
+   "sources": [
+    "Unicode CLDR 43, keyboards/windows/ar-t-k0-windows-azerty.xml (https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/windows/ar-t-k0-windows-azerty.xml), Unicode License, fetched 2026-11-23",
+    "checked against Microsoft's kbda3.dll as published at https://kbdlayout.info/kbda3 (not kept in this repository)"
+   ],
+   "notes": "The default of Windows for Algeria, Morocco and Tunisia. The Arabic letters and marks sit exactly as in Arabic (102); the digit row is the French one.",
+   "rows": [
+    [
+     {
+      "code": "Backquote",
+      "base": ">",
+      "shift": "<"
+     },
+     {
+      "code": "Digit1",
+      "base": "&",
+      "shift": "1"
+     },
+     {
+      "code": "Digit2",
+      "base": "é",
+      "shift": "2"
+     },
+     {
+      "code": "Digit3",
+      "base": "\"",
+      "shift": "3"
+     },
+     {
+      "code": "Digit4",
+      "base": "'",
+      "shift": "4"
+     },
+     {
+      "code": "Digit5",
+      "base": "(",
+      "shift": "5"
+     },
+     {
+      "code": "Digit6",
+      "base": "-",
+      "shift": "6"
+     },
+     {
+      "code": "Digit7",
+      "base": "è",
+      "shift": "7"
+     },
+     {
+      "code": "Digit8",
+      "base": "_",
+      "shift": "8"
+     },
+     {
+      "code": "Digit9",
+      "base": "ç",
+      "shift": "9"
+     },
+     {
+      "code": "Digit0",
+      "base": "à",
+      "shift": "0"
+     },
+     {
+      "code": "Minus",
+      "base": ")",
+      "shift": "°"
+     },
+     {
+      "code": "Equal",
+      "base": "=",
+      "shift": "+"
+     }
+    ],
+    [
+     {
+      "code": "KeyQ",
+      "base": "ض",
+      "shift": "َ",
+      "altgr": "َّ",
+      "altgrShift": "َّ"
+     },
+     {
+      "code": "KeyW",
+      "base": "ص",
+      "shift": "ً",
+      "altgr": "ًّ",
+      "altgrShift": "ًّ"
+     },
+     {
+      "code": "KeyE",
+      "base": "ث",
+      "shift": "ُ",
+      "altgr": "ُّ",
+      "altgrShift": "ُّ"
+     },
+     {
+      "code": "KeyR",
+      "base": "ق",
+      "shift": "ٌ",
+      "altgr": "ٌّ",
+      "altgrShift": "ٌّ"
+     },
+     {
+      "code": "KeyT",
+      "base": "ف",
+      "shift": "لإ"
+     },
+     {
+      "code": "KeyY",
+      "base": "غ",
+      "shift": "إ"
+     },
+     {
+      "code": "KeyU",
+      "base": "ع",
+      "shift": "‘"
+     },
+     {
+      "code": "KeyI",
+      "base": "ه",
+      "shift": "÷"
+     },
+     {
+      "code": "KeyO",
+      "base": "خ",
+      "shift": "×"
+     },
+     {
+      "code": "KeyP",
+      "base": "ح",
+      "shift": "؛"
+     },
+     {
+      "code": "BracketLeft",
+      "base": "ج",
+      "shift": "}"
+     },
+     {
+      "code": "BracketRight",
+      "base": "د",
+      "shift": "{"
+     },
+     {
+      "code": "Backslash",
+      "base": "ذ",
+      "shift": "ّ"
+     }
+    ],
+    [
+     {
+      "code": "KeyA",
+      "base": "ش",
+      "shift": "\\"
+     },
+     {
+      "code": "KeyS",
+      "base": "س"
+     },
+     {
+      "code": "KeyD",
+      "base": "ي",
+      "shift": "]"
+     },
+     {
+      "code": "KeyF",
+      "base": "ب",
+      "shift": "["
+     },
+     {
+      "code": "KeyG",
+      "base": "ل",
+      "shift": "لأ"
+     },
+     {
+      "code": "KeyH",
+      "base": "ا",
+      "shift": "أ"
+     },
+     {
+      "code": "KeyJ",
+      "base": "ت",
+      "shift": "ـ"
+     },
+     {
+      "code": "KeyK",
+      "base": "ن",
+      "shift": "،"
+     },
+     {
+      "code": "KeyL",
+      "base": "م",
+      "shift": "/"
+     },
+     {
+      "code": "Semicolon",
+      "base": "ك",
+      "shift": ":"
+     },
+     {
+      "code": "Quote",
+      "base": "ط",
+      "shift": "\""
+     }
+    ],
+    [
+     {
+      "code": "IntlBackslash",
+      "base": "\\",
+      "shift": "|"
+     },
+     {
+      "code": "KeyZ",
+      "base": "ئ",
+      "shift": "~"
+     },
+     {
+      "code": "KeyX",
+      "base": "ء",
+      "shift": "ْ"
+     },
+     {
+      "code": "KeyC",
+      "base": "ؤ",
+      "shift": "ِ",
+      "altgr": "ِّ",
+      "altgrShift": "ِّ"
+     },
+     {
+      "code": "KeyV",
+      "base": "ر",
+      "shift": "ٍ",
+      "altgr": "ٍّ",
+      "altgrShift": "ٍّ"
+     },
+     {
+      "code": "KeyB",
+      "base": "لا",
+      "shift": "لآ"
+     },
+     {
+      "code": "KeyN",
+      "base": "ى",
+      "shift": "آ"
+     },
+     {
+      "code": "KeyM",
+      "base": "ة",
+      "shift": "’"
+     },
+     {
+      "code": "Comma",
+      "base": "و",
+      "shift": ","
+     },
+     {
+      "code": "Period",
+      "base": "ز",
+      "shift": "."
+     },
+     {
+      "code": "Slash",
+      "base": "ظ",
+      "shift": "؟"
+     }
+    ],
+    [
+     {
+      "code": "Space",
+      "base": " ",
+      "shift": " "
+     }
+    ]
+   ]
+  },
+  {
+   "id": "mac-arabic",
+   "title": "macOS Arabic",
+   "platform": "macos",
+   "kind": "physical",
+   "iso": false,
+   "sources": [
+    "Unicode CLDR 43, keyboards/osx/ar-t-k0-osx.xml (https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/osx/ar-t-k0-osx.xml), Unicode License, fetched 2026-11-23",
+    "checked against the variant \"mac\" of xkeyboard-config 2.48, symbols/ara"
+   ],
+   "notes": "The layout printed on Apple keyboards sold with Arabic keycaps. No lam-alef key. The CLDR file describes OS X 10.9.",
+   "rows": [
+    [
+     {
+      "code": "Backquote",
+      "base": "ـ"
+     },
+     {
+      "code": "Digit1",
+      "base": "١",
+      "shift": "!",
+      "altgr": "ظ",
+      "altgrShift": "ظ"
+     },
+     {
+      "code": "Digit2",
+      "base": "٢",
+      "shift": "@",
+      "altgr": "ط"
+     },
+     {
+      "code": "Digit3",
+      "base": "٣",
+      "shift": "#",
+      "altgr": "ذ"
+     },
+     {
+      "code": "Digit4",
+      "base": "٤",
+      "shift": "$",
+      "altgr": "د"
+     },
+     {
+      "code": "Digit5",
+      "base": "٥",
+      "shift": "٪"
+     },
+     {
+      "code": "Digit6",
+      "base": "٦",
+      "shift": "^",
+      "altgr": "ٱ"
+     },
+     {
+      "code": "Digit7",
+      "base": "٧",
+      "shift": "&"
+     },
+     {
+      "code": "Digit8",
+      "base": "٨",
+      "shift": "*"
+     },
+     {
+      "code": "Digit9",
+      "base": "٩",
+      "shift": ")"
+     },
+     {
+      "code": "Digit0",
+      "base": "٠",
+      "shift": "("
+     },
+     {
+      "code": "Minus",
+      "base": "-",
+      "shift": "ـ"
+     },
+     {
+      "code": "Equal",
+      "base": "=",
+      "shift": "+"
+     }
+    ],
+    [
+     {
+      "code": "KeyQ",
+      "base": "ض",
+      "shift": "َ"
+     },
+     {
+      "code": "KeyW",
+      "base": "ص",
+      "shift": "ً"
+     },
+     {
+      "code": "KeyE",
+      "base": "ث",
+      "shift": "ِ"
+     },
+     {
+      "code": "KeyR",
+      "base": "ق",
+      "shift": "ٍ"
+     },
+     {
+      "code": "KeyT",
+      "base": "ف",
+      "shift": "ُ",
+      "altgr": "ڤ",
+      "altgrShift": "ڤ"
+     },
+     {
+      "code": "KeyY",
+      "base": "غ",
+      "shift": "ٌ"
+     },
+     {
+      "code": "KeyU",
+      "base": "ع",
+      "shift": "ْ",
+      "altgr": "ە",
+      "altgrShift": "ە"
+     },
+     {
+      "code": "KeyI",
+      "base": "ه",
+      "shift": "ّ"
+     },
+     {
+      "code": "KeyO",
+      "base": "خ",
+      "shift": "]"
+     },
+     {
+      "code": "KeyP",
+      "base": "ح",
+      "shift": "["
+     },
+     {
+      "code": "BracketLeft",
+      "base": "ج",
+      "shift": "}",
+      "altgr": "چ",
+      "altgrShift": "چ"
+     },
+     {
+      "code": "BracketRight",
+      "base": "ة",
+      "shift": "{"
+     },
+     {
+      "code": "Backslash",
+      "base": "\\",
+      "shift": "|"
+     }
+    ],
+    [
+     {
+      "code": "KeyA",
+      "base": "ش",
+      "shift": "«"
+     },
+     {
+      "code": "KeyS",
+      "base": "س",
+      "shift": "»",
+      "altgr": "ے",
+      "altgrShift": "ے"
+     },
+     {
+      "code": "KeyD",
+      "base": "ي",
+      "shift": "ى",
+      "altgr": "ی",
+      "altgrShift": "ی"
+     },
+     {
+      "code": "KeyF",
+      "base": "ب",
+      "altgr": "پ",
+      "altgrShift": "پ"
+     },
+     {
+      "code": "KeyG",
+      "base": "ل",
+      "altgr": "ٓ"
+     },
+     {
+      "code": "KeyH",
+      "base": "ا",
+      "shift": "آ",
+      "altgr": "ٰ"
+     },
+     {
+      "code": "KeyJ",
+      "base": "ت",
+      "altgr": "ٹ",
+      "altgrShift": "ٹ"
+     },
+     {
+      "code": "KeyK",
+      "base": "ن",
+      "shift": "٫",
+      "altgr": "ں",
+      "altgrShift": "ں"
+     },
+     {
+      "code": "KeyL",
+      "base": "م",
+      "shift": "٬"
+     },
+     {
+      "code": "Semicolon",
+      "base": "ك",
+      "shift": ":",
+      "altgr": "گ",
+      "altgrShift": "ک"
+     },
+     {
+      "code": "Quote",
+      "base": "؛",
+      "shift": "\""
+     }
+    ],
+    [
+     {
+      "code": "IntlBackslash",
+      "base": "§",
+      "shift": "±"
+     },
+     {
+      "code": "KeyZ",
+      "base": "ظ",
+      "shift": "'"
+     },
+     {
+      "code": "KeyX",
+      "base": "ط"
+     },
+     {
+      "code": "KeyC",
+      "base": "ذ",
+      "shift": "ئ",
+      "altgr": "ڈ",
+      "altgrShift": "ڈ"
+     },
+     {
+      "code": "KeyV",
+      "base": "د",
+      "shift": "ء",
+      "altgr": "ڑ",
+      "altgrShift": "ڑ"
+     },
+     {
+      "code": "KeyB",
+      "base": "ز",
+      "shift": "أ",
+      "altgr": "ژ",
+      "altgrShift": "ژ"
+     },
+     {
+      "code": "KeyN",
+      "base": "ر",
+      "shift": "إ"
+     },
+     {
+      "code": "KeyM",
+      "base": "و",
+      "shift": "ؤ"
+     },
+     {
+      "code": "Comma",
+      "base": "،",
+      "shift": ">"
+     },
+     {
+      "code": "Period",
+      "base": ".",
+      "shift": "<"
+     },
+     {
+      "code": "Slash",
+      "base": "/",
+      "shift": "؟"
+     }
+    ],
+    [
+     {
+      "code": "Space",
+      "base": " ",
+      "shift": " "
+     }
+    ]
+   ]
+  },
+  {
+   "id": "mac-arabic-pc",
+   "title": "macOS Arabic - PC",
+   "platform": "macos",
+   "kind": "physical",
+   "iso": false,
+   "sources": [
+    "Unicode CLDR 43, keyboards/osx/ar-t-k0-osx-qwerty-var.xml (https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/osx/ar-t-k0-osx-qwerty-var.xml), Unicode License, fetched 2026-11-23",
+    "checked against Windows Arabic (101)"
+   ],
+   "notes": "The letters and marks of Windows Arabic (101) on a Mac, with Arabic-Indic digits on the digit row. The CLDR file describes OS X 10.9.",
+   "rows": [
+    [
+     {
+      "code": "Backquote",
+      "base": "ذ",
+      "shift": "ّ"
+     },
+     {
+      "code": "Digit1",
+      "base": "١",
+      "shift": "!",
+      "altgr": "ظ",
+      "altgrShift": "ظ"
+     },
+     {
+      "code": "Digit2",
+      "base": "٢",
+      "shift": "@",
+      "altgr": "ط",
+      "altgrShift": "ط"
+     },
+     {
+      "code": "Digit3",
+      "base": "٣",
+      "shift": "#",
+      "altgr": "ذ"
+     },
+     {
+      "code": "Digit4",
+      "base": "٤",
+      "shift": "$",
+      "altgr": "د"
+     },
+     {
+      "code": "Digit5",
+      "base": "٥",
+      "shift": "٪"
+     },
+     {
+      "code": "Digit6",
+      "base": "٦",
+      "shift": "^",
+      "altgr": "ٱ"
+     },
+     {
+      "code": "Digit7",
+      "base": "٧",
+      "shift": "&"
+     },
+     {
+      "code": "Digit8",
+      "base": "٨",
+      "shift": "*"
+     },
+     {
+      "code": "Digit9",
+      "base": "٩",
+      "shift": ")"
+     },
+     {
+      "code": "Digit0",
+      "base": "٠",
+      "shift": "("
+     },
+     {
+      "code": "Minus",
+      "base": "-",
+      "shift": "ـ"
+     },
+     {
+      "code": "Equal",
+      "base": "=",
+      "shift": "+"
+     }
+    ],
+    [
+     {
+      "code": "KeyQ",
+      "base": "ض",
+      "shift": "َ"
+     },
+     {
+      "code": "KeyW",
+      "base": "ص",
+      "shift": "ً"
+     },
+     {
+      "code": "KeyE",
+      "base": "ث",
+      "shift": "ُ"
+     },
+     {
+      "code": "KeyR",
+      "base": "ق",
+      "shift": "ٌ"
+     },
+     {
+      "code": "KeyT",
+      "base": "ف",
+      "shift": "لإ",
+      "altgr": "ڤ",
+      "altgrShift": "ڤ"
+     },
+     {
+      "code": "KeyY",
+      "base": "غ",
+      "shift": "إ"
+     },
+     {
+      "code": "KeyU",
+      "base": "ع",
+      "shift": "‘",
+      "altgr": "ە",
+      "altgrShift": "ە"
+     },
+     {
+      "code": "KeyI",
+      "base": "ه",
+      "shift": "÷"
+     },
+     {
+      "code": "KeyO",
+      "base": "خ",
+      "shift": "×"
+     },
+     {
+      "code": "KeyP",
+      "base": "ح",
+      "shift": "؛"
+     },
+     {
+      "code": "BracketLeft",
+      "base": "ج",
+      "shift": "<",
+      "altgr": "چ",
+      "altgrShift": "چ"
+     },
+     {
+      "code": "BracketRight",
+      "base": "د",
+      "shift": ">"
+     },
+     {
+      "code": "Backslash",
+      "base": "\\",
+      "shift": "|"
+     }
+    ],
+    [
+     {
+      "code": "KeyA",
+      "base": "ش",
+      "shift": "ِ"
+     },
+     {
+      "code": "KeyS",
+      "base": "س",
+      "shift": "ٍ",
+      "altgr": "ے",
+      "altgrShift": "ے"
+     },
+     {
+      "code": "KeyD",
+      "base": "ي",
+      "shift": "]",
+      "altgr": "ی",
+      "altgrShift": "ی"
+     },
+     {
+      "code": "KeyF",
+      "base": "ب",
+      "shift": "[",
+      "altgr": "پ",
+      "altgrShift": "پ"
+     },
+     {
+      "code": "KeyG",
+      "base": "ل",
+      "shift": "لأ",
+      "altgr": "ٓ"
+     },
+     {
+      "code": "KeyH",
+      "base": "ا",
+      "shift": "أ",
+      "altgr": "ٰ"
+     },
+     {
+      "code": "KeyJ",
+      "base": "ت",
+      "shift": "ـ",
+      "altgr": "ٹ",
+      "altgrShift": "ٹ"
+     },
+     {
+      "code": "KeyK",
+      "base": "ن",
+      "shift": "،",
+      "altgr": "ں",
+      "altgrShift": "ں"
+     },
+     {
+      "code": "KeyL",
+      "base": "م",
+      "shift": "/"
+     },
+     {
+      "code": "Semicolon",
+      "base": "ك",
+      "shift": ":",
+      "altgr": "گ",
+      "altgrShift": "ک"
+     },
+     {
+      "code": "Quote",
+      "base": "ط",
+      "shift": "\""
+     }
+    ],
+    [
+     {
+      "code": "IntlBackslash",
+      "base": "ذ",
+      "shift": "ّ"
+     },
+     {
+      "code": "KeyZ",
+      "base": "ئ",
+      "shift": "~"
+     },
+     {
+      "code": "KeyX",
+      "base": "ء",
+      "shift": "ْ"
+     },
+     {
+      "code": "KeyC",
+      "base": "ؤ",
+      "shift": "}",
+      "altgr": "ڈ",
+      "altgrShift": "ڈ"
+     },
+     {
+      "code": "KeyV",
+      "base": "ر",
+      "shift": "{",
+      "altgr": "ڑ",
+      "altgrShift": "ڑ"
+     },
+     {
+      "code": "KeyB",
+      "base": "لا",
+      "shift": "لآ",
+      "altgr": "ژ",
+      "altgrShift": "ژ"
+     },
+     {
+      "code": "KeyN",
+      "base": "ى",
+      "shift": "آ"
+     },
+     {
+      "code": "KeyM",
+      "base": "ة",
+      "shift": "’"
+     },
+     {
+      "code": "Comma",
+      "base": "و",
+      "shift": ","
+     },
+     {
+      "code": "Period",
+      "base": "ز",
+      "shift": "."
+     },
+     {
+      "code": "Slash",
+      "base": "ظ",
+      "shift": "؟"
+     }
+    ],
+    [
+     {
+      "code": "Space",
+      "base": " ",
+      "shift": " "
+     }
+    ]
+   ]
+  },
+  {
+   "id": "linux-ara",
+   "title": "Linux Arabic (XKB ara, basic)",
+   "platform": "linux",
+   "kind": "physical",
+   "iso": false,
+   "sources": [
+    "xkeyboard-config 2.48, symbols/ara, variant \"basic\" (https://www.x.org/releases/individual/data/xkeyboard-config/xkeyboard-config-2.48.tar.xz), MIT-style license, fetched 2026-11-23",
+    "checked against Windows Arabic (101)"
+   ],
+   "notes": "The letters and marks of Windows Arabic (101). Level 3 (right Alt) adds letters of other languages and the alef wasla.",
+   "rows": [
+    [
+     {
+      "code": "Backquote",
+      "base": "ذ",
+      "shift": "ّ"
+     },
+     {
+      "code": "Digit1",
+      "base": "1",
+      "shift": "!"
+     },
+     {
+      "code": "Digit2",
+      "base": "2",
+      "shift": "@"
+     },
+     {
+      "code": "Digit3",
+      "base": "3",
+      "shift": "#"
+     },
+     {
+      "code": "Digit4",
+      "base": "4",
+      "shift": "$"
+     },
+     {
+      "code": "Digit5",
+      "base": "5",
+      "shift": "%"
+     },
+     {
+      "code": "Digit6",
+      "base": "6",
+      "shift": "^"
+     },
+     {
+      "code": "Digit7",
+      "base": "7",
+      "shift": "&"
+     },
+     {
+      "code": "Digit8",
+      "base": "8",
+      "shift": "*"
+     },
+     {
+      "code": "Digit9",
+      "base": "9",
+      "shift": ")"
+     },
+     {
+      "code": "Digit0",
+      "base": "0",
+      "shift": "("
+     },
+     {
+      "code": "Minus",
+      "base": "-",
+      "shift": "_"
+     },
+     {
+      "code": "Equal",
+      "base": "=",
+      "shift": "+"
+     }
+    ],
+    [
+     {
+      "code": "KeyQ",
+      "base": "ض",
+      "shift": "َ"
+     },
+     {
+      "code": "KeyW",
+      "base": "ص",
+      "shift": "ً"
+     },
+     {
+      "code": "KeyE",
+      "base": "ث",
+      "shift": "ُ"
+     },
+     {
+      "code": "KeyR",
+      "base": "ق",
+      "shift": "ٌ"
+     },
+     {
+      "code": "KeyT",
+      "base": "ف",
+      "shift": "لإ",
+      "altgr": "ڤ"
+     },
+     {
+      "code": "KeyY",
+      "base": "غ",
+      "shift": "إ"
+     },
+     {
+      "code": "KeyU",
+      "base": "ع",
+      "shift": "`"
+     },
+     {
+      "code": "KeyI",
+      "base": "ه",
+      "shift": "÷"
+     },
+     {
+      "code": "KeyO",
+      "base": "خ",
+      "shift": "×"
+     },
+     {
+      "code": "KeyP",
+      "base": "ح",
+      "shift": "؛"
+     },
+     {
+      "code": "BracketLeft",
+      "base": "ج",
+      "shift": "<",
+      "altgr": "چ"
+     },
+     {
+      "code": "BracketRight",
+      "base": "د",
+      "shift": ">"
+     },
+     {
+      "code": "Backslash",
+      "base": "\\",
+      "shift": "|"
+     }
+    ],
+    [
+     {
+      "code": "KeyA",
+      "base": "ش",
+      "shift": "ِ"
+     },
+     {
+      "code": "KeyS",
+      "base": "س",
+      "shift": "ٍ"
+     },
+     {
+      "code": "KeyD",
+      "base": "ي",
+      "shift": "]"
+     },
+     {
+      "code": "KeyF",
+      "base": "ب",
+      "shift": "[",
+      "altgr": "پ"
+     },
+     {
+      "code": "KeyG",
+      "base": "ل",
+      "shift": "لأ"
+     },
+     {
+      "code": "KeyH",
+      "base": "ا",
+      "shift": "أ",
+      "altgr": "ٱ"
+     },
+     {
+      "code": "KeyJ",
+      "base": "ت",
+      "shift": "ـ"
+     },
+     {
+      "code": "KeyK",
+      "base": "ن",
+      "shift": "،"
+     },
+     {
+      "code": "KeyL",
+      "base": "م",
+      "shift": "/"
+     },
+     {
+      "code": "Semicolon",
+      "base": "ك",
+      "shift": ":",
+      "altgr": "گ"
+     },
+     {
+      "code": "Quote",
+      "base": "ط",
+      "shift": "\""
+     }
+    ],
+    [
+     {
+      "code": "IntlBackslash",
+      "base": "|",
+      "shift": "…"
+     },
+     {
+      "code": "KeyZ",
+      "base": "ئ",
+      "shift": "~"
+     },
+     {
+      "code": "KeyX",
+      "base": "ء",
+      "shift": "ْ"
+     },
+     {
+      "code": "KeyC",
+      "base": "ؤ",
+      "shift": "}"
+     },
+     {
+      "code": "KeyV",
+      "base": "ر",
+      "shift": "{"
+     },
+     {
+      "code": "KeyB",
+      "base": "لا",
+      "shift": "لآ"
+     },
+     {
+      "code": "KeyN",
+      "base": "ى",
+      "shift": "آ",
+      "altgr": "ٰ"
+     },
+     {
+      "code": "KeyM",
+      "base": "ة",
+      "shift": "'"
+     },
+     {
+      "code": "Comma",
+      "base": "و",
+      "shift": ","
+     },
+     {
+      "code": "Period",
+      "base": "ز",
+      "shift": ".",
+      "altgr": "ژ"
+     },
+     {
+      "code": "Slash",
+      "base": "ظ",
+      "shift": "؟"
+     }
+    ],
+    [
+     {
+      "code": "Space"
+     }
+    ]
+   ]
+  },
+  {
+   "id": "android-phone",
+   "title": "Android keyboard (AOSP), Arabic, phone and 10-inch tablet",
+   "platform": "android",
+   "kind": "touch",
+   "iso": false,
+   "sources": [
+    "Unicode CLDR 43, keyboards/android/ar-t-k0-android.xml (https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/android/ar-t-k0-android.xml), Unicode License, fetched 2026-11-23",
+    "checked against the Android Open Source Project keyboard, LatinIME java/res/xml/rowkeys_arabic1-3.xml and keys_arabic3_left.xml, Apache License 2.0, fetched 2026-11-23"
+   ],
+   "notes": "Gboard grew out of this keyboard. Marks: on the symbols page, a long press on the full stop. The CLDR file describes Android 4.4.",
+   "rows": [
+    [
+     {
+      "base": "ض"
+     },
+     {
+      "base": "ص"
+     },
+     {
+      "base": "ث"
+     },
+     {
+      "base": "ق",
+      "more": [
+       "ڨ"
+      ]
+     },
+     {
+      "base": "ف",
+      "more": [
+       "ڤ",
+       "ڢ",
+       "ڥ"
+      ]
+     },
+     {
+      "base": "غ"
+     },
+     {
+      "base": "ع"
+     },
+     {
+      "base": "ه",
+      "more": [
+       "ه‍"
+      ]
+     },
+     {
+      "base": "خ"
+     },
+     {
+      "base": "ح"
+     },
+     {
+      "base": "ج",
+      "more": [
+       "چ"
+      ]
+     }
+    ],
+    [
+     {
+      "base": "ش",
+      "more": [
+       "ڜ"
+      ]
+     },
+     {
+      "base": "س"
+     },
+     {
+      "base": "ي",
+      "more": [
+       "ئ",
+       "ى"
+      ]
+     },
+     {
+      "base": "ب",
+      "more": [
+       "پ"
+      ]
+     },
+     {
+      "base": "ل",
+      "more": [
+       "لا",
+       "لأ",
+       "لإ",
+       "لآ"
+      ]
+     },
+     {
+      "base": "ا",
+      "more": [
+       "آ",
+       "ء",
+       "أ",
+       "إ",
+       "ٱ"
+      ]
+     },
+     {
+      "base": "ت"
+     },
+     {
+      "base": "ن"
+     },
+     {
+      "base": "م"
+     },
+     {
+      "base": "ك",
+      "more": [
+       "گ",
+       "ک"
+      ]
+     },
+     {
+      "base": "ط"
+     }
+    ],
+    [
+     {
+      "base": "ذ"
+     },
+     {
+      "base": "ء"
+     },
+     {
+      "base": "ؤ"
+     },
+     {
+      "base": "ر"
+     },
+     {
+      "base": "ى",
+      "more": [
+       "ئ"
+      ]
+     },
+     {
+      "base": "ة"
+     },
+     {
+      "base": "و"
+     },
+     {
+      "base": "ز",
+      "more": [
+       "ژ"
+      ]
+     },
+     {
+      "base": "ظ"
+     },
+     {
+      "base": "د"
+     }
+    ],
+    [
+     {
+      "base": "،"
+     },
+     {
+      "base": " "
+     },
+     {
+      "base": ".",
+      "more": [
+       "\"",
+       "'",
+       "#",
+       "-",
+       ":",
+       "!",
+       "،",
+       "؟",
+       "@",
+       "&",
+       "%",
+       "+",
+       "؛",
+       "/",
+       ")",
+       "("
+      ]
+     }
+    ]
+   ],
+   "marks": [
+    "ٕ",
+    "ٔ",
+    "ْ",
+    "ٍ",
+    "ٌ",
+    "ً",
+    "ّ",
+    "ٖ",
+    "ٰ",
+    "ٓ",
+    "ِ",
+    "ُ",
+    "َ"
+   ]
+  },
+  {
+   "id": "android-tablet-7in",
+   "title": "Android keyboard (AOSP), Arabic, 7-inch tablet",
+   "platform": "android",
+   "kind": "touch",
+   "iso": false,
+   "sources": [
+    "Unicode CLDR 43, keyboards/android/ar-t-k0-android-600dpi.xml (https://raw.githubusercontent.com/unicode-org/cldr/release-43/keyboards/android/ar-t-k0-android-600dpi.xml), Unicode License, fetched 2026-11-23",
+    "checked against LatinIME java/res/xml-sw600dp/keys_arabic3_left.xml, Apache License 2.0, fetched 2026-11-23"
+   ],
+   "notes": "One more key in the bottom row of letters. Marks: a long press on the full stop. The CLDR file describes Android 4.4.",
+   "rows": [
+    [
+     {
+      "base": "ض"
+     },
+     {
+      "base": "ص"
+     },
+     {
+      "base": "ث"
+     },
+     {
+      "base": "ق",
+      "more": [
+       "ڨ"
+      ]
+     },
+     {
+      "base": "ف",
+      "more": [
+       "ڤ",
+       "ڢ",
+       "ڥ"
+      ]
+     },
+     {
+      "base": "غ"
+     },
+     {
+      "base": "ع"
+     },
+     {
+      "base": "ه",
+      "more": [
+       "ه‍"
+      ]
+     },
+     {
+      "base": "خ"
+     },
+     {
+      "base": "ح"
+     },
+     {
+      "base": "ج",
+      "more": [
+       "چ"
+      ]
+     }
+    ],
+    [
+     {
+      "base": "ش",
+      "more": [
+       "ڜ"
+      ]
+     },
+     {
+      "base": "س"
+     },
+     {
+      "base": "ي",
+      "more": [
+       "ئ",
+       "ى"
+      ]
+     },
+     {
+      "base": "ب",
+      "more": [
+       "پ"
+      ]
+     },
+     {
+      "base": "ل",
+      "more": [
+       "لا",
+       "لأ",
+       "لإ",
+       "لآ"
+      ]
+     },
+     {
+      "base": "ا",
+      "more": [
+       "آ",
+       "ء",
+       "أ",
+       "إ",
+       "ٱ"
+      ]
+     },
+     {
+      "base": "ت"
+     },
+     {
+      "base": "ن"
+     },
+     {
+      "base": "م"
+     },
+     {
+      "base": "ك",
+      "more": [
+       "گ",
+       "ک"
+      ]
+     },
+     {
+      "base": "ط"
+     }
+    ],
+    [
+     {
+      "base": "ذ"
+     },
+     {
+      "base": "ئ"
+     },
+     {
+      "base": "ء"
+     },
+     {
+      "base": "ؤ"
+     },
+     {
+      "base": "ر"
+     },
+     {
+      "base": "ى",
+      "more": [
+       "ئ"
+      ]
+     },
+     {
+      "base": "ة"
+     },
+     {
+      "base": "و"
+     },
+     {
+      "base": "ز",
+      "more": [
+       "ژ"
+      ]
+     },
+     {
+      "base": "ظ"
+     },
+     {
+      "base": "د"
+     }
+    ],
+    [
+     {
+      "base": "/"
+     },
+     {
+      "base": " "
+     },
+     {
+      "base": "،",
+      "more": [
+       "؟",
+       "؛",
+       "!",
+       ":",
+       "-",
+       "/",
+       "'",
+       "\""
+      ]
+     },
+     {
+      "base": ".",
+      "more": [
+       "ٕ",
+       "ٔ",
+       "ْ",
+       "ٍ",
+       "ٌ",
+       "ً",
+       "ّ",
+       "ٖ",
+       "ٰ",
+       "ٓ",
+       "ِ",
+       "ُ",
+       "َ",
+       "ـ"
+      ]
+     }
+    ]
+   ]
+  }
+ ],
+ "aliases": [
+  {
+   "id": "chromeos-ar",
+   "title": "ChromeOS Arabic keyboard",
+   "platform": "chromeos",
+   "use": "win-101",
+   "notes": "Letters and marks as in Windows Arabic (101); the digit row types Arabic-Indic digits. From google-input-tools, chrome/os/keyboard/layouts/ar.js (2014), Apache License 2.0."
+  },
+  {
+   "id": "android-physical",
+   "title": "Android, Arabic layout for a plugged-in keyboard",
+   "platform": "android",
+   "use": "win-101",
+   "notes": "Letters and marks as in Windows Arabic (101); Arabic-Indic digits; each lam-alef key types one presentation-form character (U+FEFB, U+FEF5, U+FEF7, U+FEF9). From the Android Open Source Project, keyboard_layout_arabic.kcm, Apache License 2.0."
+  },
+  {
+   "id": "linux-ara-azerty",
+   "title": "Linux Arabic (XKB ara, azerty)",
+   "platform": "linux",
+   "use": "linux-ara",
+   "notes": "The basic variant with the French digit row. The letters stay where Arabic (101) has them, unlike Windows Arabic (102) AZERTY."
+  }
+ ]
+}
