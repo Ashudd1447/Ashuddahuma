@@ -44,6 +44,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .game-card .word{display:block;padding:.1em 0 .25em;color:var(--ink);font-size:clamp(2.4rem,8vw,3.2rem)}
 .game-card .basmala{padding:.6em .4em .8em;font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.9}
 .site-foot{text-align:center;padding:0 16px 28px;color:var(--muted);font-size:1rem}
+.site-foot .version{display:block;margin-top:6px;font-size:.85rem;opacity:.8}
 .install{display:block;margin:0 auto 16px;border:2px solid var(--gold);border-radius:999px;background:var(--surface);color:var(--deep);padding:.35em 1.4em;font-weight:700;font-size:1.15rem;line-height:1.6}
 .install:active{transform:scale(.97)}
 

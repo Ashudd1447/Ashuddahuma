@@ -64,6 +64,41 @@ if (navigator.storage && navigator.storage.persist && !/Firefox\//.test(navigato
   navigator.storage.persisted().then((kept) => kept || navigator.storage.persist()).catch(() => {});
 }
 
+/* The version this device runs, at the foot of the home page, so the family
+   can tell which one they have: the time of the deploy (CACHE in sw.js,
+   stamped by tools/prepare-deploy.py), shown as a date and an hour in the
+   device's own time zone; the father asked for a date, not a number. It is
+   asked of the service worker that serves the page; before one answers (a
+   first visit, or an older one that does not answer yet), it is read from
+   sw.js itself. An older copy still named by a number shows that number. */
+const MONTHS = ['يَنَايِر', 'فِبْرَايِر', 'مَارِس', 'أَبْرِيل', 'مَايُو', 'يُونْيُو', 'يُولْيُو', 'أَغُسْطُس', 'سِبْتَمْبِر', 'أُكْتُوبَر', 'نُوفَمْبِر', 'دِيسَمْبِر'];
+const arabicDigits = (text) => String(text).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
+const versionLine = document.getElementById('version');
+if (versionLine) {
+  let shown = false;
+  const showVersion = (name) => {
+    if (shown || !name) return;
+    const at = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})Z$/.exec(name);
+    const n = /v(\d+)$/.exec(name);
+    if (!at && !n) return;
+    shown = true;
+    if (!at) {
+      versionLine.textContent = 'الْإِصْدَارُ ' + arabicDigits(n[1]);
+      return;
+    }
+    const when = new Date(Date.UTC(+at[1], at[2] - 1, +at[3], +at[4], +at[5]));
+    const hour = `${when.getHours()}:${String(when.getMinutes()).padStart(2, '0')}`;
+    versionLine.textContent = `الْإِصْدَارُ: ${arabicDigits(when.getDate())} ${MONTHS[when.getMonth()]} ${arabicDigits(when.getFullYear())}، ${arabicDigits(hour)}`;
+  };
+  const fromFile = () => fetch('/sw.js').then((r) => r.text()).then((text) => showVersion((/CACHE = '([^']+)'/.exec(text) || [])[1])).catch(() => {});
+  const worker = 'serviceWorker' in navigator && navigator.serviceWorker.controller;
+  if (worker) {
+    navigator.serviceWorker.addEventListener('message', (event) => { if (event.data && event.data.version) showVersion(event.data.version); });
+    worker.postMessage('version');
+    setTimeout(() => { if (!shown) fromFile(); }, 1500);
+  } else fromFile();
+}
+
 /* Install button on the home page. Android, and Chrome or Edge on computers,
    offer installing; iPhone and iPad add the app from Safari's Share menu. */
 const installButton = document.getElementById('install');
