@@ -1,4 +1,4 @@
-# الْقِصَصُ: the stories
+# الْقَصَصُ: the stories
 
 The stories door on the home page, its shelf (`stories.html`) and the reader (`story.html`, `js/story.js`). Built on 2026-11-24 after the father's answers. This file keeps the decisions, the sources and what is still open.
 
@@ -16,7 +16,7 @@ As he wrote it. The vowel marks he had left out were added on the title, page 7 
 
 There was one grammar fix: he wrote «سَبْعَ أشواط», and it is now «سَبْعَةَ أَشْوَاطٍ». شَوْط is masculine, so the number from three to ten takes the feminine form. «سَبْعَ مَرَّاتٍ» is right only because مَرَّة is feminine. Tell Claude if you want it back.
 
-The honorifics stand where he wrote them: at the first mention of Ismail, Ibrahim, Hajar (page 1) and Jibreel (page 9), and not at later mentions or after Allah's name. Earlier he had asked for them "each time they are due", so this is a question for him. The data file is `public/stories/zamzam.json`. Edit it only with the parents' say.
+The honorifics stand where he wrote them: at the first mention of Ismail, Ibrahim, Hajar (page 1) and Jibreel (page 9), and once more on the last page, «هَاجَرَ وَإِسْمَاعِيلَ عَلَيْهِمَا السَّلَامُ», which he added before recording. He is not making a general rule yet, but saying them every time is too much for a child. The data file is `public/stories/zamzam.json`. Edit it only with the parents' say.
 
 | Page | Text | Picture |
 |---|---|---|
@@ -25,7 +25,7 @@ The honorifics stand where he wrote them: at the first mention of Ismail, Ibrahi
 | 2 | أَخَذَ إِبْرَاهِيمُ زَوْجَتَهُ وَطِفْلَهُ إِلَى مَكَّةَ، وَكَانَتْ وَادِيًا خَالِيًا لَا مَاءَ فِيهِ وَلَا نَاسَ. | The empty valley, one tree, two lines of footprints coming in |
 | 3 | تَرَكَ عِنْدَهُمَا قَلِيلًا مِنَ التَّمْرِ وَالْمَاءِ، ثُمَّ هَمَّ بِالرَّحِيلِ. | A date bag and a waterskin in the tree's shade, footprints leading away |
 | 4 | نَادَتْهُ هَاجَرُ: «يَا إِبْرَاهِيمُ، أَأَمَرَكَ اللَّهُ بِهَذَا؟» قَالَ: «نَعَمْ». فَقَالَتْ: «إِذَنْ لَنْ يُضَيِّعَنَا اللَّهُ!» | Footprints climbing to the top of the mountain pass, a calm sky |
-| 5 | مَرَّ الْوَقْتُ، وَنَفِدَ الْمَاءُ، وَعَطِشَ إِسْمَاعِيلُ وَبَكَى. | The waterskin flat and empty under the midday sun |
+| 5 | مَرَّ الْوَقْتُ، وَنَفِدَ الْمَاءُ، وَعَطِشَ إِسْمَاعِيلُ وَبَكَى. | A big acacia and, small at its foot, the waterskin, flat and empty, under the midday sun |
 | 6 | أَسْرَعَتْ هَاجَرُ إِلَى جَبَلِ الصَّفَا، وَنَظَرَتْ حَوْلَهَا، فَلَمْ تَرَ أَحَدًا. | Seen from the top of as-Safa: the empty valley |
 | 7 | ثُمَّ ذَهَبَتْ إِلَى جَبَلِ الْمَرْوَةِ، وَبَحَثَتْ عَنِ الْمَاءِ، وَلَكِنَّهَا لَمْ تَجِدْ شَيْئًا. | Seen from al-Marwa: one line of footprints across the valley |
 | 8 | ظَلَّتْ تَسْعَى بَيْنَ الصَّفَا وَالْمَرْوَةِ حَتَّى أَكْمَلَتْ سَبْعَةَ أَشْوَاطٍ. | Many trails of footprints between the two hills |
@@ -33,7 +33,7 @@ The honorifics stand where he wrote them: at the first mention of Ismail, Ibrahi
 | 10 | سُبْحَانَ اللَّهِ! إِنَّهُ مَاءُ زَمْزَمَ! | The spring close up, bubbling in its ring of sand |
 | 11 | شَرِبَتْ هَاجَرُ مِنْهُ، وَسَقَتْ إِسْمَاعِيلَ وَأَرْضَعَتْهُ. | A full waterskin beside the spring |
 | 12 | وَمَا زَالَ مَاءُ زَمْزَمَ يَجْرِي إِلَى يَوْمِنَا هَذَا. | Today: a row of drinking taps, water flowing, a stack of cups |
-| 13 | فَإِذَا زُرْتَ مَكَّةَ وَشَرِبْتَ مِنْ مَاءِ زَمْزَمَ، فَتَذَكَّرْ هَاجَرَ وَإِسْمَاعِيلَ، وَتَذَكَّرْ أَنَّ اللَّهَ لَا يُضَيِّعُ مَنْ تَوَكَّلَ عَلَيْهِ. | Today: the Kaaba in its black kiswa, a cup of water in front |
+| 13 | فَإِذَا زُرْتَ مَكَّةَ وَشَرِبْتَ مِنْ مَاءِ زَمْزَمَ، فَتَذَكَّرْ هَاجَرَ وَإِسْمَاعِيلَ عَلَيْهِمَا السَّلَامُ، وَتَذَكَّرْ أَنَّ اللَّهَ لَا يُضَيِّعُ مَنْ تَوَكَّلَ عَلَيْهِ. | Today: the Kaaba in its black kiswa in the empty courtyard |
 
 ## The pictures
 
@@ -71,6 +71,5 @@ These are notes for the parents, from sunnah.com and the Shamela connector.
 
 ## Open
 
-- Honorifics at every mention, as first asked, or only at the first, as his text has them?
-- The father reviews the 14 pictures, above all page 1 (now a plain sunrise) and page 12 (the taps).
+- The father reviews the 14 pictures, above all page 1 (now a plain sunrise) and page 12 (the taps). He sent back page 5 (the waterskin larger than the tree; now a big tree with a small, empty skin at its foot) and the cup in front of the Kaaba on page 13 (now an empty courtyard).
 - The next story.
