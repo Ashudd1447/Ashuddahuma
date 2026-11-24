@@ -53,9 +53,15 @@ document.addEventListener('visibilitychange', () => {
 });
 onActivity();
 
-/* Offline copy, see sw.js. */
+/* Offline copy, see sw.js. The browser is asked to keep it even when the
+   device runs short of space (Android) or the site goes unused for a while:
+   Chrome, Edge and Safari decide by themselves, without asking anyone;
+   Firefox would show a question, so it is not asked there. */
 if ('serviceWorker' in navigator) {
   addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+if (navigator.storage && navigator.storage.persist && !/Firefox\//.test(navigator.userAgent)) {
+  navigator.storage.persisted().then((kept) => kept || navigator.storage.persist()).catch(() => {});
 }
 
 /* Install button on the home page. Android, and Chrome or Edge on computers,

@@ -7,8 +7,14 @@
    old one). On localhost the newest files come first, so edits show on
    reload.
    Every page, photo, recording and font the pages use belongs in FILES. One
-   that is missing still gets saved the first time it is used. */
-const CACHE = 'ashudd-v18';
+   that is missing still gets saved the first time it is used.
+   A new version downloads only what changed: each file already saved is
+   offered to the server with its version tag (ETag), and a file the server
+   says is unchanged (304) is copied over from the old copy, so a deploy
+   costs a quick question per file rather than the whole site again.
+   A page asked for with a query (story.html?s=<id>) is found offline even if
+   it was never opened online: the saved page without the query is used. */
+const CACHE = 'ashudd-v19';
 const FILES = [
   '/',
   '/reading.html',
@@ -148,10 +154,27 @@ const WAIT = 3000; // ms the network has before the saved data file is used
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE)
-      .then((cache) => Promise.allSettled(FILES.map((file) => cache.add(new Request(file, { cache: 'reload' })))))
+      .then((cache) => Promise.allSettled(FILES.map((file) => fill(cache, file))))
       .then(() => self.skipWaiting()),
   );
 });
+
+/* One file into the new copy: kept from the old copy when the server says it
+   has not changed since, downloaded afresh otherwise. */
+async function fill(cache, file) {
+  const old = await caches.match(file, { ignoreVary: true });
+  const tag = old && old.headers.get('ETag');
+  if (tag) {
+    try {
+      const response = await fetch(file, { cache: 'no-store', headers: { 'If-None-Match': tag } });
+      if (response.status === 304) return cache.put(file, old);
+      if (response.ok) return cache.put(file, response);
+    } catch {
+      return cache.put(file, old); // offline while updating: keep what there is
+    }
+  }
+  return cache.add(new Request(file, { cache: 'reload' }));
+}
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -170,7 +193,8 @@ self.addEventListener('fetch', (event) => {
 async function respond(event) {
   const { request } = event;
   const cache = await caches.open(CACHE);
-  const cached = await cache.match(request, { ignoreVary: true });
+  const cached = await cache.match(request, { ignoreVary: true })
+    || (request.mode === 'navigate' ? await cache.match(request, { ignoreVary: true, ignoreSearch: true }) : undefined);
   const fresh = save(cache, request.url);
   event.waitUntil(fresh.catch(() => {}));
   const data = DATA.test(new URL(request.url).pathname);
