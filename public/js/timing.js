@@ -53,6 +53,7 @@ const timing = (() => {
   const PAUSE_UNITS = 2;
   const MIN_RUN = 0.05;
   const MIN_STEP = 0.04;
+  const BREAK_COST = 0.3; // s²: what a stretch ending away from the text's punctuation costs (about half a second of misfit)
 
   /* Clusters */
   function baseChar(text) {
@@ -412,8 +413,12 @@ const timing = (() => {
   /* Which words sound in which stretch: words in order, stretches in order,
      each stretch holding a run of words (or none, for a breath or a click),
      chosen so that each stretch's length best matches its words' weights.
-     Returns [from, to) word ranges, one per stretch. */
-  function assign(weights, stretches) {
+     When the text marks where a reader would pause (breaks: the word counts
+     after which its punctuation falls, as the stories pass), a stretch that
+     ends anywhere else pays BREAK_COST, so a pause the length could put one
+     word either side of a comma lands on the comma. Returns [from, to) word
+     ranges, one per stretch. */
+  function assign(weights, stretches, breaks) {
     const W = weights.length;
     const R = stretches.length;
     const totalWeight = weights.reduce((a, b) => a + b, 0) || 1;
@@ -431,7 +436,8 @@ const timing = (() => {
     for (let r = 1; r <= R; r++) {
       for (let w = 0; w <= W; w++) {
         for (let k = 0; k <= w; k++) {
-          const c = best[r - 1][k] + cost(r - 1, k, w);
+          const off = breaks && r < R && w > k && !breaks.has(w) ? BREAK_COST : 0;
+          const c = best[r - 1][k] + cost(r - 1, k, w) + off;
           if (c < best[r][w]) {
             best[r][w] = c;
             choice[r][w] = k;
@@ -459,7 +465,7 @@ const timing = (() => {
     const out = spread(start, end, weights);
     const stretches = pauses(env, start, end, weights.reduce((a, b) => a + b, 0));
     if (stretches.length > 1) {
-      assign(weights, stretches).forEach(([from, to], r) => {
+      assign(weights, stretches, opts.breaks).forEach(([from, to], r) => {
         if (to <= from) return;
         const run = stretches[r];
         const part = spread(Math.max(start, run.start - 0.03), run.end, weights.slice(from, to));

@@ -92,7 +92,11 @@ const story = (() => {
       }
       el.text.classList.remove('still');
       words.forEach((w) => w.classList.remove('ink'));
-      const times = timing.autoWords(words.map((w) => forTiming(w.textContent)), timing.envelope(decoded), {waqf: true});
+      /* A reader pauses at the punctuation, so a pause the timing hears is
+         matched to a comma or a full stop before anywhere else. */
+      const breaks = new Set();
+      words.forEach((w, i) => { if (/[،,.:؛!؟?»…]$/.test(w.textContent)) breaks.add(i + 1); });
+      const times = timing.autoWords(words.map((w) => forTiming(w.textContent)), timing.envelope(decoded), {waqf: true, breaks: breaks});
       let ended = false;
       sound.play(p.clip).then(() => {
         if (mine !== run) return;
