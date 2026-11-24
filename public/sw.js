@@ -1,10 +1,14 @@
 /* Offline copy of the site. Pages open from the saved copy at once, and each
    visit quietly saves newer files for next time, so a deploy shows up on the
-   second launch. On localhost the newest files come first, so edits show on
+   second launch. The data files (.json: a story's text, the surah, the
+   mazes, the typing words) are the exception: they come from the network
+   first when there is one, so a story's words always match its newest
+   recordings (once its new recordings played while the saved text was the
+   old one). On localhost the newest files come first, so edits show on
    reload.
    Every page, photo, recording and font the pages use belongs in FILES. One
    that is missing still gets saved the first time it is used. */
-const CACHE = 'ashudd-v17';
+const CACHE = 'ashudd-v18';
 const FILES = [
   '/',
   '/reading.html',
@@ -138,6 +142,8 @@ const FILES = [
   '/audio/zamzam-13.wav',
 ];
 const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
+const DATA = /\.json$/; // read from the network first
+const WAIT = 3000; // ms the network has before the saved data file is used
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -167,6 +173,11 @@ async function respond(event) {
   const cached = await cache.match(request, { ignoreVary: true });
   const fresh = save(cache, request.url);
   event.waitUntil(fresh.catch(() => {}));
+  const data = DATA.test(new URL(request.url).pathname);
+  if (cached && data) {
+    const response = await Promise.race([fresh.catch(() => null), new Promise((resolve) => setTimeout(resolve, WAIT, null))]);
+    return response && response.ok ? response : answer(request, cached);
+  }
   if (cached && !LOCAL) return answer(request, cached);
   try {
     return await (request.headers.has('range') ? fetch(request) : fresh);

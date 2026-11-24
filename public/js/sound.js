@@ -173,11 +173,34 @@ const sound = (() => {
 
   function stop() {
     generation += 1;
+    if (held) {
+      held = false;
+      wake();
+    }
     if (!active) return;
     const current = active;
     active = null;
     current.stop();
   }
+
+  /* Pausing the recording that plays (the story reader): the whole context
+     is held, so the clip and its clock, current().position(), stand still
+     together, and resume() goes on from the same point. stop() and play()
+     wake it again. */
+  let held = false;
+  function pause() {
+    const c = ctx();
+    if (!c || !active || held) return false;
+    held = true;
+    c.suspend().catch(() => {});
+    return true;
+  }
+  function resume() {
+    if (!held) return;
+    held = false;
+    wake();
+  }
+  const paused = () => held;
 
   /* Where the sound is now, in seconds into the clip: the context clock less
      the output latency, capped by the last output timestamp. */
@@ -794,7 +817,7 @@ const sound = (() => {
   });
 
   return {
-    preload, preloadPrompts, buffer, play, say, stop, current, dialect, setDialect, unlock: warm,
+    preload, preloadPrompts, buffer, play, say, stop, pause, resume, paused, current, dialect, setDialect, unlock: warm,
     chime, buzz, tick, click, honk, pop, blink, eagle, knock, ratchet, thud, splash, backup, drill, spray, pour, rev, zip, spark, ambience, engine, engineOff, wrong,
   };
 })();

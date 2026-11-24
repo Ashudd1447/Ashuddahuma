@@ -11,18 +11,28 @@
 
    Browsers play sound only after a tap, so the title page waits with its
    play button breathing; from then on each page reads itself when it opens.
-   Nothing turns a page by itself: the arrows, a swipe or the arrow keys do. */
+   Nothing turns a page by itself: the arrows, a swipe or the arrow keys do.
+
+   The middle button listens to the page again; while the page is read it
+   pauses, and then plays on from the same word. The button at the top left
+   turns the story's sound off for a child who reads alone or a parent who
+   reads aloud (the father's request): every page then shows its words inked
+   and stays silent, until the sound is turned on again. It lasts for this
+   reading of the story. */
 const story = (() => {
   const SWIPE = 60; // px a finger must travel across the page to turn it
   const HINT_AFTER = 700; // ms after a page ends before the next arrow breathes
   const $ = (id) => document.getElementById(id);
   const root = $('story');
-  const el = {picture: $('picture'), text: $('text'), prev: $('prev'), next: $('next'), again: $('again'), dots: $('dots'), book: $('book')};
+  const el = {picture: $('picture'), text: $('text'), prev: $('prev'), next: $('next'), again: $('again'), dots: $('dots'), book: $('book'), sound: $('sound')};
+  const LABELS = {listen: 'اِسْتَمِعْ', pause: 'تَوَقَّفْ', play: 'تَابِعْ'};
 
   let book = null;
   let at = 0; // 0 is the title page; 1 … n are the pages
   let run = 0; // counts page shows, so an old page's narration stops lighting words
   let heard = false; // the family has tapped once, so sound may play
+  let voice = true; // the story's sound is on
+  let speaking = false; // the page is being read (or is paused) now
   let words = [];
   let hintTimer = 0;
   const known = {}; // clip name: true when a recording exists, false when it does not
@@ -66,11 +76,22 @@ const story = (() => {
     hintTimer = setTimeout(() => (heard ? el.next : el.again).classList.add('hint'), heard ? HINT_AFTER : 0);
   };
 
+  const middle = (state) => {
+    el.again.dataset.state = state;
+    el.again.setAttribute('aria-label', LABELS[state]);
+  };
+
   /* Reads the page aloud, inking each word as it is spoken. */
   const read = () => {
     const mine = run;
     const p = page(at);
     hint(false);
+    speaking = false;
+    middle('listen');
+    if (!voice) {
+      inkAll();
+      return;
+    }
     if (!heard || known[p.clip] === false) {
       inkAll();
       hint(true);
@@ -98,9 +119,13 @@ const story = (() => {
       words.forEach((w, i) => { if (/[،,.:؛!؟?»…]$/.test(w.textContent)) breaks.add(i + 1); });
       const times = timing.autoWords(words.map((w) => forTiming(w.textContent)), timing.envelope(decoded), {waqf: true, breaks: breaks});
       let ended = false;
+      speaking = true;
+      middle('pause');
       sound.play(p.clip).then(() => {
         if (mine !== run) return;
         ended = true;
+        speaking = false;
+        middle('listen');
         inkAll();
         hint(true);
       });
@@ -149,7 +174,23 @@ const story = (() => {
   el.prev.addEventListener('click', () => turn(-1));
   el.again.addEventListener('click', () => {
     wake();
+    if (speaking) {
+      if (sound.paused()) {
+        sound.resume();
+        middle('pause');
+      } else if (sound.pause()) middle('play');
+      return;
+    }
     run += 1;
+    read();
+  });
+  el.sound.addEventListener('click', () => {
+    wake();
+    voice = !voice;
+    root.classList.toggle('quiet', !voice);
+    el.sound.setAttribute('aria-pressed', String(voice));
+    run += 1;
+    sound.stop();
     read();
   });
   /* A swipe across the page turns it as a hand turns an Arabic book's page:

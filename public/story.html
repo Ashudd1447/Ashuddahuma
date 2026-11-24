@@ -13,6 +13,7 @@
 </head>
 <body class="story-page">
 <div class="story" id="story" data-page="title">
+  <button class="story-sound" id="sound" type="button" aria-label="الصَّوْتُ" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2h3.6L12 5v14l-4.9-4.2H3.5z" fill="currentColor"/><path class="waves" d="M15.3 8.8a4.3 4.3 0 0 1 0 6.4M17.9 6.2a8 8 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path class="cross" d="M15.5 9.5l5 5M20.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
   <header class="head">
     <a href="stories.html" aria-label="الْقَصَصُ"><img class="logo" src="images/logo.webp" alt=""></a>
   </header>
@@ -23,7 +24,7 @@
   <nav class="story-nav">
     <button class="round story-prev" id="prev" type="button" aria-label="الصَّفْحَةُ السَّابِقَةُ" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5.5l6.5 6.5-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="story-mid">
-      <button class="round story-again" id="again" type="button" aria-label="اِسْتَمِعْ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2h3.6L12 5v14l-4.9-4.2H3.5z" fill="currentColor"/><path d="M15.3 8.8a4.3 4.3 0 0 1 0 6.4M17.9 6.2a8 8 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      <button class="round story-again" id="again" type="button" aria-label="اِسْتَمِعْ" data-state="listen"><svg class="i-listen" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2h3.6L12 5v14l-4.9-4.2H3.5z" fill="currentColor"/><path d="M15.3 8.8a4.3 4.3 0 0 1 0 6.4M17.9 6.2a8 8 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg></button>
       <div class="story-dots" id="dots" aria-hidden="true"></div>
     </div>
     <button class="round story-next" id="next" type="button" aria-label="الصَّفْحَةُ التَّالِيَةُ"><svg class="go-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5.5L4.5 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="go-shelf" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5h4v15h-4zM10 4.5h4v15h-4zM15.6 5.3l3.8-1 3.6 14.3-3.8 1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg></button>

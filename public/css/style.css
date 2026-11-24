@@ -674,6 +674,15 @@ button{font:inherit;color:inherit;cursor:pointer}
 .story-nav .round.hint{animation:breathe 1.3s ease-in-out infinite}
 .story-next .go-shelf,.story[data-page="last"] .story-next .go-on{display:none}
 .story[data-page="last"] .story-next .go-shelf{display:block}
+.story-again svg{display:none}
+.story-again[data-state="listen"] .i-listen,.story-again[data-state="pause"] .i-pause,.story-again[data-state="play"] .i-play{display:block}
+.story.quiet .story-again{visibility:hidden}
+/* The sound of the whole story, on or off, for a child who reads alone or a parent who reads aloud */
+.story-sound{position:fixed;top:calc(10px + env(safe-area-inset-top));left:10px;z-index:40;width:46px;height:46px;padding:9px;border:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow)}
+.story-sound svg{display:block;width:100%;height:100%}
+.story-sound .cross,.story.quiet .story-sound .waves{display:none}
+.story.quiet .story-sound .cross{display:inline}
+.story.quiet .story-sound{color:var(--muted)}
 .story-dots{display:flex;justify-content:center;gap:clamp(3px,1vw,5px)}
 .story-dots i{flex:none;width:clamp(6px,1.9vw,9px);height:clamp(6px,1.9vw,9px);border-radius:50%;background:var(--line)}
 .story-dots i.on{background:var(--gold)}
