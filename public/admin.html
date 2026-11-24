@@ -18,6 +18,12 @@
     <li><a href="timing.html">Check the word timing</a><br><span class="note">The words light up automatically from each recording; preview an ayah here and tap along only when the automatic timing is off. Writes <code>public/audio/&lt;surah&gt;.timings.json</code>.</span></li>
     <li><a href="strokes.html">Draw letter strokes</a><br><span class="note">The strokes the tracing lesson will check, drawn on the Naskh letters. Writes <code>public/tracing/strokes.json</code>.</span></li>
   </ul>
+  <section id="device-errors" hidden>
+    <h2>Typing game problems on this device</h2>
+    <p class="note">What went wrong when the typing game ran in this browser, newest last. Open this page on the device that had the problem and send Claude a screenshot.</p>
+    <pre id="device-errors-list"></pre>
+    <p class="row"><button type="button" class="quiet" id="device-errors-clear">Clear the list</button></p>
+  </section>
   <p class="row"><a href="/">Back to the site</a> <button type="button" class="quiet" id="out">Sign out</button></p>
 </main>
 <script src="js/app.js"></script>
@@ -28,6 +34,18 @@ document.getElementById('out').addEventListener('click', () => {
   account.signOut();
   location.href = '/';
 });
+/* The typing game writes down what went wrong on this device (js/typing.js, remember()). */
+(() => {
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('typing-errors') || '[]'); } catch (e) { /* nothing readable */ }
+  if (!list.length) return;
+  document.getElementById('device-errors').hidden = false;
+  document.getElementById('device-errors-list').textContent = list.map((x) => Object.keys(x).map((k) => k + ': ' + x[k]).join('\n')).join('\n\n');
+  document.getElementById('device-errors-clear').addEventListener('click', () => {
+    localStorage.removeItem('typing-errors');
+    document.getElementById('device-errors').hidden = true;
+  });
+})();
 </script>
 </body>
 </html>

@@ -18,6 +18,8 @@
    the parents. */
 const typing = (() => {
   const STORE = 'typing'; // the localStorage key
+  const ERRORS = 'typing-errors'; // the last things that went wrong on this device, listed on the admin page
+  const BACKUP = 'typing-backup'; // a record this page could not use, kept before starting over
   const KEY_MAX = {keys: 66, touch: 118, small: 128}; // px: the largest a drawn key grows, by way
   const KEY_MIN = 14; // px: the smallest
   const TALL = 1.25; // the child's keys on glass are this much taller than wide
@@ -93,6 +95,7 @@ const typing = (() => {
   let told = false; // the small version has said what it is
   let dirty = false; // a setting was changed while the panel was open
   let asking = 0; // how far the fresh start has been confirmed
+  let rescued = false; // something went wrong on this visit, so on glass the small version is used until the page is opened again
 
   const beep = (name, ...values) => {
     if (name && typeof sound !== 'undefined' && typeof sound[name] === 'function') sound[name](...values);
@@ -110,6 +113,20 @@ const typing = (() => {
   };
   const save = () => {
     try { localStorage.setItem(STORE, JSON.stringify(game.state())); } catch (e) { /* a private window keeps nothing */ }
+  };
+  /* What went wrong, written down on the device with what the page knew at
+     the time, so the admin page can show it: the family's tablet once showed
+     the child a blank page that no emulated screen would. */
+  const remember = (err) => {
+    try {
+      let s = null;
+      try { s = game && game.settings(); } catch (e) { /* the game itself may be what broke */ }
+      const list = JSON.parse(localStorage.getItem(ERRORS) || '[]').slice(-4);
+      list.push({at: new Date().toISOString(), message: String((err && err.message) || err), stack: String((err && err.stack) || '').split('\n').slice(0, 6).join('\n'),
+        player: s && s.player, way: s && s.playing.way, chosen: s && s.way, layout: s && s.playing.layout, view: view, rescued: rescued,
+        screen: innerWidth + 'x' + innerHeight + ' at ' + devicePixelRatio, hands: hands, fine: matchMedia('(hover: hover) and (pointer: fine)').matches, agent: navigator.userAgent});
+      localStorage.setItem(ERRORS, JSON.stringify(list));
+    } catch (e) { /* nothing more can be done */ }
   };
   /* The engine gives no new letter while the character just earned still
      waits for its own round. A mark earned and then switched off never gets
@@ -370,12 +387,43 @@ const typing = (() => {
      screen allow. Answers whether it changed. */
   const reway = () => {
     const s = game.settings();
-    const next = typingEngine.wayFor({choice: s.way === 'auto' ? '' : s.way, fine: hands === 'keys', width: innerWidth, height: innerHeight, player: s.player});
+    const next = rescued && hands !== 'keys' ? 'small' : typingEngine.wayFor({choice: s.way === 'auto' ? '' : s.way, fine: hands === 'keys', width: innerWidth, height: innerHeight, player: s.player});
     if (next === s.playing.way) return false;
     game.setWay(next);
     return true;
   };
+  /* A round, and if it cannot begin, the way out: the error is written down,
+     the small version (which needs the least) is tried, and if even that
+     fails this player starts afresh, the old record kept aside. */
   const begin = () => {
+    for (let tries = 0; tries < 3; tries++) {
+      try {
+        beginRound();
+        return;
+      } catch (err) {
+        remember(err);
+        built = '';
+        if (tries === 0) rescued = true;
+        else {
+          try { localStorage.setItem(BACKUP, saved() || ''); } catch (e) { /* keeps nothing */ }
+          game.reset();
+          save();
+        }
+      }
+    }
+  };
+  /* Right after a round begins on glass, the drawn keyboard must be on the
+     screen with room for a finger; if it is not, that is written down too
+     and the small version takes over. */
+  const looked = () => {
+    if (view !== 'play' || rescued || way() !== 'touch') return;
+    const box = el.kbd.getBoundingClientRect();
+    if (box.width >= 120 && box.height >= 40 && box.top >= 0 && box.bottom <= innerHeight + 2) return;
+    remember(`the keyboard is not in view: ${Math.round(box.left)},${Math.round(box.top)} ${Math.round(box.width)}x${Math.round(box.height)}`);
+    rescued = true;
+    begin();
+  };
+  const beginRound = () => {
     clearTimeout(gapTimer);
     reway();
     if (signature() !== built) build();
@@ -392,6 +440,7 @@ const typing = (() => {
     light(round.guide);
     fit();
     if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+    setTimeout(looked, 800);
   };
 
   const change = (d) => (d > 0 ? `<i class="up">▲ ${num(d)}</i>` : d < 0 ? `<i>▼ ${num(d)}</i>` : '<i></i>');
@@ -618,7 +667,14 @@ const typing = (() => {
     files = read;
     let state = null;
     try { state = JSON.parse(saved()); } catch (e) { /* a damaged state is a fresh start */ }
-    game = engine(state, 'keys');
+    try {
+      game = engine(state, 'keys');
+    } catch (err) {
+      /* A record the engine cannot read: kept aside, and a fresh start. */
+      remember(err);
+      try { localStorage.setItem(BACKUP, saved() || ''); } catch (e) { /* keeps nothing */ }
+      game = engine(null, 'keys');
+    }
     beep('preloadPrompts', ['well-done', 'mashaallah']);
     if (!game.settings().player) {
       show('who');
@@ -646,8 +702,11 @@ const typing = (() => {
     }, 150);
   });
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => fit()).observe(el.board);
+  /* Anything else that goes wrong on this page is written down as well. */
+  addEventListener('error', (e) => remember(e.error || e.message));
+  addEventListener('unhandledrejection', (e) => remember(e.reason));
 
-  Promise.all(['layouts', 'stats', 'words'].map((name) => fetch('typing/' + name + '.json').then((r) => r.json()))).then(start);
+  Promise.all(['layouts', 'stats', 'words'].map((name) => fetch('typing/' + name + '.json').then((r) => r.json()))).then(start).catch(remember);
 
   /* For testing by hand on the family's own computer. */
   const hook = {game: () => game, begin: begin, build: build, fit: fit, state: () => ({view: view, hands: hands, geo: geo, lit: lit, held: held, at: at})};

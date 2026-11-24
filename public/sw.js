@@ -4,7 +4,7 @@
    reload.
    Every page, photo, recording and font the pages use belongs in FILES. One
    that is missing still gets saved the first time it is used. */
-const CACHE = 'ashudd-v14';
+const CACHE = 'ashudd-v15';
 const FILES = [
   '/',
   '/reading.html',
@@ -18,6 +18,8 @@ const FILES = [
   '/factory.html',
   '/mazes.html',
   '/typing.html',
+  '/stories.html',
+  '/story.html',
   '/credits.html',
   '/404.html',
   '/css/style.css',
@@ -38,12 +40,14 @@ const FILES = [
   '/js/mazes.js',
   '/js/typing-engine.js',
   '/js/typing.js',
+  '/js/story.js',
   '/quran/fatihah.json',
   '/dua/riding.json',
   '/mazes/mazes.json',
   '/typing/layouts.json',
   '/typing/stats.json',
   '/typing/words.json',
+  '/stories/zamzam.json',
   '/audio/fatihah.timings.json',
   '/fonts/NotoNaskhArabic.woff2',
   '/fonts/ScheherazadeNew.woff2',
@@ -55,6 +59,20 @@ const FILES = [
   '/images/house.jpg',
   '/images/mosque.jpg',
   '/images/kaaba.jpg',
+  '/images/stories/zamzam/cover.webp',
+  '/images/stories/zamzam/1.webp',
+  '/images/stories/zamzam/2.webp',
+  '/images/stories/zamzam/3.webp',
+  '/images/stories/zamzam/4.webp',
+  '/images/stories/zamzam/5.webp',
+  '/images/stories/zamzam/6.webp',
+  '/images/stories/zamzam/7.webp',
+  '/images/stories/zamzam/8.webp',
+  '/images/stories/zamzam/9.webp',
+  '/images/stories/zamzam/10.webp',
+  '/images/stories/zamzam/11.webp',
+  '/images/stories/zamzam/12.webp',
+  '/images/stories/zamzam/13.webp',
   '/images/drive/acacia.svg',
   '/images/drive/atv.svg',
   '/images/drive/bakery.svg',

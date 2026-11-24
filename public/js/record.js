@@ -535,6 +535,15 @@ async function init() {
       note: "The du'a of riding in one recording: the bismillah, then the verses (from Sunan Abi Dawud 2602). Pause briefly between the two lines so the words light up in step. One recording for both dialect settings",
     });
   }
+  // A story's text is read from its own file too, so the card says exactly the words on screen.
+  const zamzam = await fetch('stories/zamzam.json').then((response) => response.json()).catch(() => null);
+  if (zamzam) {
+    const note = 'Fusha only: the words on screen light up as they are spoken, so read exactly these words, slowly and warmly, with a short breath at each comma and full stop';
+    slots.push(
+      { group: 'Story: Ismail and Zamzam', file: zamzam.clip, text: zamzam.title, note: `The title page. ${note}` },
+      ...zamzam.pages.map((page, i) => ({ group: 'Story: Ismail and Zamzam', file: page.clip, text: page.text, note: `Page ${i + 1} of ${zamzam.pages.length}. ${note}` })),
+    );
+  }
   render();
   markRecorded();
   $('todo').addEventListener('change', () => $('slots').classList.toggle('only-todo', $('todo').checked));

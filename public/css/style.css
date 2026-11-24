@@ -642,3 +642,47 @@ button{font:inherit;color:inherit;cursor:pointer}
   .typing[data-way="small"] .type-letters{grid-area:letters;align-self:start}
   .type-result .round{width:56px;height:56px;padding:12px}
 }
+/* The stories: the shelf (stories.html) and the reader (story.html, js/story.js) */
+.shelf{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;padding:8px 16px 40px}
+/* A closed Arabic book seen face on: its spine on the right, the edges of its pages on the left */
+.book{position:relative;display:block;width:min(78vw,52svh,340px);aspect-ratio:3/4;margin-left:6px;border-radius:14px 5px 5px 14px;background:#23766D;box-shadow:inset -16px 0 0 rgba(0,0,0,.16),var(--shadow);text-decoration:none;transition:transform .18s ease}
+.book::before{content:"";position:absolute;left:-6px;top:9px;bottom:9px;width:7px;border-radius:4px 0 0 4px;background:repeating-linear-gradient(#FBF4E8 0 2px,#E6D8C0 2px 3px)}
+.book:hover{transform:translateY(-3px)}
+.book:active{transform:scale(.99)}
+.book-cover{position:absolute;inset:14px 30px 14px 14px;display:flex;flex-direction:column;align-items:center;gap:6%;padding:10px;border:2px solid var(--gold);border-radius:8px}
+.book-cover img{display:block;width:100%;aspect-ratio:1216/896;object-fit:cover;border-radius:6px}
+.book-title{flex:1;display:flex;align-items:center;justify-content:center;color:#FBF4E8;font-weight:700;font-size:clamp(1.45rem,min(6.4vw,4.4svh),2.2rem);line-height:1.75;text-align:center}
+.story-page{overscroll-behavior:none}
+.story{height:100svh;display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1.2vh,12px);padding:calc(8px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom));overflow:hidden}
+.story .head{flex:none;display:flex;justify-content:center}
+.story .head .logo{width:56px;height:56px}
+.story-book{flex:1;min-height:0;width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.6vh,18px);touch-action:pan-y;user-select:none;-webkit-user-select:none}
+/* The picture's box grows to the room left by the words, but never taller than the picture at full width, so the page sits together in the middle */
+.story-picture{flex:1 1 0;min-height:0;max-height:calc(min(100vw - 24px,1100px) * .737);width:100%;margin:0;display:flex;align-items:center;justify-content:center}
+.story-picture img{display:block;max-width:100%;max-height:100%;border-radius:22px;box-shadow:var(--shadow);-webkit-user-drag:none}
+/* The words: soft grey while they wait to be read, full ink once spoken, and they stay inked */
+.story-text{flex:none;max-width:min(100%,980px);margin:0;text-align:center;font-weight:600;font-size:clamp(1.45rem,min(5vh,7vw),2.9rem);line-height:1.9}
+.story-text .w{color:#BDAE9B;transition:color .35s ease}
+.story-text .w.ink,.story-text.still .w{color:var(--ink)}
+.story-text.title{font-weight:700;font-size:clamp(1.8rem,min(6.4vh,8vw),3.6rem);line-height:1.7}
+.story-text.title .w.ink,.story-text.title.still .w{color:var(--deep)}
+.story-nav{flex:none;width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.story-mid{display:flex;flex-direction:column;align-items:center;gap:6px}
+.story-nav .round{width:clamp(56px,9vh,72px);height:clamp(56px,9vh,72px);padding:clamp(12px,2vh,16px)}
+.round.story-next{background:#35A85A;color:#fff}
+.round.story-prev:disabled{opacity:.3;box-shadow:none}
+.story-nav .round.hint{animation:breathe 1.3s ease-in-out infinite}
+.story-next .go-shelf,.story[data-page="last"] .story-next .go-on{display:none}
+.story[data-page="last"] .story-next .go-shelf{display:block}
+.story-dots{display:flex;justify-content:center;gap:clamp(3px,1vw,5px)}
+.story-dots i{flex:none;width:clamp(6px,1.9vw,9px);height:clamp(6px,1.9vw,9px);border-radius:50%;background:var(--line)}
+.story-dots i.on{background:var(--gold)}
+/* A low, wide screen (a phone on its side): the picture beside the words, and no logo */
+@media (max-height:520px) and (min-aspect-ratio:4/3){
+  .story{padding-top:calc(60px + env(safe-area-inset-top))}
+  .story .head{display:none}
+  .story-book{flex-direction:row;align-items:center}
+  .story-picture{flex:1.25 1 0;height:100%;max-height:none}
+  .story-text{flex:1;font-size:clamp(1.2rem,4.4vw,2rem)}
+  .story-text.title{font-size:clamp(1.4rem,5vw,2.4rem)}
+}
