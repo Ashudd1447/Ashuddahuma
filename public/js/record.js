@@ -1,8 +1,13 @@
 /* The parents' recording tool. Ported from the IQRA app's intake page: the
    microphone is captured raw (no echo cancellation, noise suppression or
    automatic gain, which cannot be undone later), through an AudioWorklet, and
-   written as 16-bit mono WAV. Takes stay in memory until written or
-   downloaded, so finish a sitting before closing the page. */
+   written as 16-bit mono WAV. From IQRA's intake too: the meter with the
+   loudest point held, a take player that pauses and stops, the keys R,
+   Space, N and P, the level advice, the warning when the microphone changes,
+   and the takes kept on the computer (IndexedDB) with the folder remembered.
+   The room check is this site's own: three seconds of silence, measured and
+   not saved (IQRA records its room tone as a file for later analysis, which
+   this site has no use for). */
 const $ = (id) => document.getElementById(id);
 
 /* Every clip the site plays, by file name. Quran text comes from the surah
@@ -160,8 +165,43 @@ let recorder = null;
 let recordingSlot = null;
 let starting = false;
 let workletUrl = null;
-const takes = new Map();
-const kept = new Map();
+let lastMic = ''; // the microphone of the take before, to warn when it changes
+const takes = new Map(); // file: [take], every take of this computer's sittings
+const kept = new Map(); // file: the number of the take to write
+
+/* Kept on this computer between visits, as IQRA's intake keeps its session:
+   every take (its WAV and its check), which take is kept for each card, and
+   the folder last written to. A reload or a crash loses nothing; "Discard
+   saved takes" empties it. */
+const store = (() => {
+  let opened = null;
+  const open = () => opened || (opened = new Promise((resolve, reject) => {
+    const request = indexedDB.open('ashudd-record', 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore('takes');
+      request.result.createObjectStore('meta');
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  }));
+  const run = async (name, mode, work) => {
+    const db = await open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(name, mode);
+      const request = work(tx.objectStore(name));
+      tx.oncomplete = () => resolve(request ? request.result : undefined);
+      tx.onerror = () => reject(tx.error);
+    });
+  };
+  return {
+    putTake: (file, take) => run('takes', 'readwrite', (s) => s.put({ ...take, file }, `${file}:${take.no}`)),
+    allTakes: () => run('takes', 'readonly', (s) => s.getAll()),
+    get: (key) => run('meta', 'readonly', (s) => s.get(key)),
+    put: (key, value) => run('meta', 'readwrite', (s) => s.put(value, key)),
+    clear: async () => { await run('takes', 'readwrite', (s) => s.clear()); await run('meta', 'readwrite', (s) => s.delete('kept')); },
+  };
+})();
+const saveKept = () => store.put('kept', [...kept]).catch(() => {});
 
 /* Capture */
 async function startRecording(deviceId) {
@@ -325,13 +365,76 @@ function verdict(p, duration) {
   return { level, notes, snr };
 }
 
+/* A microphone's name without what Windows adds around it, as IQRA's micName. */
+const micName = (label) => (label || '').replace(/^(Default|Communications) - /, '').replace(/^\d+- /, '').replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i, '').trim();
+
+/* IQRA's level advice: from the loudest point of every kept take, once there
+   are two, whether the input level suits the voice. */
+function levelAdvice() {
+  const peaks = slots.map((slot) => (takes.get(slot.file) || []).find((t) => t.no === kept.get(slot.file))).filter(Boolean).map((t) => t.peak).sort((a, b) => a - b);
+  const box = $('advice');
+  if (peaks.length < 2) { box.hidden = true; return; }
+  const median = peaks[Math.floor(peaks.length / 2)];
+  let text = '';
+  let level = 'good';
+  if (median > -1) { text = `Too loud: the kept takes peak around ${median.toFixed(0)} dBFS and may be clipped. Move back from the microphone or lower the Windows input level.`; level = 'bad'; }
+  else if (median < -30) { text = `Very quiet: the kept takes peak around ${median.toFixed(0)} dBFS. Raise the Windows input level by about ${Math.round(-12 - median)} dB, or come closer.`; level = 'bad'; }
+  else if (median < -18) { text = `Usable but quiet: the kept takes peak around ${median.toFixed(0)} dBFS. Raise the Windows input level by about ${Math.round(-12 - median)} dB for the next ones.`; level = 'warn'; }
+  box.hidden = !text;
+  box.className = `note ${level}`;
+  box.textContent = text;
+}
+
+/* The room check: three seconds of silence, before a sitting, to hear how
+   noisy the room is. Nothing is saved. The click of the button and of the
+   end are left out (half a second at each end). */
+const ROOM_SECONDS = 3;
+async function roomCheck() {
+  if (recorder || starting) return;
+  stopPlayback();
+  const button = $('room');
+  let handle;
+  starting = true;
+  try {
+    handle = await startRecording($('mic').value);
+  } catch (error) {
+    setStatus(`Microphone not available: ${error.message}`);
+    return;
+  } finally {
+    starting = false;
+  }
+  recorder = handle;
+  button.disabled = true;
+  $('room-result').textContent = '';
+  setStatus('Room check: stay quiet for three seconds…');
+  watchMeter();
+  await new Promise((resolve) => setTimeout(resolve, ROOM_SECONDS * 1000 + 300));
+  recorder = null;
+  const { samples, sampleRate } = await handle.stop();
+  button.disabled = false;
+  const edge = Math.round(sampleRate * 0.5);
+  const quiet = samples.length > 4 * edge ? samples.slice(edge, samples.length - edge) : samples;
+  const p = profile(quiet, sampleRate);
+  const sorted = Float64Array.from(p.rms).sort();
+  const room = dbfs(sorted[Math.floor(sorted.length / 2)] || 0);
+  let text;
+  let level = 'good';
+  if (p.peakSample > 0.05) { text = `Something loud was heard (peak ${dbfs(p.peakSample).toFixed(0)} dBFS): a voice, a door? Try again when it is quiet.`; level = 'bad'; }
+  else if (room > -50) { text = `The room is noisy (${room.toFixed(0)} dBFS). The noise will be under every take: wait for a quieter moment or close the door.`; level = 'warn'; }
+  else if (room > -60) text = `The room is fine (${room.toFixed(0)} dBFS).`;
+  else text = `The room is quiet (${room.toFixed(0)} dBFS). Good.`;
+  $('room-result').className = `note ${level}`;
+  $('room-result').textContent = text;
+  setStatus(text);
+}
+
 /* Takes */
 async function stopRecording(slot) {
   const handle = recorder;
   recorder = null;
   recordingSlot = null;
   const { samples, sampleRate, device } = await handle.stop();
-  $('meter').firstElementChild.style.width = '0';
+  $('meter-fill').style.width = '0';
   if (samples.length < sampleRate * 0.1) {
     setStatus('Nothing recorded. Press Record, wait a beat, say it, then Stop.');
     return;
@@ -349,16 +452,61 @@ async function stopRecording(slot) {
     peak: dbfs(p.peakSample),
     device,
     check: verdict(p, duration),
+    recordedAt: new Date().toISOString(),
   };
+  /* IQRA's wrong-microphone warning: a take from another microphone than the
+     one before sounds different beside the others. */
+  const mic = micName(device);
+  if (lastMic && mic && mic !== lastMic) {
+    take.check.notes.push(`recorded with ${mic}, not ${lastMic} as the take before`);
+    if (take.check.level === 'good') take.check.level = 'warn';
+  }
+  if (mic) lastMic = mic;
   list.push(take);
   takes.set(slot.file, list);
   kept.set(slot.file, take.no);
+  store.putTake(slot.file, take).catch(() => setStatus('This take could not be kept on the computer: write it to the folder before closing the page.'));
+  saveKept();
   render();
+  levelAdvice();
   setStatus(`Take ${take.no} of ${slot.file}: ${duration.toFixed(2)} s, peak ${take.peak.toFixed(1)} dBFS${take.check.notes.length ? ', ' + take.check.notes.join(', ') : ''}.`);
+}
+
+/* IQRA's meter: the loudest sample of the latest chunk, on a scale of −60 to
+   0 dBFS, with the loudest point of the take held as a mark. The shaded band
+   (−18 to −6) is where the voice should peak; above −1 the bar turns red. */
+const meterAt = (db) => `${Math.max(0, Math.min(100, ((db + 60) / 60) * 100))}%`;
+function watchMeter() {
+  const meter = $('meter');
+  const fill = $('meter-fill');
+  const hold = $('meter-hold');
+  let held = -Infinity;
+  meter.classList.remove('hot');
+  hold.hidden = true;
+  $('meter-text').textContent = 'Listening…';
+  const loop = () => {
+    if (!recorder) {
+      fill.style.width = '0';
+      if (held > -Infinity) $('meter-text').textContent = `The loudest point was ${held.toFixed(1)} dBFS.`;
+      return;
+    }
+    const db = dbfs(recorder.level());
+    fill.style.width = meterAt(db);
+    if (db > held) {
+      held = db;
+      hold.hidden = false;
+      hold.style.left = meterAt(held);
+      meter.classList.toggle('hot', held > -1);
+      $('meter-text').textContent = `Loudest so far ${held.toFixed(1)} dBFS`;
+    }
+    requestAnimationFrame(loop);
+  };
+  loop();
 }
 
 async function toggleRecording(slot) {
   if (starting) return;
+  if (recorder && !recordingSlot) return; // the room check is listening
   if (recorder) {
     // Whatever card was clicked, the take belongs to the card being recorded.
     const recording = recordingSlot;
@@ -368,6 +516,7 @@ async function toggleRecording(slot) {
     return;
   }
   select(slot);
+  stopPlayback();
   starting = true;
   try {
     recorder = await startRecording($('mic').value);
@@ -379,26 +528,53 @@ async function toggleRecording(slot) {
     starting = false;
   }
   const button = document.querySelector(`[data-rec="${slot.file}"]`);
-  button.textContent = 'Stop';
-  button.classList.add('rec');
-  const meter = $('meter').firstElementChild;
-  const loop = () => {
-    if (!recorder) return;
-    const db = dbfs(recorder.level());
-    meter.style.width = `${Math.max(0, Math.min(100, ((db + 60) / 60) * 100))}%`;
-    requestAnimationFrame(loop);
-  };
-  loop();
-  setStatus(`Recording ${slot.file}. Wait a beat, say it, then Stop.`);
+  if (button) { button.textContent = 'Stop'; button.classList.add('rec'); }
+  if ($('mic').length === 1) listMicrophones(); // the names show once the microphone is allowed
+  watchMeter();
+  setStatus(`Recording ${slot.file}. Wait a beat, say it, then Stop (R).`);
 }
 
+/* Listening back, as IQRA's take player: one take at a time, which can be
+   paused and resumed, or stopped, so a long passage need not play to the
+   end. Recording, or moving to another card, stops it. */
 let player = null;
-function playTake(take) {
-  if (!player) player = new Audio();
-  player.pause();
-  player.src = URL.createObjectURL(take.blob);
-  player.play().catch(() => {});
+let playing = null; // {file, no, url}
+function showPlayback() {
+  for (const button of document.querySelectorAll('[data-play]')) {
+    const card = button.closest('.slot');
+    const on = playing && card && card.dataset.file === playing.file && Number(button.dataset.play) === playing.no;
+    button.textContent = on && !player.paused ? 'Pause' : on ? 'Resume' : 'Play';
+    const stop = button.nextElementSibling;
+    if (stop && stop.dataset.stop) stop.hidden = !on;
+  }
 }
+function stopPlayback() {
+  if (!player || !playing) return;
+  player.pause();
+  URL.revokeObjectURL(playing.url);
+  playing = null;
+  showPlayback();
+}
+function togglePlay(slot, take) {
+  if (!take) return;
+  if (!player) {
+    player = new Audio();
+    player.addEventListener('ended', stopPlayback);
+    player.addEventListener('play', showPlayback);
+    player.addEventListener('pause', showPlayback);
+  }
+  if (playing && playing.file === slot.file && playing.no === take.no) {
+    if (player.paused) player.play().catch(() => {});
+    else player.pause();
+    return;
+  }
+  stopPlayback();
+  playing = { file: slot.file, no: take.no, url: URL.createObjectURL(take.blob) };
+  player.src = playing.url;
+  player.play().catch(() => {});
+  showPlayback();
+}
+const keptTake = (slot) => (takes.get(slot.file) || []).find((t) => t.no === kept.get(slot.file));
 
 function downloadTake(slot, take) {
   const link = document.createElement('a');
@@ -414,30 +590,66 @@ async function writeAll() {
     setStatus('This browser cannot write into a folder. Use Chrome or Edge on a computer, or download each take.');
     return;
   }
-  let dir;
-  try {
-    dir = await window.showDirectoryPicker({ mode: 'readwrite' });
-  } catch {
-    return;
-  }
+  const dir = await folder(false);
+  if (!dir) return;
   const written = [];
+  const replaced = [];
   for (const slot of slots) {
-    const take = (takes.get(slot.file) || []).find((t) => t.no === kept.get(slot.file));
+    const take = keptTake(slot);
     if (!take) continue;
-    const handle = await dir.getFileHandle(`${slot.file}.wav`, { create: true });
+    const name = `${slot.file}.wav`;
+    const there = await dir.getFileHandle(name).then(() => true, () => false);
+    const handle = await dir.getFileHandle(name, { create: true });
     const stream = await handle.createWritable();
     await stream.write(take.blob);
     await stream.close();
-    written.push(`${slot.file}.wav`);
+    written.push(name);
+    if (there) replaced.push(name);
   }
-  $('written').textContent = written.length ? `Written: ${written.join(', ')}` : 'Nothing to write yet.';
-  setStatus(written.length ? `Wrote ${written.length} file(s) into ${dir.name}.` : 'No kept takes to write.');
+  $('written').textContent = written.length ? `Written: ${written.join(', ')}${replaced.length ? `. Replaced: ${replaced.join(', ')}` : ''}` : 'Nothing to write yet.';
+  setStatus(written.length ? `Wrote ${written.length} file(s) into ${dir.name}${replaced.length ? `, ${replaced.length} of them replacing a file already there` : ''}.` : 'No kept takes to write.');
+}
+
+/* The folder to write into: the one used last time, asked for again only
+   when the browser has forgotten the permission, or a new one when asked.
+   The site plays recordings from public/audio, so a folder with another name
+   is questioned. */
+async function folder(choose) {
+  let dir = choose ? null : await store.get('dir').catch(() => null);
+  if (dir) {
+    const mode = { mode: 'readwrite' };
+    const allowed = (await dir.queryPermission(mode)) === 'granted' || (await dir.requestPermission(mode).catch(() => 'denied')) === 'granted';
+    if (!allowed) dir = null;
+  }
+  if (!dir) {
+    try {
+      dir = await window.showDirectoryPicker({ id: 'ashudd-audio', mode: 'readwrite' });
+    } catch {
+      return null;
+    }
+    if (dir.name !== 'audio' && !confirm(`This folder is called "${dir.name}". The site's recordings go in public\\audio inside the project. Use "${dir.name}" anyway?`)) return null;
+    await store.put('dir', dir).catch(() => {});
+  }
+  $('folder').textContent = `Folder: ${dir.name}`;
+  return dir;
 }
 
 /* Page */
 function select(slot) {
+  if (selected !== slot) stopPlayback();
   selected = slot;
   for (const card of document.querySelectorAll('.slot')) card.classList.toggle('selected', card.dataset.file === slot.file);
+}
+
+/* N and P, as IQRA: the next or the previous card on the page (with the
+   filter on, the next one still to record), brought to the middle. */
+function move(step) {
+  const shown = [...document.querySelectorAll('.slot')].filter((card) => card.offsetParent !== null);
+  if (!shown.length) return;
+  const at = selected ? shown.findIndex((card) => card.dataset.file === selected.file) : -1;
+  const next = shown[at < 0 ? 0 : Math.max(0, Math.min(shown.length - 1, at + step))];
+  select(slots.find((slot) => slot.file === next.dataset.file));
+  next.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 
 function setStatus(text) {
@@ -466,10 +678,11 @@ function render() {
       <div class="row"><button type="button" data-rec="${slot.file}">Record</button></div>
       <ul class="takes">${list.map((take) => `
         <li data-take="${take.no}">
+          <b class="badge ${take.check.level}" title="${take.check.level}">${{ good: '✓', warn: '!', bad: '✗' }[take.check.level] || '·'}</b>
           <span class="${take.no === kept.get(slot.file) ? 'kept' : ''}">Take ${take.no}${take.no === kept.get(slot.file) ? ' (kept)' : ''}</span>
           <span>${take.duration.toFixed(2)} s · peak ${take.peak.toFixed(1)} dBFS</span>
-          <span class="${take.check.level}">${take.check.notes.join(', ')}</span>
-          <button type="button" class="quiet" data-play="${take.no}">Play</button>
+          <span class="${take.check.level}">${take.check.notes.join(', ') || 'clean'}</span>
+          <button type="button" class="quiet" data-play="${take.no}">Play</button><button type="button" class="quiet" data-stop="${take.no}" hidden>Stop</button>
           <button type="button" class="quiet" data-keep="${take.no}">Keep this</button>
           <button type="button" class="quiet" data-download="${take.no}">Download</button>
         </li>`).join('')}</ul>`;
@@ -477,26 +690,33 @@ function render() {
       const button = event.target.closest('button');
       select(slot);
       if (!button) return;
+      button.blur(); // so Space and R stay with the page, not with the button
       const take = (n) => list.find((t) => t.no === Number(n));
       if (button.dataset.rec) toggleRecording(slot);
-      else if (button.dataset.play) playTake(take(button.dataset.play));
-      else if (button.dataset.keep) { kept.set(slot.file, Number(button.dataset.keep)); render(); }
+      else if (button.dataset.play) togglePlay(slot, take(button.dataset.play));
+      else if (button.dataset.stop) stopPlayback();
+      else if (button.dataset.keep) { kept.set(slot.file, Number(button.dataset.keep)); saveKept(); render(); levelAdvice(); }
       else if (button.dataset.download) downloadTake(slot, take(button.dataset.download));
     });
     root.append(card);
   }
+  showPlayback();
 }
 
 async function listMicrophones() {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const mics = devices.filter((d) => d.kind === 'audioinput' && d.label);
+    const picker = $('mic');
+    const chosen = picker.value;
+    picker.length = 1; // keeps "Default"
     for (const mic of mics) {
       const option = document.createElement('option');
       option.value = mic.deviceId;
-      option.textContent = mic.label;
-      $('mic').append(option);
+      option.textContent = micName(mic.label) || mic.label;
+      picker.append(option);
     }
+    if (mics.some((mic) => mic.deviceId === chosen)) picker.value = chosen;
   } catch {
     // Names show after the first recording grants permission.
   }
@@ -544,17 +764,70 @@ async function init() {
       ...zamzam.pages.map((page, i) => ({ group: 'Story: Ismail and Zamzam', file: page.clip, text: page.text, note: `Page ${i + 1} of ${zamzam.pages.length}. ${note}` })),
     );
   }
+  await restore();
   render();
+  levelAdvice();
   markRecorded();
   $('todo').addEventListener('change', () => $('slots').classList.toggle('only-todo', $('todo').checked));
   listMicrophones();
+  if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) navigator.mediaDevices.addEventListener('devicechange', listMicrophones);
   $('write').addEventListener('click', writeAll);
+  $('choose').addEventListener('click', () => folder(true));
+  $('room').addEventListener('click', roomCheck);
+  $('discard').addEventListener('click', discard);
+  store.get('dir').then((dir) => { if (dir) $('folder').textContent = `Folder: ${dir.name}`; }).catch(() => {});
+  /* IQRA's keys: R records or stops; Space plays or pauses the card's kept
+     take; N and P go to the next and the previous card; Escape stops playing. */
   addEventListener('keydown', (event) => {
-    if (event.code === 'KeyR' && !event.repeat && selected && !/input|select|textarea/i.test(event.target.tagName)) {
+    if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (/input|select|textarea/i.test(event.target.tagName)) return;
+    if (event.code === 'KeyR') {
       event.preventDefault();
-      toggleRecording(selected);
-    }
+      if (recorder && recordingSlot) toggleRecording(recordingSlot);
+      else if (selected) toggleRecording(selected);
+    } else if (event.code === 'Space') {
+      event.preventDefault();
+      if (selected) togglePlay(selected, keptTake(selected));
+    } else if (event.code === 'KeyN') {
+      event.preventDefault();
+      move(1);
+    } else if (event.code === 'KeyP') {
+      event.preventDefault();
+      move(-1);
+    } else if (event.code === 'Escape') stopPlayback();
   });
+}
+
+/* The takes kept on this computer, back on their cards. */
+async function restore() {
+  try {
+    const saved = await store.allTakes();
+    const known = new Set(slots.map((slot) => slot.file));
+    for (const take of saved.sort((a, b) => a.no - b.no)) {
+      if (!known.has(take.file)) continue;
+      const list = takes.get(take.file) || [];
+      list.push(take);
+      takes.set(take.file, list);
+    }
+    for (const [file, no] of (await store.get('kept')) || []) if (takes.has(file)) kept.set(file, no);
+    const count = [...takes.values()].reduce((n, list) => n + list.length, 0);
+    if (count) setStatus(`${count} take(s) from earlier sittings are back on their cards. Write the kept ones to the folder, or discard them.`);
+  } catch {
+    setStatus('Takes cannot be kept on this computer in this browser: write them to the folder before closing the page.');
+  }
+}
+
+async function discard() {
+  const count = [...takes.values()].reduce((n, list) => n + list.length, 0);
+  if (!count) { setStatus('There are no saved takes.'); return; }
+  if (!confirm(`Discard all ${count} take(s) kept on this computer? Files already written to the folder stay.`)) return;
+  stopPlayback();
+  await store.clear().catch(() => {});
+  takes.clear();
+  kept.clear();
+  render();
+  levelAdvice();
+  setStatus('Saved takes discarded.');
 }
 
 init();

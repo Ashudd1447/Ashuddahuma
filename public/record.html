@@ -10,9 +10,15 @@
 <link rel="stylesheet" href="css/admin.css">
 <style>
 .setup{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;margin:12px 0}
-.meter{height:14px;background:var(--line);border-radius:7px;overflow:hidden;position:relative;margin:8px 0}
-.meter i{display:block;height:100%;width:0;background:var(--gold);transition:width .05s linear}
-.meter b{position:absolute;top:0;bottom:0;width:2px;background:var(--deep);opacity:.4}
+.meter{height:16px;max-width:560px;background:var(--line);border-radius:8px;overflow:hidden;position:relative;margin:8px 0 2px}
+.meter .band{position:absolute;top:0;bottom:0;left:70%;width:20%;background:rgba(58,138,58,.3)}
+.meter i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--gold);transition:width 60ms linear}
+.meter b{position:absolute;top:0;bottom:0;width:3px;margin-left:-1px;background:var(--deep)}
+.meter.hot i,.meter.hot b{background:#C0392B}
+.good{color:#2E7D32}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border-radius:50%;color:#fff;font-size:.85rem}
+.badge.good{background:#2E7D32;color:#fff}.badge.warn{background:#B9770E;color:#fff}.badge.bad{background:#C0392B;color:#fff}
+kbd{font:600 .85rem ui-monospace,monospace;padding:1px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;background:var(--surface)}
 .slot{background:var(--surface);border-radius:16px;padding:14px 16px;margin:10px 0;box-shadow:var(--shadow)}
 .slot.selected{outline:3px solid var(--gold)}
 .slot .text{direction:rtl;font-size:2.2rem;line-height:1.9;margin:0}
@@ -30,18 +36,24 @@
 <body>
 <main class="tool" hidden>
   <h1>Recording tool</h1>
-  <p>Admin tool, not linked from the site. Each card is one clip the site plays. Where the child hears a prompt in either dialect there are two cards: the Fusha one, and the Egyptian one named <code>-masri</code>, whose text is here only to read aloud and is never shown to the child. Press <b>Record</b>, wait a beat, say it, press <b>Stop</b>. The newest take is kept; keep an older one if it was better. Then <b>Write to folder</b> and choose the <code>public/audio</code> folder of the repo (Chrome or Edge on a computer), or download each take. A new recording of a name that already has an <code>.m4a</code> file is ignored by the site until that <code>.m4a</code> is removed.</p>
+  <p>Admin tool, not linked from the site. Each card is one clip the site plays. Where the child hears a prompt in either dialect there are two cards: the Fusha one, and the Egyptian one named <code>-masri</code>, whose text is here only to read aloud and is never shown to the child. Press <b>Record</b> (or <kbd>R</kbd>), wait a beat, say it, press <b>Stop</b>. The newest take is kept; keep an older one if it was better. Every take stays on this computer, even after a reload, until you discard it. Then <b>Write to folder</b>: the first time, choose the project's <code>publicudio</code> folder (Chrome or Edge on a computer); after that the page remembers it. A new recording of a name that already has an <code>.m4a</code> file is ignored by the site until that <code>.m4a</code> is removed.</p>
   <div class="setup">
     <label>Microphone <select id="mic"><option value="">Default</option></select></label>
     <label>Save as <select id="rate"><option value="22050">WAV mono 22,050 Hz (small, clear speech)</option><option value="44100">WAV mono 44,100 Hz</option><option value="48000">WAV mono 48,000 Hz (as recorded)</option></select></label>
     <label><input id="trim" type="checkbox" checked> Trim the silence at both ends</label>
   </div>
-  <div class="meter" id="meter"><i></i><b style="left:70%"></b><b style="left:90%"></b></div>
-  <p class="note">Aim for the voice to reach between the two marks (−18 to −6 dBFS). Press <b>R</b> to record or stop the selected card.</p>
+  <p class="row"><button id="room" type="button" class="quiet">Room check (3 s of silence)</button> <span id="room-result" class="note">Before a sitting, to hear how noisy the room is. Nothing is saved.</span></p>
+  <div class="meter" id="meter"><span class="band"></span><i id="meter-fill"></i><b id="meter-hold" hidden></b></div>
+  <p class="note" id="meter-text">Aim for the shaded band: peaks around −12 dBFS. Above −1 dBFS the bar turns red.</p>
+  <p class="note" id="advice" hidden></p>
+  <p class="note">Keys: <kbd>R</kbd> record or stop · <kbd>Space</kbd> play or pause the card's kept take · <kbd>N</kbd> next card · <kbd>P</kbd> previous card · <kbd>Esc</kbd> stop playing</p>
   <div class="row">
     <button id="write" type="button">Write to folder</button>
-    <span id="written" class="note"></span>
+    <button id="choose" type="button" class="quiet">Choose folder</button>
+    <span id="folder" class="note"></span>
+    <button id="discard" type="button" class="quiet">Discard saved takes</button>
   </div>
+  <p id="written" class="note"></p>
   <p><label><input id="todo" type="checkbox" checked> Show only the clips still to record</label> <span id="todo-count" class="note"></span></p>
   <div id="slots" class="only-todo"></div>
   <p id="status"></p>
