@@ -458,16 +458,23 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mazes{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
 .mazes .head{display:flex;justify-content:center}
 .mazes .head .logo{width:56px;height:56px}
-/* The list: two cards across on a phone; on a wide screen four, sized so that both rows fit the height */
+/* The list, which scrolls: three sections, each a heading between two fine lines over its cards; two cards across on a phone, four on a wide screen */
 .maze-list{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
-.maze-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:520px}
+.maze-sections{display:flex;flex-direction:column;align-items:center;gap:22px;width:100%}
+.maze-section{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:520px}
+.maze-heading{display:flex;align-items:center;gap:14px;align-self:stretch;margin:0;color:var(--deep);font-size:clamp(1.45rem,4.4vw,2rem);line-height:1.8;text-align:center}
+.maze-heading::before,.maze-heading::after{content:"";flex:1;min-width:12px;height:2px;border-radius:2px;background:var(--line)}
+.maze-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%}
 .maze-card{display:flex;flex-direction:column;align-items:center;min-width:0;padding:10px 10px 4px;border:0;border-radius:20px;background:var(--surface);box-shadow:var(--shadow);transition:transform .18s ease}
 .maze-card:active{transform:scale(.98)}
 .maze-card>svg{display:block;width:100%;aspect-ratio:1}
 .maze-card-title{font-weight:700;color:var(--deep);font-size:clamp(1.1rem,2.5vw,1.55rem);line-height:1.7}
 .maze-card-mark{min-height:1.6em;color:#1854B0;font-weight:700;font-size:clamp(1.15rem,2.7vw,1.65rem);line-height:1.6}
 .maze-card-mark svg{display:block;width:1.3em;height:1.3em;margin-top:.1em;fill:var(--gold)}
-@media (min-width:700px){.maze-cards{grid-template-columns:repeat(4,minmax(0,1fr));max-width:min(1100px,max(640px,calc(200svh - 700px)))}}
+@media (min-width:700px){
+  .maze-section{max-width:1000px}
+  .maze-cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
 /* A maze: the page does not scroll or zoom under the drawing finger */
 .mazes[data-view="maze"]{position:fixed;inset:0;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .maze-play{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -480,10 +487,12 @@ button{font:inherit;color:inherit;cursor:pointer}
 .maze-paper canvas{display:block;width:100%;height:100%}
 .maze-ring{position:absolute;width:var(--ring,64px);height:var(--ring,64px);margin:calc(var(--ring,64px) / -2) 0 0 calc(var(--ring,64px) / -2);border:4px solid #2F86DE;border-radius:50%;pointer-events:none;animation:maze-ring 1.2s ease-in-out infinite}
 @keyframes maze-ring{50%{transform:scale(.7);opacity:.4}}
-/* The name and the buttons keep their room from the start, so the maze does not move when they come */
-.maze-after{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:calc(clamp(2.2rem,9vmin,4.2rem) * 1.6 + 78px)}
-.maze-name{margin:0;font-weight:700;color:#1854B0;font-size:clamp(2.2rem,9vmin,4.2rem);line-height:1.6;animation:rise .5s cubic-bezier(.2,.8,.2,1)}
-.maze-buttons{display:flex;gap:18px;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+/* The name and the buttons keep their room from the start, so the maze does not move when they come: side by side under the maze, which leaves the maze the height */
+.maze-after{display:flex;align-items:center;justify-content:center;gap:6px clamp(12px,4vw,28px);min-height:max(64px,calc(clamp(2rem,8vmin,3.4rem) * 1.6))}
+.maze-name{margin:0;font-weight:700;color:#1854B0;font-size:clamp(2rem,8vmin,3.4rem);line-height:1.6;white-space:nowrap;animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+.maze-buttons{display:flex;gap:clamp(10px,3vw,18px);animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.maze-after .round{width:64px;height:64px;padding:14px}
+@media (max-width:520px){.mazes[data-view="maze"]{padding-inline:8px}}
 .round.maze-next{background:#35A85A;color:#fff}
 /* Wide screens: the title, the instruction, the name and the buttons in a column beside the maze, under the menu, so the maze takes the full height */
 @media (min-aspect-ratio:5/4){
@@ -492,7 +501,9 @@ button{font:inherit;color:inherit;cursor:pointer}
   .mazes[data-view="maze"] .head{grid-area:head;justify-self:stretch;justify-content:flex-end}
   .maze-text{grid-area:text}
   .maze-board{grid-area:board;height:100%}
-  .maze-after{grid-area:after;align-self:start;min-height:0}
+  .maze-after{grid-area:after;align-self:start;flex-direction:column;min-height:0}
+  .maze-name{font-size:clamp(2.2rem,9vmin,4.2rem);white-space:normal;text-align:center}
+  .maze-after .round{width:72px;height:72px;padding:16px}
 }
 @media (min-aspect-ratio:5/4) and (max-height:480px){
   .mazes[data-view="maze"] .head .logo{width:44px;height:44px}

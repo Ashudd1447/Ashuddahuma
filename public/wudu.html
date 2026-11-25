@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الْوُضُوءُ</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/salah.css">
+</head>
+<body class="salah-page">
+<div class="salah" id="salah" data-view="parts">
+  <header class="head">
+    <a href="salah.html" aria-label="الصَّلَاةُ"><img class="logo" src="images/logo.webp" alt=""></a>
+  </header>
+  <section class="s-parts" id="view-parts">
+    <h1 class="hub-title">الْوُضُوءُ</h1>
+    <div class="s-part-cards">
+      <button class="s-part" id="part-do" type="button" data-parts="wudu">
+        <span class="s-part-art" id="art-do"></span>
+        <span class="s-part-name">أَتَوَضَّأُ</span>
+      </button>
+      <button class="s-part" id="part-quiz" type="button" data-parts="wudu-quiz">
+        <span class="s-part-art" id="art-quiz"></span>
+        <span class="s-part-name">مَاذَا بَعْدُ؟</span>
+      </button>
+    </div>
+  </section>
+  <section class="w-do" id="view-do" hidden>
+    <div class="w-stage">
+      <div class="w-pic" id="pic">
+        <div class="w-splash" id="splash" aria-hidden="true"></div>
+      </div>
+      <div class="w-marks" id="marks" aria-hidden="true"></div>
+    </div>
+    <button class="w-label" id="label" type="button"></button>
+    <div class="s-dots" id="dots" aria-hidden="true"></div>
+  </section>
+  <section class="s-quiz" id="view-quiz" hidden></section>
+  <section class="s-done" id="view-praise" hidden>
+    <p class="praise">أحسنت</p>
+  </section>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/salah.js"></script>
+<script src="js/wudu.js"></script>
+</body>
+</html>

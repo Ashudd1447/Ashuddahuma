@@ -1,0 +1,199 @@
+/* الصَّلَاةُ: the hub (salah.html) and three of its games (wudu.html, pray.html, qibla.html; the five prayers have
+   prayers.css). The shell, the cards and the round buttons come from style.css. */
+
+/* A station's picture in its frame. Under the picture stands a warm card with a pale arch: it shows while the
+   picture loads, and when there is no picture the station's name is written on it and it stays. The pictures are
+   rounded tiles on white: the frame has the tile's corners and cuts the white away, so nothing depends on a
+   picture's own background. */
+.s-pic{position:relative;display:block;width:100%;aspect-ratio:1;border-radius:17%;overflow:hidden;background:#F3E3C6;container-type:inline-size}
+.s-pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;scale:1.02;transition:opacity .2s ease;pointer-events:none;-webkit-user-drag:none}
+.s-pic.ok img{opacity:1}
+.s-standin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18% 12% 6%}
+.s-arch{position:absolute;left:14%;right:14%;top:10%;bottom:0;border-radius:50% 50% 0 0/38% 38% 0 0;background:#FBF3E2;box-shadow:inset 0 0 0 max(2px,1.2cqi) #EAD7B2}
+.s-standin b{display:none;position:relative;max-width:100%;text-align:center;color:var(--deep);font-weight:700;font-size:min(9.5cqi,2.2rem);line-height:1.7;text-wrap:balance}
+.s-pic.none .s-standin b{display:block}
+.game-card .s-pic.art{border-radius:0}
+
+/* A star for each finished part, on the hub's cards and on the part cards */
+.s-card,.s-part{position:relative}
+.s-stars{position:absolute;top:10px;left:12px;display:flex;gap:2px;pointer-events:none}
+.s-stars svg{display:block;width:30px;height:30px;fill:var(--gold);filter:drop-shadow(0 1px 2px rgba(169,96,58,.35));animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+/* On a part card the star stands beside the name, clear of the picture */
+.s-part .s-stars{top:auto;bottom:.55em;left:10px}
+.s-part .s-stars svg{width:clamp(20px,5vw,30px);height:clamp(20px,5vw,30px)}
+
+/* Small marks in a row: where he is */
+.s-dots{flex:none;display:flex;justify-content:center;gap:clamp(4px,1.2vw,7px);min-height:10px}
+.s-dots i{flex:none;width:clamp(7px,2vw,10px);height:clamp(7px,2vw,10px);border-radius:50%;background:var(--line)}
+.s-dots i.on{background:var(--gold)}
+.s-dots i.now{background:var(--surface);box-shadow:0 0 0 2px var(--gold)}
+
+/* The rak'ah's badge, above the picture of the station reached (in the prayer and in its quiz): two marks, the first
+   lit or both, and the rak'ah's name. When the second rak'ah begins it stirs for a moment. --badge is the size of its
+   letters, measured where it stands (the quiz, or the prayer's stage); it is 1.7 of that high, and its border. */
+.salah{--badge:clamp(1.05rem,min(4cqh,5.4cqw),1.6rem)}
+.s-rakah{flex:none;display:flex;align-items:center;gap:.5em;max-width:100%;margin:0;padding-block:0 .1em;padding-inline:.75em .95em;border:2px solid var(--gold);border-radius:999px;background:var(--surface);color:var(--deep);font-weight:700;font-size:var(--badge);line-height:1.6;white-space:nowrap}
+.s-rakah-marks{flex:none;display:flex;gap:.3em}
+.s-rakah-marks i{width:.72em;height:.72em;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 2px var(--gold);transition:background .35s ease}
+.s-rakah-marks i.on{background:var(--gold)}
+.s-rakah.began{animation:s-began 1.2s cubic-bezier(.2,.8,.3,1)}
+@keyframes s-began{0%{scale:.9}30%{scale:1.14;background:#FBE9C4;box-shadow:0 0 0 8px rgba(201,138,69,.3)}62%{scale:1}100%{scale:1;box-shadow:0 0 0 14px rgba(201,138,69,0)}}
+
+/* The page of a game: the logo, then one section at a time */
+.salah-page{overscroll-behavior:none}
+.salah{min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom))}
+.salah .head{flex:none;display:flex;justify-content:center}
+.salah .head .logo{width:56px;height:56px}
+/* Inside a part nothing scrolls or zooms under the finger */
+.salah:not([data-view="parts"]){position:fixed;inset:0;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.salah section{width:100%}
+
+/* The two parts of a game, as two large cards */
+.s-parts{display:flex;flex-direction:column;align-items:center;gap:12px}
+.s-part-cards{display:flex;justify-content:center;gap:16px;width:100%}
+.s-part{display:flex;flex-direction:column;width:min(calc(50% - 8px),54svh,440px);padding:0;border:0;border-radius:24px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow);transition:transform .18s ease}
+.s-part:active{transform:scale(.98)}
+.s-part-art{display:block;width:100%}
+.s-part-art>.s-pic{border-radius:0}
+.s-part-name{padding:.2em .3em .3em;text-align:center;font-weight:700;color:var(--deep);font-size:clamp(1.35rem,min(6.2vw,5.4vh),2.3rem);line-height:1.6}
+/* The quiz's card: a station, an arrow, and the one to find */
+.q-art{display:flex;align-items:center;justify-content:center;gap:4%;width:100%;aspect-ratio:1;padding:7%;background:#F6EBDA}
+.q-art .s-pic{flex:1 1 0;box-shadow:var(--shadow)}
+.q-art svg{flex:none;width:13%;color:var(--gold)}
+.q-art b{flex:1 1 0;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:max(3px,.5vmin) dashed var(--gold);border-radius:17%;background:#FFFDF6;color:var(--deep);font-size:clamp(2rem,11vmin,5rem);line-height:1}
+
+/* أحسنت, in the middle of the page (its section is view-praise: style.css places #view-done for the building game) */
+.s-done{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.s-done-buttons{display:flex;gap:18px;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.s-done-buttons .round{display:block}
+.round.s-go{background:#35A85A;color:#fff}
+
+/* What comes next? */
+.s-quiz{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1.4vh,14px);container-type:size}
+.q-now{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;max-width:100%}
+.q-now .s-rakah{margin-bottom:clamp(2px,.8cqh,8px)}
+.q-now-pic{position:relative;display:block;width:min(46cqw,26cqh,230px)}
+.q-now-pic .s-pic{box-shadow:var(--shadow);animation:rise .45s cubic-bezier(.2,.8,.2,1)}
+.q-nth{position:absolute;top:6%;left:6%;min-width:1.7em;height:1.7em;border-radius:999px;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);font-weight:700;font-size:clamp(.95rem,7cqi,1.5rem);line-height:1.7em;text-align:center}
+.q-label{margin:0;text-align:center;font-weight:700;color:var(--ink);font-size:clamp(1.05rem,min(3.6cqh,5cqw),1.9rem);line-height:1.7;text-wrap:balance}
+.q-ask{flex:none;max-width:100%;border:0;border-radius:999px;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);padding:.02em .9em .16em;font-weight:700;font-size:clamp(1.4rem,min(5cqh,7.2cqw),2.6rem);line-height:1.6;text-wrap:balance;transition:background .25s ease,color .25s ease}
+.q-ask:empty{visibility:hidden}
+.q-ask.named{background:var(--gold);color:#fff;border-radius:24px;font-size:clamp(1.2rem,min(4.2cqh,5.8cqw),2.2rem)}
+.q-choices{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;gap:clamp(10px,3cqw,28px);container-type:size}
+.q-choice{flex:none;width:min(calc((100cqw - 2 * clamp(10px,3cqw,28px)) / 3),100cqh,330px);padding:0;border:0;border-radius:17%;background:none;box-shadow:var(--shadow);transition:transform .18s ease,opacity .3s ease,box-shadow .2s ease}
+.q-choices[data-count="2"] .q-choice{width:min(calc((100cqw - clamp(10px,3cqw,28px)) / 2),100cqh,330px)}
+.q-choice:active{transform:scale(.97)}
+.q-choice.no{opacity:.34;filter:grayscale(.8);box-shadow:none;animation:s-no .42s ease-in-out}
+@keyframes s-no{20%{translate:-7px 0}45%{translate:7px 0}70%{translate:-4px 0}90%{translate:3px 0}}
+.q-choice.hint{animation:breathe 1.2s ease-in-out infinite;box-shadow:0 0 0 6px rgba(242,184,75,.8),var(--shadow)}
+.q-choice.right{box-shadow:0 0 0 6px var(--gold),var(--shadow);transform:scale(1.04)}
+.q-choice.gone{opacity:0;pointer-events:none}
+/* A low, wide screen (a phone on its side): the badge and the name stand beside the station's picture, so that the
+   pictures to choose from keep their room */
+@media (min-aspect-ratio:5/4) and (max-height:520px){
+  .q-now{display:grid;grid-template-columns:auto auto;column-gap:clamp(10px,2.4cqw,22px);align-items:center;justify-items:start}
+  .q-now-pic{grid-column:1;grid-row:1 / 3}
+  .q-now .s-rakah{grid-column:2;grid-row:1;align-self:end;margin:0}
+  .q-now .q-label{grid-column:2;grid-row:2;align-self:start}
+  .q-now .s-rakah[hidden]~.q-label{grid-row:1 / 3;align-self:center}
+}
+
+/* Wudu: the picture he washes, the drops that count, the station's words */
+.w-do{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1.2vh,12px);--mark:clamp(52px,min(11vh,15vw),92px)}
+.w-stage{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.4vh,14px);container-type:size}
+.w-pic{position:relative;flex:none;width:min(100cqw,calc(100cqh - var(--mark) - 14px),620px);border-radius:17%;box-shadow:var(--shadow);cursor:pointer;touch-action:none}
+.w-pic.next .s-pic{animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.w-splash{position:absolute;inset:0;overflow:hidden;border-radius:17%;pointer-events:none}
+.w-drop{position:absolute;margin:-8px 0 0 -8px;border-radius:0 55% 55% 55%;rotate:45deg;background:linear-gradient(135deg,#BDE4FA,#4FA9E2);box-shadow:inset -1px -1px 0 rgba(255,255,255,.7);opacity:0;animation:w-fall .75s ease-in forwards}
+@keyframes w-fall{0%{opacity:0;translate:0 -14px;scale:.4}18%{opacity:.95;scale:1}100%{opacity:0;translate:0 70px;scale:.9}}
+.w-marks{flex:none;display:flex;justify-content:center;gap:clamp(8px,2.4vw,18px);height:var(--mark)}
+.w-mark{position:relative;width:var(--mark);height:var(--mark)}
+.w-mark svg{display:block;width:100%;height:100%;fill:#FFFDF6;stroke:#9CC9E8;stroke-width:1.4;stroke-linejoin:round;transition:fill .3s ease,stroke .3s ease}
+.w-mark b{position:absolute;left:0;right:0;top:34%;text-align:center;color:#9CC9E8;font-weight:700;font-size:calc(var(--mark) * .38);line-height:1.5;transition:color .3s ease}
+.w-mark.on svg{fill:#4FA9E2;stroke:#2F86C4}
+.w-mark.on b{color:#fff}
+.w-mark.on{animation:w-fill .35s cubic-bezier(.2,.8,.3,1.4)}
+@keyframes w-fill{from{scale:.7}}
+.w-mark.said svg{stroke:#D9C39A;stroke-width:1.6}
+.w-mark.said.on svg{fill:var(--gold);stroke:var(--deep)}
+.w-mark.said .tick{fill:none;stroke:#D9C39A;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.w-mark.said.on .tick{stroke:#fff}
+.w-label{flex:none;display:flex;align-items:center;justify-content:center;width:100%;max-width:900px;height:clamp(5.6rem,14vh,7.4rem);padding:0 4px;border:0;background:none;text-align:center;font-weight:700;color:var(--ink);font-size:clamp(1.3rem,min(4.4vh,6vw),2.5rem);line-height:1.7;text-wrap:balance}
+/* Wide screens: the drops in a column beside the picture */
+@media (min-aspect-ratio:5/4){
+  .w-stage{flex-direction:row;gap:clamp(12px,3vw,40px)}
+  .w-pic{width:min(100cqh,calc(100cqw - var(--mark) - 40px),700px)}
+  .w-marks{flex-direction:column;height:auto;width:var(--mark)}
+  .w-label{height:clamp(3.4rem,11vh,5rem)}
+}
+
+/* My prayer: the rak'ah's badge over the picture, what is said, the arrows */
+.p-do{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1.2vh,12px)}
+.p-stage{flex:1;min-height:0;width:100%;max-width:1200px;display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1.2vh,12px);container-type:size}
+.p-side{--under:clamp(3px,1cqh,10px);flex:none;max-width:100%;display:flex;flex-direction:column;align-items:center;gap:var(--under)}
+.p-pic{position:relative;flex:none;width:min(100cqw,47cqh,560px)}
+.p-pic .s-pic{box-shadow:var(--shadow)}
+.p-pic.next .s-pic{animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.p-takbir{position:absolute;left:50%;bottom:2%;translate:-50% 0;margin:0;padding:.02em .8em .14em;border-radius:999px;background:rgba(255,255,255,.95);box-shadow:var(--shadow);color:var(--deep);font-weight:700;font-size:clamp(1.05rem,min(3.4vh,5vw),1.8rem);line-height:1.6;white-space:nowrap;animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+.p-words{flex:1 1 0;min-height:0;min-width:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(2px,.8vh,8px)}
+.p-label{flex:none;max-width:100%;border:0;border-radius:999px;background:#F3E4C8;color:var(--deep);padding:0 .9em .1em;font-weight:700;font-size:clamp(.95rem,min(2.8vh,4.4vw),1.5rem);line-height:1.7}
+.p-text{flex:1 1 0;min-height:0;width:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.p-fit{text-align:center;font-weight:700;color:var(--ink);line-height:1.85;text-wrap:balance}
+.p-fit p{margin:0}
+.p-fit p+p{margin-top:.35em}
+.p-fit .quran{font-weight:400;line-height:2.05;color:var(--ink)}
+.p-fit .ayah-no{color:var(--gold)}
+.p-parts{min-height:8px}
+.p-parts i{width:6px;height:6px}
+.p-marks{flex:none;display:flex;justify-content:center;align-items:center;gap:clamp(8px,2.4vw,18px);direction:rtl}
+.p-rakah{display:flex;align-items:center;gap:clamp(3px,.9vw,6px);padding:3px 8px 3px 6px;border-radius:999px;background:rgba(235,220,196,.5)}
+.p-rakah b{min-width:1.5em;height:1.5em;border-radius:50%;background:var(--surface);color:var(--muted);font-weight:700;font-size:.95rem;line-height:1.5em;text-align:center}
+.p-rakah.here b{background:var(--gold);color:#fff}
+.p-rakah i{flex:none;width:clamp(6px,1.7vw,9px);height:clamp(6px,1.7vw,9px);border-radius:50%;background:#DCCBAE}
+.p-rakah i.on{background:var(--gold)}
+.p-rakah i.now{background:var(--surface);box-shadow:0 0 0 2px var(--gold);scale:1.25}
+.p-nav{flex:none;width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.p-nav .round{width:clamp(56px,9vh,72px);height:clamp(56px,9vh,72px);padding:clamp(12px,2vh,16px)}
+.p-nav .round.p-next{width:clamp(72px,12vh,96px);height:clamp(72px,12vh,96px);padding:clamp(16px,2.6vh,22px);background:#35A85A;color:#fff}
+.p-nav .round:disabled{opacity:.3;box-shadow:none}
+.p-nav .round.hint{animation:breathe 1.3s ease-in-out infinite}
+/* Wide screens: the picture, under its badge, beside the words */
+@media (min-aspect-ratio:5/4){
+  .p-stage{flex-direction:row;align-items:center;gap:clamp(16px,4vw,56px)}
+  .p-pic{width:min(calc(100cqh - var(--badge) * 1.7 - 4px - var(--under)),44cqw,620px)}
+  .p-words{height:100%;justify-content:center}
+}
+/* A low, wide screen (a phone on its side): the picture takes the full height, and the badge stands over the words */
+@media (min-aspect-ratio:5/4) and (max-height:520px){
+  .p-stage{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);row-gap:2px;justify-items:center}
+  .p-side{display:contents}
+  .p-pic{grid-column:1;grid-row:1 / 3;width:min(100cqh,44cqw,620px)}
+  .p-side .s-rakah{grid-column:2;grid-row:1}
+  .p-words{grid-column:2;grid-row:2;height:auto;align-self:stretch}
+}
+
+/* The qibla: a picture from above on a canvas, the words over it */
+.qibla-page{overflow:hidden;overscroll-behavior:none}
+.qb-canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.qibla{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom));pointer-events:none;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;--bar:clamp(84px,13vh,116px)}
+.qibla .head{flex:none;display:flex;justify-content:center;pointer-events:auto}
+.qibla .head .logo{width:56px;height:56px}
+.qb-bar{flex:none;display:flex;align-items:center;justify-content:center;gap:.5em;height:var(--bar);max-width:100%;padding:0 1.1em;border:0;border-radius:calc(var(--bar) / 2.4);background:rgba(255,255,255,.95);box-shadow:var(--shadow);pointer-events:auto;transition:background .25s ease}
+.qb-words{display:flex;flex-direction:column;align-items:center;min-width:0}
+.qb-place{font-weight:700;color:var(--deep);font-size:clamp(1.25rem,calc(var(--bar) * .27),2rem);line-height:1.5;white-space:nowrap}
+.qb-ask{font-weight:700;color:var(--ink);font-size:clamp(1.05rem,calc(var(--bar) * .23),1.7rem);line-height:1.5;white-space:nowrap}
+.qb-zikr{display:none;font-weight:700;color:#fff;font-size:clamp(1.7rem,calc(var(--bar) * .42),3rem);line-height:1.5;white-space:nowrap}
+.qb-takbir{display:none;flex:none;width:calc(var(--bar) - 12px);margin-inline-start:-.6em}
+.qb-takbir .s-pic{box-shadow:0 0 0 3px #fff}
+.qb-takbir .s-pic.none .s-standin b{display:none}
+.qb-bar.won{background:var(--gold);animation:deal .4s cubic-bezier(.2,.8,.3,1.25)}
+.qb-bar.won .qb-place,.qb-bar.won .qb-ask{display:none}
+.qb-bar.won .qb-zikr,.qb-bar.won .qb-takbir{display:block}
+.qb-dots{position:absolute;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:14px}
+.qb-dots .s-dots{padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.8)}
+.qb-done{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(254,249,239,.82);pointer-events:auto}
+/* A low, wide screen: the words stand at the side and the picture takes the full height */
+.qibla[data-side]{align-items:flex-end}
+.qibla[data-side] .head{width:min(34vw,300px)}
+.qibla[data-side] .qb-bar{width:min(34vw,300px);padding:0 .6em}
+.qibla[data-side] .qb-place,.qibla[data-side] .qb-ask{white-space:normal;text-align:center;line-height:1.35}

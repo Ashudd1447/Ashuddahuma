@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الرِّمَايَةُ</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/archery.css">
+</head>
+<body class="arch-page">
+<canvas class="arch-canvas" id="field" aria-hidden="true" hidden></canvas>
+<div class="arch" id="archery" data-view="hadith">
+  <header class="head">
+    <a href="sports.html" aria-label="الرِّيَاضَةُ"><img class="logo" src="images/logo.webp" alt=""></a>
+  </header>
+
+  <section class="arch-view" id="view-hadith">
+    <h1 class="arch-title">الرِّمَايَةُ</h1>
+    <div class="arch-card">
+      <p class="arch-teller">قَالَ النَّبِيُّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ:</p>
+      <p class="arch-hadith" id="hadith"></p>
+      <svg class="arch-rule" viewBox="0 0 220 18" aria-hidden="true"><path d="M4 9H92M128 9H216" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M110 1.5l2.2 5.3 5.3 2.2-5.3 2.2-2.2 5.3-2.2-5.3-5.3-2.2 5.3-2.2z" fill="currentColor"/><path d="M104.7 3.7l5.3 2.2 5.3-2.2-2.2 5.3 2.2 5.3-5.3-2.2-5.3 2.2 2.2-5.3z" fill="currentColor"/></svg>
+      <p class="arch-source">رَوَاهُ الْبُخَارِيُّ</p>
+    </div>
+    <button class="go" id="begin" type="button" aria-label="اِبْدَأْ"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M17 9L40 24L17 39z" fill="currentColor"/></svg></button>
+  </section>
+
+  <section class="arch-view" id="view-field" hidden>
+    <div class="arch-level" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.4" fill="#F6F2E6" stroke="#33302E" stroke-width="1.2"/><circle cx="12" cy="12" r="7.6" fill="#33302E"/><circle cx="12" cy="12" r="5.4" fill="#3E86C6"/><circle cx="12" cy="12" r="3.4" fill="#D5483A"/><circle cx="12" cy="12" r="1.5" fill="#F3C22F"/></svg><span id="level-number">١</span></div>
+    <div class="arch-top">
+      <div class="arch-say">
+        <p class="arch-line" id="line"></p>
+        <p class="arch-word" id="word" hidden></p>
+      </div>
+      <div class="arch-marks" id="marks" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+    <div id="places"></div>
+    <div class="arch-end" id="end" hidden>
+      <p class="praise arch-praise" id="praise"></p>
+      <button class="round arch-again" id="again" type="button" aria-label="مِنَ الْبِدَايَةِ" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </section>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/archery.js"></script>
+</body>
+</html>

@@ -75,7 +75,10 @@ const SIZE = {
 
 /* The roads. A stop is a red light or a crossing; a special is a building
    placed once, at about that point of the road; a row is what stands beyond
-   the walk, picked in turn. The goal stands at the end of a side street. */
+   the walk, picked in turn. The goal stands at the end of a side street.
+   A stop belongs at least 30 lanes before the end: the last stretch is the
+   car's own way to the side street, and seen from behind it has left the
+   road for the last 12 lanes, where a stop would not hold it. */
 const ROADS = [
   {
     id: 'hayy', name: 'الْحَيُّ', goal: 'masjid-big', goalName: 'الْمَسْجِدُ', goalClip: 'place-masjid', adhan: true,
@@ -890,8 +893,9 @@ function slipPart(y) {
   return k * k * (3 - 2 * k);
 }
 
-function startTrip() {
-  const random = rng(road.seed + 100 + Math.floor(performance.now() % 1000));
+/* deal picks the traffic and the stars of this drive: a test gives one, to get the same drive again. */
+function startTrip(deal = Math.floor(performance.now() % 1000)) {
+  const random = rng(road.seed + 100 + deal);
   trip = road.desert ? desert.make(road, random) : {
     road, chase: Boolean(road.chase), t: 0, x: 0, y: 0, v: 0, yaw: 0, pan: 0, braking: false, held: false,
     // The child's car's length along the road, and, seen from behind, where the side street leaves it.
@@ -946,8 +950,11 @@ function stopLimit(front, laneIndex = -1) {
   // back, so that the line and the crossing show clear of it.
   const short = trip.chase ? 1 : 0.25;
   for (const stop of trip.stops) {
-    // Once a stop clears, traffic pulls away one lane after another, not as a wall.
-    const holds = blocks(stop) || (laneIndex >= 0 && stop.state === 'done' && stop.clock < laneIndex * 1.5);
+    // The child's car (no lane given) slows for an amber light as for a red
+    // one: it may speed up a lot while the light is amber, and the red would
+    // find it too close to stop. Once a stop clears, traffic pulls away one
+    // lane after another, not as a wall.
+    const holds = blocks(stop) || (laneIndex < 0 ? stop.state === 'amber' : stop.state === 'done' && stop.clock < laneIndex * 1.5);
     if (!holds || front > stop.y + 0.3) continue;
     limit = Math.min(limit, Math.max(0, (stop.y - short - front) * 1.7));
   }
@@ -975,11 +982,14 @@ function updateStop(stop, dt) {
     stop.clock = 0;
   }
   if (stop.state !== 'open') {
-    // The last one waits at the curb until the car has stopped for them.
-    // Across, they stay on the walk.
+    // The last one waits at the curb until the car has stopped for them, and
+    // nobody steps off the curb while a car that was too close to stop at
+    // the line is still on the crossing. Across, they stay on the walk.
     const waits = stop.state === 'walk' && !stop.waited && stop.clock < 12 ? stop.people[stop.people.length - 1] : null;
+    const busy = stop.state === 'walk' && stop.clock < 12 && trip.cars.some((car) => car.y - car.l / 2 < stop.y + 1.9
+      && car.y + car.l / 2 + (car.v * car.v) / (2 * pace().brake) > stop.y + 0.3);
     for (const walker of stop.people) {
-      if (walker === waits || walker.x * walker.dir >= 2.05) continue;
+      if (walker === waits || walker.x * walker.dir >= 2.05 || (busy && walker.x * walker.dir < -1.62)) continue;
       walker.x += walker.dir * walker.speed * dt;
       walker.phase += dt * 9;
     }
@@ -1027,8 +1037,11 @@ function driveOn(dt, steer) {
   }
   const target = Math.min(want, limit);
   trip.braking = target < trip.v - 0.25 || (trip.v < 0.1 && limit < 0.4);
+  // The car brakes for whatever is in the way, pedal or no pedal: with the
+  // pedal let go it used to coast on at a red light until it was too late.
+  // With the road clear it only slows gently.
   if (target > trip.v) trip.v = Math.min(target, trip.v + speed.gain * dt);
-  else trip.v = Math.max(target, trip.v - (limit < want ? speed.brake : speed.drop) * dt);
+  else trip.v = Math.max(target, trip.v - (limit < trip.v ? speed.brake : speed.drop) * dt);
   trip.y += trip.v * dt;
   const edge = 1.5 - CAR.w / 2 - 0.05;
   const rate = trip.chase ? STEER.rate.behind : STEER.rate.above;
@@ -1620,4 +1633,14 @@ fetch('dua/riding.json').then((response) => response.json()).then((data) => {
 }).catch(() => {});
 sound.preloadPrompts(['belt']);
 sound.preload(['riding-dua', 'alhamdulillah']);
-if (LOCAL) window.driveGame = { get trip() { return trip; }, set road(id) { road = ROADS.find((item) => item.id === id); }, update, draw, render, tilt, steerAngle, onOrientation, keys, pedals, startTrip, show };
+/* On the admin's own computer, for trying the game by hand and for tools/test-drive-stops.js:
+   streets lists the roads with lights and crossings, and hold() stops the page's own frames,
+   so that a test can step a drive with update(). */
+if (LOCAL) {
+  window.driveGame = {
+    get trip() { return trip; }, set road(id) { road = ROADS.find((item) => item.id === id); },
+    streets: ROADS.filter((item) => !item.desert).map((item) => item.id),
+    hold() { running = false; cancelAnimationFrame(raf); },
+    update, draw, render, tilt, steerAngle, onOrientation, keys, pedals, startTrip, show,
+  };
+}

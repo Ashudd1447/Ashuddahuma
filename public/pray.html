@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>صَلَاتِي</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/salah.css">
+</head>
+<body class="salah-page">
+<div class="salah" id="salah" data-view="parts">
+  <header class="head">
+    <a href="salah.html" aria-label="الصَّلَاةُ"><img class="logo" src="images/logo.webp" alt=""></a>
+  </header>
+  <section class="s-parts" id="view-parts">
+    <h1 class="hub-title">صَلَاتِي</h1>
+    <div class="s-part-cards">
+      <button class="s-part" id="part-do" type="button" data-parts="pray">
+        <span class="s-part-art" id="art-do"></span>
+        <span class="s-part-name">أُصَلِّي</span>
+      </button>
+      <button class="s-part" id="part-quiz" type="button" data-parts="pray-quiz">
+        <span class="s-part-art" id="art-quiz"></span>
+        <span class="s-part-name">مَاذَا بَعْدُ؟</span>
+      </button>
+    </div>
+  </section>
+  <section class="p-do" id="view-do" hidden>
+    <div class="p-stage">
+      <div class="p-side">
+        <button class="s-rakah" id="rakah" type="button" hidden></button>
+        <div class="p-pic" id="pic">
+          <p class="p-takbir" id="takbir" hidden></p>
+        </div>
+      </div>
+      <div class="p-words">
+        <button class="p-label" id="label" type="button"></button>
+        <div class="p-text" id="text"><div class="p-fit" id="fit"></div></div>
+        <div class="s-dots p-parts" id="parts" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="p-marks" id="marks" aria-hidden="true"></div>
+    <nav class="p-nav">
+      <button class="round p-prev" id="prev" type="button" aria-label="السَّابِقُ" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5.5l6.5 6.5-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="round p-again" id="again" type="button" aria-label="اِسْتَمِعْ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2h3.6L12 5v14l-4.9-4.2H3.5z" fill="currentColor"/><path d="M15.3 8.8a4.3 4.3 0 0 1 0 6.4M17.9 6.2a8 8 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      <button class="round p-next" id="next" type="button" aria-label="التَّالِي"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5.5L4.5 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </nav>
+  </section>
+  <section class="s-quiz" id="view-quiz" hidden></section>
+  <section class="s-done" id="view-praise" hidden>
+    <p class="praise">أحسنت</p>
+  </section>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/salah.js"></script>
+<script src="js/pray.js"></script>
+</body>
+</html>

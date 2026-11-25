@@ -1,0 +1,29 @@
+{
+  "source": "Written by tools/make-archery-hadith.py. Never edit by hand.",
+  "hadith": "https://sunnah.com/bukhari:2899 (Sahih al-Bukhari 2899), copied 2026-11-24; the words of the Prophet, peace and blessings be upon him, from their first word to \"راميا\"; words respelled: 0; vowel marks added: 1.",
+  "printed": "ارْمُوا بَنِي إِسْمَاعِيلَ، فَإِنَّ أَبَاكُمْ كَانَ رَامِيًا",
+  "respelled": [],
+  "added": [
+    {
+      "word": 1,
+      "printed": "ارْمُوا",
+      "shown": "اِرْمُوا",
+      "mark": "kasra (U+0650) on letter 1",
+      "why": "The opening alif is a hamzat al-wasl, printed bare at sunnah.com; the site writes its vowel when it opens what is said. It is a kasra here: the verb is of the pattern yaf`ilu (yarmi), and the damma on the mim is only for the waw of the plural."
+    }
+  ],
+  "parts": [
+    {
+      "id": "said",
+      "words": [
+        "اِرْمُوا",
+        "بَنِي",
+        "إِسْمَاعِيلَ،",
+        "فَإِنَّ",
+        "أَبَاكُمْ",
+        "كَانَ",
+        "رَامِيًا"
+      ]
+    }
+  ]
+}

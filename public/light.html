@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الضَّوْءُ وَالْمِرْآةُ</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/light.css">
+</head>
+<body class="light-page">
+<div class="light" id="light">
+  <header class="light-head">
+    <a href="lab.html" aria-label="الْمُخْتَبَرُ"><img class="logo" src="images/logo.webp" alt=""></a>
+    <p class="light-line" id="line"></p>
+  </header>
+  <div class="light-board" id="board">
+    <div class="light-room" id="room">
+      <canvas id="scene" aria-hidden="true"></canvas>
+      <p class="light-word" id="word" hidden></p>
+      <p class="light-praise" id="praise" hidden></p>
+      <button class="round light-again" id="again" type="button" aria-label="مِنَ الْبِدَايَةِ" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
+  <div class="light-steps" id="steps" aria-hidden="true"></div>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/light.js"></script>
+</body>
+</html>

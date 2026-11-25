@@ -819,5 +819,8 @@ const sound = (() => {
   return {
     preload, preloadPrompts, buffer, play, say, stop, pause, resume, paused, current, dialect, setDialect, unlock: warm,
     chime, buzz, tick, click, honk, pop, blink, eagle, knock, ratchet, thud, splash, backup, drill, spray, pour, rev, zip, spark, ambience, engine, engineOff, wrong,
+    /* The two building blocks, for a game that makes a sound of its own in its own file:
+       tone(frequency, startsIn, length, volume, type, slideTo) and rush(frequency, startsIn, length, volume, q, slideTo). */
+    tone, rush,
   };
 })();

@@ -1,0 +1,58 @@
+/* الرِّمَايَةُ: archery (archery.html, js/archery.js). The field is a canvas
+   behind everything; the words, the marks and the buttons lie over it. */
+.arch-page{overflow:hidden;overscroll-behavior:none}
+.arch-canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+.arch{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;padding:calc(8px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.arch .head{display:flex;justify-content:center;flex:none;position:relative;z-index:3}
+.arch .head .logo{width:56px;height:56px}
+.arch-view{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center}
+
+/* The hadith that opens every visit */
+#view-hadith{justify-content:center;gap:clamp(10px,2.6vh,26px)}
+.arch-title{margin:0;color:var(--deep);font-size:clamp(1.7rem,min(6vh,7vw),2.8rem);line-height:1.5}
+.arch-card{max-width:min(100%,780px);padding:clamp(12px,2.6vh,26px) clamp(16px,4vw,44px);border-radius:28px;background:var(--surface);box-shadow:var(--shadow),inset 0 0 0 2px var(--line);text-align:center}
+.arch-teller{margin:0;color:var(--muted);font-size:clamp(1.05rem,min(3.4vh,4.6vw),1.6rem);line-height:1.9}
+.arch-hadith{margin:0;min-height:1.9em;font-weight:700;color:var(--ink);font-size:clamp(1.6rem,min(7vh,7.2vw),3.4rem);line-height:1.9;text-wrap:balance}
+.arch-hadith:not(:empty)::before{content:"«"}
+.arch-hadith:not(:empty)::after{content:"»"}
+.arch-rule{display:block;width:clamp(120px,40%,220px);height:18px;margin:clamp(2px,1vh,10px) auto;color:var(--gold)}
+.arch-source{margin:0;color:var(--muted);font-size:clamp(1rem,min(3vh,4.2vw),1.4rem);line-height:1.8}
+/* While it is said the button only hides and keeps its room, so the words stay where they are */
+.arch[data-step="saying"] #begin{visibility:hidden;animation:none}
+
+/* The field */
+#view-field{position:relative}
+.arch-level{position:fixed;top:calc(10px + env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));z-index:5;display:flex;align-items:center;gap:.3em;height:46px;padding:0 14px 0 12px;border-radius:999px;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);font-weight:700;font-size:1.5rem;line-height:1}
+.arch-level svg{display:block;width:26px;height:26px}
+.arch-top{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px;pointer-events:none}
+.arch-say{display:grid;justify-items:center;align-items:center}
+.arch-say>*{grid-area:1/1}
+.arch-line,.arch-word{margin:0;padding:.02em .8em .12em;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:var(--shadow);color:var(--deep);font-weight:700;font-size:clamp(1.1rem,min(4.6vmin,4.6svh),2rem);line-height:1.7;white-space:nowrap}
+.arch-line.away{visibility:hidden}
+.arch-word{color:#8A5A12;background:#FFF3CF;box-shadow:0 0 0 3px #F3C22F,var(--shadow);font-size:clamp(1.3rem,min(5.6vmin,5.4svh),2.4rem);animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.arch-marks{display:flex;gap:10px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.82);box-shadow:var(--shadow)}
+.arch-marks i{width:18px;height:18px;border-radius:50%;border:3px solid var(--gold);background:transparent}
+.arch-marks i.on{background:#F3C22F;border-color:#C98A12;animation:arch-mark .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes arch-mark{from{transform:scale(.3)}60%{transform:scale(1.35)}}
+
+/* The places to stand: a button at the edge of the screen on the side where the place is. The page sets
+   how far down each stands (placePlaces in archery.js): clear of the boy and of the targets */
+.arch-place{--size:clamp(52px,11vmin,72px);position:fixed;top:40%;z-index:2;width:var(--size);height:var(--size);padding:0;border:4px solid #fff;border-radius:50%;background:#35A85A;color:#fff;box-shadow:var(--shadow);touch-action:none}
+.arch-place[data-side="left"]{left:max(16px,env(safe-area-inset-left))}
+.arch-place[data-side="right"]{right:max(16px,env(safe-area-inset-right))}
+.arch-place svg{display:block;width:64%;height:64%;margin:auto;pointer-events:none}
+.arch-place:active{transform:scale(.93);background:#2C8C4B}
+.arch-place.call{animation:breathe 1.1s ease-in-out infinite;box-shadow:0 0 0 6px rgba(242,184,75,.75),var(--shadow)}
+
+/* The praise at the end of a level, and the end of the last one */
+.arch-end{position:absolute;left:0;right:0;top:20%;z-index:3;display:flex;flex-direction:column;align-items:center;gap:clamp(12px,3vh,28px);pointer-events:none}
+.arch-praise{font-size:clamp(2.6rem,min(14vmin,11svh),5.6rem);line-height:1.6;padding:0 .5em;border-radius:999px;background:rgba(255,255,255,.94);box-shadow:var(--shadow);white-space:nowrap}
+.arch-again{pointer-events:auto;background:#35A85A;color:#fff;animation:breathe 1.6s ease-in-out infinite}
+
+@media (max-height:480px){
+  .arch-title{display:none}
+  .arch .head .logo{width:44px;height:44px}
+  .arch-top{flex-direction:row;gap:10px;margin-top:2px}
+  .arch-marks{padding:5px 10px}
+  .arch-marks i{width:15px;height:15px}
+}

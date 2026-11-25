@@ -1,0 +1,38 @@
+/* الضَّوْءُ وَالْمِرْآةُ: the line of words above, the room in the middle, the strip of small lanterns at the edge */
+.light-page{overflow:hidden;overscroll-behavior:none}
+.light{position:fixed;inset:0;display:grid;grid-template:"head" auto "board" minmax(0,1fr) "steps" auto/minmax(0,1fr);gap:6px;padding:calc(8px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.light-head{grid-area:head;display:flex;flex-direction:column;align-items:center;gap:2px}
+.light-head .logo{width:56px;height:56px}
+.light-line{margin:0;min-height:1.7em;text-align:center;text-wrap:balance;font-weight:700;color:var(--ink);font-size:clamp(1.05rem,min(3.4vh,4.8vw),1.7rem);line-height:1.7}
+.light-board{grid-area:board;position:relative;min-height:0}
+.light-room{position:absolute;overflow:hidden;border-radius:18px;background:var(--line);box-shadow:var(--shadow);touch-action:none;cursor:grab}
+.light-room canvas{display:block;width:100%;height:100%;transition:opacity .4s ease}
+.light-room.away canvas{opacity:0}
+
+/* The word for what he has just done, in a pill at the top of the room */
+.light-word{position:absolute;top:10px;left:50%;transform:translateX(-50%);margin:0;padding:.02em .7em .12em;border-radius:999px;background:rgba(255,255,255,.95);box-shadow:var(--shadow);color:var(--deep);font-weight:700;font-size:clamp(1.6rem,min(7vmin,6svh),3.2rem);line-height:1.6;white-space:nowrap;pointer-events:none;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.light-praise{position:absolute;inset:0;margin:0;padding-bottom:10%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(3rem,17vmin,8.5rem);line-height:1.5;text-shadow:0 .03em 0 rgba(74,52,36,.75),0 0 .35em rgba(74,52,36,.7);background:radial-gradient(closest-side,rgba(74,52,36,.38),rgba(74,52,36,0));pointer-events:none;animation:rise .5s cubic-bezier(.2,.8,.2,1)}
+.round.light-again{position:absolute;left:50%;bottom:5%;margin-left:-36px;background:#35A85A;color:#fff;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+
+/* One small lantern for each level: lit when the level is done, ringed when it is the one open */
+.light-steps{grid-area:steps;display:flex;justify-content:center;align-items:center;gap:clamp(2px,1.2vw,10px)}
+.light-steps i{display:block;width:clamp(16px,5.4vw,26px);padding:2px;border-radius:50%;color:#C9B99F}
+.light-steps svg{display:block;width:100%;height:auto}
+.light-steps .glass{fill:#F2E9D8}
+.light-steps .on{color:#B8862B}
+.light-steps .on .glass{fill:#FFD466}
+.light-steps .on svg{filter:drop-shadow(0 0 3px rgba(255,196,70,.9))}
+.light-steps .now{color:var(--deep);box-shadow:0 0 0 2px var(--gold);background:var(--surface)}
+
+/* A wide screen: the words beside the logo, clear of the two buttons at the top right, and the lanterns in a column */
+@media (min-aspect-ratio:5/4){
+  .light{grid-template:"head head" auto "steps board" minmax(0,1fr)/auto minmax(0,1fr);gap:6px 10px}
+  .light-head{flex-direction:row;justify-content:center;gap:14px;padding:0 126px;min-height:56px}
+  .light-steps{flex-direction:column;gap:clamp(1px,.7vh,8px)}
+  .light-steps i{width:clamp(14px,4.2vh,26px)}
+}
+@media (min-aspect-ratio:5/4) and (max-height:480px){
+  .light-head .logo{width:40px;height:40px}
+  .light-head{min-height:50px}
+  .light-line{font-size:1rem}
+}

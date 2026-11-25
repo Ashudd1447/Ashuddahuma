@@ -1,0 +1,178 @@
+/* الصَّلَوَاتُ الْخَمْسُ (prayers.html): the five prayers and their times of day. The colors, the logo, the title, the
+   round buttons and أحسنت come from style.css; everything else is here, so the page leans on no other game of the door. */
+
+/* The five small skies are drawn once, out of sight (prayers.html), and used wherever one is needed */
+.pr-sprite{position:absolute;width:0;height:0;overflow:hidden}
+
+/* The page: the logo, then one section at a time. --name and --time are the sizes of a prayer's name and of its time.
+   Where a size is written twice, the first is for a browser that does not know the second (svh, or the cq units that
+   measure a box). */
+.prayers-page{overscroll-behavior:none}
+.prayers{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom));--gap:clamp(4px,1.2vh,12px);--mark:clamp(24px,min(5.2vh,7.5vw),40px);--name:clamp(2rem,min(7.4vh,13vw),4.4rem);--time:clamp(1.15rem,min(3.7vh,5.6vw),2rem)}
+.prayers .head{flex:none;display:flex;justify-content:center}
+.prayers .head .logo{width:56px;height:56px}
+/* Inside a part nothing scrolls or zooms under the finger */
+.prayers:not([data-view="parts"]){position:fixed;inset:0;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.prayers section{width:100%}
+@keyframes pr-rise{from{transform:scale(.8);opacity:0}}
+@keyframes pr-breathe{50%{transform:scale(1.06)}}
+@keyframes pr-no{20%{translate:-7px 0}45%{translate:7px 0}70%{translate:-4px 0}90%{translate:3px 0}}
+
+/* A time's picture in its frame. Under the picture stands the color of that sky, which shows while the picture loads;
+   a picture that cannot be fetched leaves the sky with its small sun or moon. The pictures fill their squares, so the
+   frame only rounds the corners. */
+.pr-pic{position:relative;display:block;width:100%;aspect-ratio:1;border-radius:12%;overflow:hidden;isolation:isolate;background:#CFE3F2}
+.pr-pic[data-time="fajr"]{background:#4A5890}
+.pr-pic[data-time="dhuhr"]{background:#BFDDF3}
+.pr-pic[data-time="asr"]{background:#86AED0}
+.pr-pic[data-time="maghrib"]{background:#E0745E}
+.pr-pic[data-time="isha"]{background:#1B2A5C}
+.pr-pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .2s ease;pointer-events:none;-webkit-user-drag:none}
+.pr-pic.ok img{opacity:1}
+.pr-sky{display:none;position:absolute;inset:20%;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.85)}
+.pr-pic.none .pr-sky{display:block}
+.pr-sky svg,.pr-sun svg,.pr-marks svg{display:block;width:100%;height:100%;border-radius:50%}
+
+/* The three parts, each a large card; a star on a part that has been finished */
+.pr-parts{display:flex;flex-direction:column;align-items:center;gap:12px}
+.pr-cards{display:flex;justify-content:center;gap:16px;width:100%}
+.pr-card{position:relative;flex:none;display:flex;flex-direction:column;width:min(calc((100% - 32px) / 3),46vh,380px);width:min(calc((100% - 32px) / 3),46svh,380px);padding:0;border:0;border-radius:24px;background:var(--surface);overflow:hidden;box-shadow:var(--shadow);transition:transform .18s ease}
+.pr-card:active{transform:scale(.98)}
+.pr-art{position:relative;flex:none;display:block;width:100%;aspect-ratio:1;overflow:hidden;background:#fff;container-type:inline-size}
+.pr-card-name{display:block;padding:.2em .3em .3em;text-align:center;font-weight:700;color:var(--deep);font-size:clamp(1.05rem,min(2.75vw,3.9vh),2.1rem);line-height:1.6;white-space:nowrap}
+.pr-star{position:absolute;top:8px;left:10px;display:block;width:clamp(24px,3.4vw,34px);height:clamp(24px,3.4vw,34px);pointer-events:none;animation:pr-rise .5s cubic-bezier(.2,.8,.2,1)}
+.pr-star svg{display:block;width:100%;height:100%;fill:#F2B84B;stroke:#fff;stroke-width:1.4;stroke-linejoin:round;paint-order:stroke;filter:drop-shadow(0 1px 2px rgba(74,52,36,.45))}
+/* The first card's picture: the town through the day, a strip of each time, dawn on the right */
+.pr-art-day i{position:absolute;top:0;bottom:0;width:20%;background-repeat:no-repeat;background-size:500% 100%;box-shadow:inset 2px 0 0 rgba(255,255,255,.75)}
+.pr-art-day i[data-time="fajr"]{left:80%;background-color:#4A5890;background-image:url(../images/salah/time-fajr.webp);background-position:100% 0}
+.pr-art-day i[data-time="dhuhr"]{left:60%;background-color:#BFDDF3;background-image:url(../images/salah/time-dhuhr.webp);background-position:75% 0}
+.pr-art-day i[data-time="asr"]{left:40%;background-color:#86AED0;background-image:url(../images/salah/time-asr.webp);background-position:50% 0}
+.pr-art-day i[data-time="maghrib"]{left:20%;background-color:#E0745E;background-image:url(../images/salah/time-maghrib.webp);background-position:25% 0}
+.pr-art-day i[data-time="isha"]{left:0;background-color:#1B2A5C;background-image:url(../images/salah/time-isha.webp);background-position:0 0;box-shadow:none}
+/* The second card's: a name to listen to, and pictures to choose from, one of them ringed. The third's: a time, an
+   arrow, and the one to find. */
+.pr-art-box{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:7%;padding:7cqi;background:#F6EBDA}
+.pr-art-which{flex-direction:column;gap:10px;gap:8cqi}
+.pr-art-pill{display:flex;align-items:center;gap:.3em;padding:0 .75em;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);color:var(--deep);font-weight:700;font-size:1.2rem;font-size:13cqi;line-height:1.55}
+.pr-art-pill svg{flex:none;width:.85em;height:.85em;color:var(--gold)}
+.pr-art-row{display:flex;align-items:center;gap:6px;gap:4.5cqi;width:100%}
+.pr-art-row .pr-pic{flex:1 1 0;box-shadow:var(--shadow)}
+.pr-art-row .pr-pic.ring{box-shadow:0 0 0 3px var(--gold),var(--shadow);box-shadow:0 0 0 max(3px,1.5cqi) var(--gold),var(--shadow)}
+.pr-art-next{gap:6px;gap:4cqi}
+.pr-art-from{flex:1 1 0;min-width:0;display:block}
+.pr-art-from .pr-pic{box-shadow:var(--shadow)}
+.pr-art-next>svg{flex:none;width:13%;width:13cqi;color:var(--gold)}
+.pr-art-next>b{flex:1 1 0;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:3px dashed var(--gold);border:max(3px,1.2cqi) dashed var(--gold);border-radius:12%;background:#FFFDF6;color:var(--deep);font-size:2rem;font-size:26cqi;line-height:1}
+/* An upright screen: the cards one under another, each with its picture beside its name */
+@media (orientation:portrait){
+  .pr-cards{flex-direction:column;align-items:center;gap:clamp(12px,1.8vh,20px)}
+  .pr-card{flex-direction:row;align-items:center;width:min(100%,660px)}
+  .pr-art{width:min(40vw,21vh,300px);width:min(40vw,21svh,300px)}
+  .pr-card-name{flex:1;min-width:0;padding:0 .3em;font-size:clamp(1.25rem,6.4vw,2.7rem);white-space:normal;text-wrap:balance}
+  .pr-star{width:clamp(26px,4.4vw,36px);height:clamp(26px,4.4vw,36px)}
+}
+/* A low, wide screen (a phone on its side): a smaller title, so the three cards show whole */
+@media (max-height:480px) and (min-aspect-ratio:4/3){
+  .pr-parts{gap:6px}
+  .pr-parts .hub-title{font-size:clamp(1.6rem,9vh,3rem);line-height:1.5}
+}
+
+/* A line that is being said is marked, for as long as its recording plays */
+.pr-name.now,.pr-time.now,.pr-ask.now,.pr-reached-name.now{background:#F8D990;box-shadow:0 0 0 3px rgba(201,138,69,.28)}
+.pr-ask.now{box-shadow:0 0 0 3px rgba(201,138,69,.28),var(--shadow)}
+
+/* A prayer's time, in a line of its own: its small sky, then the words */
+.pr-time{position:relative;flex:none;display:inline-flex;align-items:center;gap:.4em;height:calc(var(--time) * 1.8);margin:0;border:0;padding-block:0;padding-inline:.45em .9em;border-radius:999px;background:#F3E4C8;color:var(--ink);font-weight:700;font-size:var(--time);line-height:1.8;white-space:nowrap;transition:background .25s ease,box-shadow .25s ease}
+.pr-sun{flex:none;display:block;width:1.3em;height:1.3em;border-radius:50%;box-shadow:0 0 0 2px #fff}
+/* A finger finds a small line a little outside it as well: 56 px high at least */
+button.pr-time::after,.pr-follow .pr-ask::after,.pr-reached-name::after{content:"";position:absolute;inset:-12px -6px}
+
+/* The five small skies in a row: where he is in the day */
+.pr-marks{position:relative;flex:none;display:flex;justify-content:center;align-items:center;gap:calc(var(--mark) * .6);height:calc(var(--mark) * 1.35 + 8px);padding:0 calc(var(--mark) * .5)}
+.pr-marks::before{content:"";position:absolute;left:var(--mark);right:var(--mark);top:50%;height:3px;margin-top:-1.5px;border-radius:2px;background:var(--line)}
+.pr-marks i{position:relative;flex:none;display:block;width:var(--mark);height:var(--mark);border-radius:50%;box-shadow:0 0 0 2px #fff,0 1px 4px rgba(74,52,36,.3);transition:scale .3s ease,box-shadow .3s ease}
+.pr-marks i::after{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(254,249,239,.62);transition:opacity .3s ease}
+.pr-marks i.on::after,.pr-marks i.now::after{opacity:0}
+.pr-marks i.now{scale:1.35;box-shadow:0 0 0 3px var(--gold),0 2px 6px rgba(74,52,36,.3)}
+
+/* 1. The day and its prayers: the picture, the name, the time, the arrows */
+.pr-day{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:var(--gap);--words:calc(var(--name) * 1.6 + var(--time) * 1.8 + 4px)}
+.pr-stage{flex:1;min-height:0;width:100%;max-width:1200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--gap);container-type:size}
+/* The five pictures lie on one another; the one that shows is on top */
+.pr-scene{position:relative;flex:none;width:min(88vw,46vh);width:min(100cqw,calc(100cqh - var(--words) - var(--gap) - 2px),640px);aspect-ratio:1;border-radius:9%;overflow:hidden;isolation:isolate;background:#CFE3F2;box-shadow:var(--shadow);cursor:pointer;touch-action:none}
+.pr-scene .pr-pic{position:absolute;inset:0;border-radius:0}
+.pr-words{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:100%}
+.pr-name{flex:none;height:calc(var(--name) * 1.6);margin:0;border:0;padding:0 .4em;border-radius:999px;background:none;color:var(--deep);font-weight:700;font-size:var(--name);line-height:1.6;white-space:nowrap;transition:background .25s ease,box-shadow .25s ease}
+.pr-nav{flex:none;width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pr-nav .round{flex:none;width:clamp(56px,9vh,72px);height:clamp(56px,9vh,72px);padding:clamp(12px,2vh,16px)}
+.pr-nav .round.pr-forward{width:clamp(72px,12vh,96px);height:clamp(72px,12vh,96px);padding:clamp(16px,2.6vh,22px);background:#35A85A;color:#fff}
+.pr-nav .round:disabled{opacity:.3;box-shadow:none;cursor:default}
+.pr-nav .round.hint{animation:pr-breathe 1.3s ease-in-out infinite}
+/* A wide screen: the picture beside the words. The picture keeps its place whatever the words are. */
+@media (min-aspect-ratio:5/4){
+  .prayers{--name:clamp(2rem,min(9vh,6vw),4.6rem);--time:clamp(1.15rem,min(4.4vh,2.6vw),2.2rem)}
+  .pr-stage{flex-direction:row;gap:clamp(16px,4vw,56px)}
+  .pr-scene{width:min(100cqh,50cqw,660px)}
+  .pr-words{flex:1 1 0;min-width:0;gap:clamp(4px,1.6vh,16px)}
+}
+/* A low, wide screen (a phone on its side): the picture takes the height, and the words, the skies and the arrows stand beside it */
+@media (max-height:480px) and (min-aspect-ratio:4/3){
+  .pr-day{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto;grid-template-areas:"scene words" "scene marks" "scene nav";justify-items:center;align-items:center;column-gap:16px;row-gap:var(--gap)}
+  .pr-stage{display:contents}
+  .pr-scene{grid-area:scene;width:min(100vh - 86px,46vw);width:min(100svh - 86px - env(safe-area-inset-top) - env(safe-area-inset-bottom),46vw)}
+  .pr-words{grid-area:words;align-self:end}
+  .pr-marks{grid-area:marks}
+  .pr-nav{grid-area:nav}
+}
+
+/* 2 and 3. A question, and pictures to choose from */
+.pr-quiz{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:var(--gap);container-type:size}
+.pr-asked{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%}
+.pr-ask{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:.35em;max-width:100%;margin:0;border:0;border-radius:999px;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);padding:.02em .8em .16em;font-weight:700;line-height:1.6;white-space:nowrap;transition:background .25s ease,color .25s ease,box-shadow .25s ease}
+.pr-which .pr-ask{font-size:clamp(1.7rem,min(5vh,9vw),3.6rem);font-size:clamp(1.7rem,min(6cqh,9.6cqw),3.6rem)}
+.pr-follow .pr-ask{font-size:clamp(1.4rem,min(4vh,7vw),2.6rem);font-size:clamp(1.4rem,min(5cqh,7.2cqw),2.6rem)}
+.pr-ask:empty{visibility:hidden}
+.pr-ear{flex:none;width:.8em;height:.8em;color:var(--gold);transition:color .25s ease}
+/* The answer has been found: its name in gold, and its time under it */
+.pr-ask.named{background:var(--gold);color:#fff;box-shadow:var(--shadow)}
+.pr-ask.named .pr-ear{color:#fff}
+.pr-answer{visibility:hidden}
+.pr-answer.on{visibility:visible;animation:pr-rise .35s cubic-bezier(.2,.8,.2,1)}
+/* The pictures: prayers.js sets their size (--tile) and how many stand in a row, so they are as large as the box allows */
+.pr-choices{flex:1;min-height:0;min-width:0;width:100%;display:flex;align-items:center;justify-content:center}
+.pr-tiles{flex:none;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:var(--tile-gap,12px);max-width:100%}
+.pr-tile{flex:none;width:var(--tile,120px);padding:0;border:0;border-radius:12%;background:none;box-shadow:var(--shadow);transition:transform .18s ease,opacity .3s ease,box-shadow .2s ease}
+.pr-tile .pr-pic{animation:pr-rise .35s cubic-bezier(.2,.8,.2,1)}
+.pr-tile:active{transform:scale(.97)}
+.pr-tile.no{opacity:.34;filter:grayscale(.8);box-shadow:none;cursor:default;animation:pr-no .42s ease-in-out}
+.pr-tile.hint{animation:pr-breathe 1.2s ease-in-out infinite;box-shadow:0 0 0 6px rgba(242,184,75,.8),var(--shadow)}
+.pr-tile.right{box-shadow:0 0 0 6px var(--gold),var(--shadow);transform:scale(1.04)}
+.pr-tile.gone{opacity:0;pointer-events:none}
+/* How many of the five have been found */
+.pr-dots{flex:none;display:flex;justify-content:center;gap:clamp(5px,1.4vw,8px);min-height:12px}
+.pr-dots i{flex:none;width:clamp(8px,2.2vw,12px);height:clamp(8px,2.2vw,12px);border-radius:50%;background:var(--line)}
+.pr-dots i.on{background:var(--gold)}
+.pr-dots i.now{background:var(--surface);box-shadow:0 0 0 2px var(--gold)}
+/* 3. The time he has reached, smaller, with its name */
+.pr-reached{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;max-width:100%}
+.pr-reached-pic{display:block;width:min(44vw,20vh,230px);width:min(46cqw,24cqh,230px)}
+.pr-reached-pic .pr-pic{box-shadow:var(--shadow);animation:pr-rise .45s cubic-bezier(.2,.8,.2,1)}
+.pr-reached-name{position:relative;margin:0;border:0;padding:0 .5em;border-radius:999px;background:none;color:var(--ink);font-weight:700;font-size:clamp(1.2rem,min(3.4vh,5.6vw),2.1rem);font-size:clamp(1.2rem,min(4.2cqh,6cqw),2.1rem);line-height:1.7;white-space:nowrap;transition:background .25s ease,box-shadow .25s ease}
+/* A low, wide screen (a phone on its side): the time reached stands at the side and the pictures take the height */
+@media (max-height:480px) and (min-aspect-ratio:4/3){
+  .pr-follow{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,7fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"reached ask" "reached choices" "marks marks";justify-items:center;align-items:center;column-gap:16px}
+  .pr-reached{grid-area:reached}
+  .pr-follow .pr-ask{grid-area:ask}
+  .pr-follow .pr-choices{grid-area:choices;align-self:stretch}
+  .pr-follow .pr-marks{grid-area:marks}
+  .pr-reached-pic{width:min(24vw,40vh,230px);width:min(27cqw,58cqh,230px)}
+}
+
+/* أحسنت */
+.pr-done{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* For someone who has asked the device for less motion: what breathes is ringed instead, and nothing wobbles */
+@media (prefers-reduced-motion:reduce){
+  .pr-nav .round.hint{animation:none;box-shadow:0 0 0 6px rgba(242,184,75,.8),var(--shadow)}
+  .pr-tile.hint,.pr-tile.no,.pr-tile .pr-pic,.pr-reached-pic .pr-pic,.pr-answer.on,.pr-star{animation:none}
+}

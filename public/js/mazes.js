@@ -1,7 +1,10 @@
-/* الْمَتَاهَاتُ, the mazes: the family's seven printed mazes, as printed
-   (mazes/mazes.json, read out of the worksheet by tools/make-mazes.py). The
-   child draws a line with his finger from the green door to the red one. The
-   line is his own, uneven as it is, and it cannot cross a wall. Every
+/* الْمَتَاهَاتُ, the mazes: the family's printed mazes, as printed
+   (mazes/mazes.json, read out of the worksheet and the son's two activity
+   books by tools/make-mazes.py). The list shows them in three sections: the
+   mazes without a picture, the ones with a picture at each end (a car to
+   take to its house), and the ones whose way through draws a hidden picture.
+   The child draws a line with his finger from the green door to the red one.
+   The line is his own, uneven as it is, and it cannot cross a wall. Every
    corridor is open to him: a wrong turn can be taken, and undone by going
    back the way he came. At the end of a dead end the line is lost with a soft
    buzz and he starts over; at the exit a chime plays. In the mazes whose way
@@ -13,9 +16,13 @@ const $ = (id) => document.getElementById(id);
 const KEY = 'mazes';
 const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 
-/* What the child sees and hears. The parents approve every line. The titles
-   and the pictures' names come with the mazes. */
+/* What the child sees and hears. The parents approve every line. The titles,
+   the pictures' names and the instructions that name a maze's two pictures
+   come with the mazes. */
 const TEXT = {
+  plain: 'مَتَاهَاتٌ',
+  help: 'سَاعِدْ',
+  picture: 'مَتَاهَاتٌ فِيهَا رَسْمٌ مَخْفِيٌّ',
   start: 'اِبْدَأْ هُنَا',
   end: 'النِّهَايَةُ',
   draw: { text: 'اِرْسُمْ خَطًّا مِنَ الْبِدَايَةِ إِلَى النِّهَايَةِ', clip: 'maze-draw' },
@@ -53,7 +60,9 @@ const MORPH = 1.8;
 const REST = 0.9; // the name or the praise, before the buttons
 const PATIENCE = 6; // the longest wait for a recording to end
 
-const EDGE = 12; // pixels of paper around the maze where no door is
+const EDGE = 8; // pixels of paper around the maze where no door is
+const FINE = 13; // a maze with this many cells across or down keeps the room outside its doors small, for its cells
+const SECTIONS = ['plain', 'help', 'picture']; // the list's sections, in order
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
 const STEPS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const KEYS = { ArrowUp: 'up', ArrowRight: 'right', ArrowDown: 'down', ArrowLeft: 'left' };
@@ -71,7 +80,7 @@ const ring = $('ring');
 const ctx = canvas.getContext('2d');
 const page = document.createElement('canvas'); // the printed page as a picture, drawn once for each size
 
-let mazes = [];
+let mazes = []; // in the order of the list
 let done = new Set();
 let maze = null; // the open maze, or none while the list shows
 let walls = null; // its walls, as one path in cells
@@ -362,13 +371,18 @@ function headPoint() {
   return [c + 0.5, r + 0.5];
 }
 
-/* Whether a touch is on the green arrow outside the first door, which takes
-   up a line that has not left the first cell. */
+/* Whether a touch is on the green arrow outside the first door, or on the
+   picture beside it, which takes up a line that has not left the first cell. */
 function onStartArrow(x, y) {
   if (trail.length !== 1 || !fit) return false;
   const deep = fit.m / fit.s + 0.2;
   const beyond = maze.enter === 'top' ? -y : y - maze.rows;
-  return Math.abs(x - (maze.start[0] + 0.5)) <= 1 && beyond >= 0 && beyond <= deep;
+  if (Math.abs(x - (maze.start[0] + 0.5)) <= 1 && beyond >= 0 && beyond <= deep) return true;
+  if (!fit.from) return false;
+  const [left, top, wide, high] = fit.from;
+  const px = fit.ox + x * fit.s;
+  const py = fit.oy + y * fit.s;
+  return px >= left - 8 && px <= left + wide + 8 && py >= top - 8 && py <= top + high + 8;
 }
 
 /* The finger down, moving and up, in cells: the pointer handlers and the test
@@ -571,7 +585,10 @@ function layout() {
   const wide = board.clientWidth;
   const high = board.clientHeight;
   if (!wide || !high) return;
-  const m = clamp(Math.min(wide, high) * 0.085, 42, 66);
+  // The room outside a door: for its arrow and its word, or its picture; small when the maze is fine.
+  const room = Math.min(wide, high);
+  const fine = Math.max(maze.cols, maze.rows) >= FINE;
+  const m = maze.help ? clamp(room * 0.11, 54, 84) : clamp(room * 0.085, 42, fine ? 46 : 66);
   const doors = [maze.enter, maze.leave];
   const top = doors.includes('top') ? m : EDGE;
   const bottom = doors.includes('bottom') ? m : EDGE;
@@ -603,9 +620,29 @@ function placeRing() {
   ring.style.top = `${fit.oy + y * fit.s}px`;
 }
 
-/* A door's arrow outside the wall, with its word beside it, on the side with
-   room: away from the other door when both are on one side of the maze. */
-function drawDoor(pen, cell, side, into, color, label, other, otherSide) {
+/* The pictures at the two ends of some mazes, each loaded once. The page is
+   drawn again when one arrives. */
+const pictures = new Map();
+
+function pictureOf(name) {
+  let image = pictures.get(name);
+  if (!image) {
+    image = new Image();
+    image.addEventListener('load', () => {
+      if (!maze || !fit || !maze.help || ![maze.help.from.image, maze.help.to.image].includes(name)) return;
+      drawSheet();
+      draw();
+    });
+    image.src = `images/mazes/${name}.png`;
+    pictures.set(name, image);
+  }
+  return image;
+}
+
+/* A door's arrow outside the wall, with its word beside it, or its picture
+   in place of the word, on the side with room: away from the other door when
+   both are on one side of the maze. Returns the picture's place on the paper. */
+function drawDoor(pen, cell, side, into, color, mark, other, otherSide) {
   const { s, ox, oy, m } = fit;
   const outward = side === 'top' ? -1 : 1;
   const x = ox + (cell[0] + 0.5) * s;
@@ -633,16 +670,31 @@ function drawDoor(pen, cell, side, into, color, label, other, otherSide) {
   pen.fill();
   const size = clamp(m * 0.42, 15, 28);
   const beside = side === otherSide ? Math.sign(cell[0] - other[0]) || 1 : cell[0] + 0.5 > maze.cols / 2 ? -1 : 1;
-  pen.font = `700 ${size}px "Noto Naskh Arabic", "Geeza Pro", serif`;
-  pen.direction = 'rtl';
-  pen.textBaseline = 'middle';
-  pen.textAlign = beside > 0 ? 'left' : 'right';
-  pen.fillText(label, x + beside * (half + size * 0.4), (near + far) / 2);
+  if (typeof mark === 'string') {
+    pen.font = `700 ${size}px "Noto Naskh Arabic", "Geeza Pro", serif`;
+    pen.direction = 'rtl';
+    pen.textBaseline = 'middle';
+    pen.textAlign = beside > 0 ? 'left' : 'right';
+    pen.fillText(mark, x + beside * (half + size * 0.4), (near + far) / 2);
+    return null;
+  }
+  // A picture: as tall as the room allows, and no wider than the paper has room for on that side.
+  const gap = half + 8;
+  const most = (beside > 0 ? fit.w - x : x) - gap - 6;
+  const scale = Math.min((m - 10) / mark.h, most / mark.w);
+  const wide = mark.w * scale;
+  const high = mark.h * scale;
+  const left = beside > 0 ? x + gap : x - gap - wide;
+  const top = (near + far) / 2 - high / 2;
+  const image = pictureOf(mark.image);
+  if (image.complete && image.naturalWidth) pen.drawImage(image, left, top, wide, high);
+  return [left, top, wide, high];
 }
 
-/* The printed page: the two discs, the walls, the arrows and their words. It
-   is drawn once for each size on a bitmap of its own, so that a move of the
-   finger costs one picture and one line however many walls the maze has. */
+/* The printed page: the two discs, the walls, the arrows and their words or
+   pictures. It is drawn once for each size on a bitmap of its own, so that a
+   move of the finger costs one picture and one line however many walls the
+   maze has. */
 function drawSheet() {
   const { s, ox, oy, ratio } = fit;
   page.width = canvas.width;
@@ -665,8 +717,9 @@ function drawSheet() {
   pen.lineCap = 'round';
   pen.stroke(walls);
   pen.restore();
-  drawDoor(pen, maze.start, maze.enter, true, GREEN, TEXT.start, maze.end, maze.leave);
-  drawDoor(pen, maze.end, maze.leave, false, RED, TEXT.end, maze.start, maze.enter);
+  const { help } = maze;
+  fit.from = drawDoor(pen, maze.start, maze.enter, true, GREEN, help ? help.from : TEXT.start, maze.end, maze.leave);
+  drawDoor(pen, maze.end, maze.leave, false, RED, help ? help.to : TEXT.end, maze.start, maze.enter);
 }
 
 /* The line as it is to be drawn at this moment: its points in cells, its
@@ -740,13 +793,29 @@ function draw() {
   drawLine();
 }
 
-/* The list: a small drawing of each maze with its title. A finished maze
-   shows it: the first two their way through and a star, the others their
-   picture, bold over faint walls, with its name. */
+/* The list: a small drawing of each maze with its title, in three sections.
+   A maze with a picture at each end shows them outside its two doors. A
+   finished maze shows it: its way through and a star, or its hidden picture,
+   bold over faint walls, with its name. */
+const kindOf = (m) => (m.picture ? 'picture' : m.help ? 'help' : 'plain');
+
+/* A door's picture in a card's drawing, outside the door and inside the drawing's sides. */
+function doorArt(m, cell, side, { image, w, h }, pad, room) {
+  const high = Math.min(room - 0.3, ((m.cols + 2 * pad) * 0.6 * h) / w);
+  const wide = (high * w) / h;
+  const x = clamp(cell[0] + 0.5 - wide / 2, -pad, m.cols + pad - wide);
+  const y = side === 'top' ? -0.25 - high : m.rows + 0.25;
+  return `<image href="images/mazes/${image}.png" x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${wide.toFixed(2)}" height="${high.toFixed(2)}"/>`;
+}
+
 function art(m, finished) {
   const pad = 0.7;
+  const room = m.help ? Math.max(1.9, m.rows * 0.22) : 0; // outside a door with a picture
+  const above = [m.enter, m.leave].includes('top') ? room : 0;
+  const below = [m.enter, m.leave].includes('bottom') ? room : 0;
   const line = (points, more) => `<path d="M${points.map(([x, y]) => `${x} ${y}`).join('L')}${more}" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
   const disc = ([c, r], color) => `<circle cx="${c + 0.5}" cy="${r + 0.5}" r=".4" fill="${color}" opacity=".3"/>`;
+  const ends = m.help ? doorArt(m, m.start, m.enter, m.help.from, pad, room) + doorArt(m, m.end, m.leave, m.help.to, pad, room) : '';
   let over = '';
   if (finished && m.picture) {
     over = `${line(m.picture.outline, 'Z')} stroke="${rgb(PICTURE)}" stroke-width=".42"/>`;
@@ -756,9 +825,9 @@ function art(m, finished) {
     way.push([c + 0.5, m.leave === 'bottom' ? r + 1.35 : r - 0.35]);
     over = `${line(way, '')} stroke="${rgb(LINE)}" stroke-width=".34"/>`;
   }
-  return `<svg viewBox="${-pad} ${-pad} ${m.cols + 2 * pad} ${m.rows + 2 * pad}" aria-hidden="true">`
+  return `<svg viewBox="${-pad} ${-pad - above} ${m.cols + 2 * pad} ${m.rows + 2 * pad + above + below}" aria-hidden="true">`
     + `<g${finished && m.picture ? ' opacity=".16"' : ''}>${disc(m.start, GREEN)}${disc(m.end, RED)}`
-    + `<path d="${wallPath(m)}" fill="none" stroke="${WALL}" stroke-width=".13" stroke-linecap="round"/></g>${over}</svg>`;
+    + `<path d="${wallPath(m)}" fill="none" stroke="${WALL}" stroke-width=".13" stroke-linecap="round"/></g>${ends}${over}</svg>`;
 }
 
 function card(m) {
@@ -766,13 +835,16 @@ function card(m) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'maze-card';
+  button.dataset.number = m.number;
   const mark = finished ? (m.picture ? m.picture.name : STAR) : '';
   button.innerHTML = `${art(m, finished)}<span class="maze-card-title">${m.title}</span><span class="maze-card-mark">${mark}</span>`;
   button.addEventListener('click', () => openMaze(m.number));
   return button;
 }
 
+/* The list. Coming back from a maze, it shows that maze's card. */
 function showList() {
+  const from = maze ? maze.number : null;
   maze = null;
   phase = 'list';
   finger = null;
@@ -782,8 +854,22 @@ function showList() {
   root.dataset.view = 'list';
   $('view-maze').hidden = true;
   $('view-list').hidden = false;
-  $('cards').replaceChildren(...mazes.map(card));
-  scrollTo(0, 0);
+  $('cards').replaceChildren(...SECTIONS.map((kind) => {
+    const section = document.createElement('section');
+    section.className = 'maze-section';
+    const heading = document.createElement('h2');
+    heading.className = 'maze-heading';
+    heading.textContent = TEXT[kind];
+    const cards = document.createElement('div');
+    cards.className = 'maze-cards';
+    cards.append(...mazes.filter((m) => kindOf(m) === kind).map(card));
+    section.append(heading, cards);
+    return section;
+  }).filter((section) => section.lastChild.childElementCount));
+  const back = from === null ? null : $('cards').querySelector(`[data-number="${from}"]`);
+  // At once: the page's smooth scrolling would slide the whole long list past.
+  if (back) back.scrollIntoView({ block: 'center', behavior: 'instant' });
+  else scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function openMaze(number) {
@@ -798,12 +884,12 @@ function openMaze(number) {
   sheet = 1;
   finger = null;
   lift = null;
-  const words = maze.picture ? TEXT.find : TEXT.draw;
+  const words = maze.help || (maze.picture ? TEXT.find : TEXT.draw);
   $('title').textContent = maze.title;
   $('line').textContent = words.text;
   $('name').hidden = true;
   $('buttons').hidden = true;
-  const isLast = number === mazes[mazes.length - 1].number;
+  const isLast = maze === mazes[mazes.length - 1];
   $('next').hidden = isLast;
   $('to-list').hidden = !isLast;
   root.dataset.view = 'maze';
@@ -813,6 +899,7 @@ function openMaze(number) {
   time = 0;
   layout();
   speak(words.clip);
+  if (maze.picture) sound.preloadPrompts([maze.picture.clip]);
 }
 
 /* Saved on the device: which mazes have been finished. */
@@ -872,7 +959,10 @@ addEventListener('keydown', (event) => {
   key(KEYS[event.key]);
 });
 
-$('next').addEventListener('click', () => openMaze(maze.number + 1));
+$('next').addEventListener('click', () => {
+  const next = mazes[mazes.indexOf(maze) + 1];
+  if (next) openMaze(next.number);
+});
 $('to-list').addEventListener('click', showList);
 $('again').addEventListener('click', () => openMaze(maze.number));
 
@@ -939,6 +1029,7 @@ if (LOCAL) {
         fit,
         shape: maze && fit ? shape() : null,
         done: [...done],
+        order: mazes.map((m) => m.number),
         mazes,
       };
     },
@@ -951,8 +1042,8 @@ sound.preloadPrompts([TEXT.draw.clip, TEXT.find.clip, TEXT.what.clip, TEXT.prais
 fetch('mazes/mazes.json')
   .then((response) => response.json())
   .then((data) => {
-    mazes = data.mazes;
-    sound.preloadPrompts(mazes.filter((m) => m.picture).map((m) => m.picture.clip));
+    // The order of the list: section by section, each in the order of the file.
+    mazes = SECTIONS.flatMap((kind) => data.mazes.filter((m) => kindOf(m) === kind));
     showList();
   })
   .catch(() => {
