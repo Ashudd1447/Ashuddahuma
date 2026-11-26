@@ -163,6 +163,7 @@ function buildMenu() {
     renderDialect();
     sound.play(next);
   });
+  addEventListener('dialectchange', renderDialect);
   document.addEventListener('pointerdown', (event) => {
     if (!menu.hidden && !menu.contains(event.target) && !button.contains(event.target)) open(false);
   });
@@ -201,3 +202,56 @@ function buildExit() {
 }
 
 buildExit();
+
+/* The dialect switch on the page itself, beside the menu, when the activity
+   that is open has anything recorded in both dialects (sound.twoDialects()):
+   the father, 2026-11-25: "there should be something to signal that you
+   should toggle". Two sides, the word for Fusha and the flag, the chosen one
+   filled. It breathes twice when it comes, on every visit, and then rests:
+   once for the activity, never again for each word ("the user already
+   knows"). A tap switches and says the dialect's name, as the menu's button
+   does, and a page that hides its Fusha text under Egyptian speech follows
+   through 'dialectchange'. With nothing recorded in both dialects it is not
+   there, and the switch stays in the menu. On a phone it takes the top left
+   corner, as the row has no room beside the two round buttons. */
+function buildDialectSwitch() {
+  if (document.documentElement.lang !== 'ar' || typeof sound === 'undefined' || typeof sound.twoDialects !== 'function') return;
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'dialect-switch';
+  toggle.id = 'dialect-switch';
+  toggle.hidden = true;
+  toggle.setAttribute('aria-label', 'لَهْجَةُ التَّعْلِيمَاتِ');
+  toggle.innerHTML = `<span class="side" data-d="fusha">فُصْحَى</span><span class="side" data-d="masri">${FLAG}</span>`;
+  document.body.append(toggle);
+  const render = () => {
+    toggle.dataset.on = sound.dialect();
+  };
+  toggle.addEventListener('click', () => {
+    const next = sound.dialect() === 'masri' ? 'fusha' : 'masri';
+    sound.setDialect(next);
+    render();
+    sound.play(next);
+  });
+  addEventListener('dialectchange', render);
+  let there = false;
+  const look = () => {
+    if (there) return;
+    sound.twoDialects().then((yes) => {
+      if (!yes || there) return;
+      there = true;
+      render();
+      if (!document.getElementById('exit')) toggle.classList.add('alone');
+      toggle.hidden = false;
+      toggle.classList.add('hello');
+      document.body.classList.add('two-dialects');
+      toggle.addEventListener('animationend', () => toggle.classList.remove('hello'), { once: true });
+    });
+  };
+  addEventListener('promptsannounced', look);
+  look();
+}
+
+/* sound.js loads after this file: wait for the page's scripts. */
+if (document.readyState === 'loading') addEventListener('DOMContentLoaded', buildDialectSwitch);
+else buildDialectSwitch();

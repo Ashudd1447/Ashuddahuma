@@ -1,63 +1,125 @@
-/* أَيْنَ؟: the words of where a thing is (where.html, js/where.js). */
-.where .game{height:100svh;min-height:0}
+/* أَيْنَ؟: the words of where a thing is (where.html, js/where.js).
+
+   The page is exactly as tall as the screen and never scrolls. A picture is
+   an svg that fills a box this file lays out and fits itself inside, so it
+   cannot cover the words around it whatever changes (js/where.js says why).
+   Upright, the step is a column: dots, head, picture, sentence, choices,
+   buttons. On a screen wider than tall the picture stands beside the words
+   and takes the full height. Sizes follow the screen's height and width, so
+   everything fits from 360 by 600 upright and 600 by 360 on its side.
+
+   Kept to what old tablets know: no container units, vh before nothing newer
+   (the page's height is a chain of 100%, the visible height on Android and
+   iPad alike), no aspect-ratio, and nothing here styles an element inside a
+   picture except how its box is placed. Every class of the game starts w-. */
+html{height:100%}
+.where{height:100%;overflow:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);--w-gap:clamp(4px,1.3vh,12px)}
+.where .game{height:100%;min-height:0}
+.where .top{flex:none;padding-top:clamp(4px,1.4vh,8px)}
+.where .top img{width:clamp(36px,10vh,56px);height:clamp(36px,10vh,56px)}
 .where .view{overflow:hidden}
+.where .hub-title{flex:none;font-size:clamp(1.8rem,min(7vw,8vh),3rem);line-height:1.5}
 
 /* The list of stages: each its words, in their colors. */
-.stages{display:flex;flex-direction:column;gap:18px;width:min(100%,560px);padding:8px 0 24px}
-.w-stage-card{position:relative;display:flex;justify-content:center;padding:18px 16px;border:0;border-radius:24px;background:var(--surface);box-shadow:var(--shadow);font:inherit;cursor:pointer}
+.where #view-list{gap:clamp(6px,1.6vh,16px);padding-bottom:12px}
+.w-stages{display:flex;flex-direction:column;gap:clamp(10px,2.2vh,18px);width:100%;max-width:560px;min-height:0}
+.w-stage-card{position:relative;display:flex;justify-content:center;align-items:center;min-width:0;padding:clamp(8px,2vh,18px) 16px;border:0;border-radius:24px;background:var(--surface);box-shadow:var(--shadow);font:inherit;cursor:pointer}
 .w-stage-card.invite{animation:breathe 1.8s ease-in-out infinite}
-.w-stage-card.done::after{content:"";position:absolute;top:12px;left:14px;width:34px;height:34px;background:#F2B84B;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
-.w-stage-words{display:flex;flex-wrap:wrap;justify-content:center;gap:.2em .7em;font-size:clamp(2.2rem,8vw,3.2rem);line-height:1.6}
+.w-stage-card.done::after{content:"";position:absolute;top:10px;left:12px;width:clamp(20px,4.4vh,34px);height:clamp(20px,4.4vh,34px);background:#F2B84B;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.w-stage-words{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 .7em;font-size:clamp(1.7rem,min(8vw,6.4vh),3.2rem);line-height:1.6}
 
 /* A word of place is always in its own color. */
-.w-word{color:var(--c);font-weight:700}
-.w-big{font-size:clamp(3rem,min(11vh,16vw),6rem);line-height:1.3;cursor:pointer}
-.w-filled{animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.w-word{color:var(--c);font-weight:700;white-space:nowrap}
+.w-filled{display:inline-block;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
 
-/* The step on the screen: the head, the picture(s), the sentence, the words to choose, the buttons. */
-.where .w-play{gap:clamp(6px,1.4vh,14px);padding-top:4px}
-.where .dots{justify-content:center;flex-wrap:wrap;gap:8px}
-.w-head{margin:0;min-height:1.4em;text-align:center;font-weight:700;color:var(--deep);font-size:clamp(1.6rem,min(5.4vh,8vw),2.6rem);line-height:1.4}
+/* The speaker mark that stands in for a Fusha text while Egyptian is
+   spoken: in the color of the text it replaces; as a chip, white on the
+   word's color. */
+.w-mark{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.3em;vertical-align:middle;color:var(--c,inherit)}
+.w-mark svg{display:block;width:1.25em;height:1.25em}
+.w-chip{width:2em;height:1.15em;border-radius:999px;background:var(--c);color:#fff}
+.w-chip svg{width:.8em;height:.8em}
+/* Three chips fit one row of a stage's card. */
+.w-stage-words .w-chip{width:1.5em}
+.w-choice .w-mark{height:1.15em}
+.w-choice .w-mark svg{width:1.1em;height:1.1em}
+/* A text that waits to learn whether its Egyptian recording exists keeps its room, unseen. */
+.w-hold .w-head,.w-hold .w-line,.w-hold .w-choice > *,.w-hold .w-word,.w-hold .w-mark{visibility:hidden}
+
+/* The step on the screen. Upright: one column, the picture's room taking
+   what the words leave, never more than a picture as wide as the screen needs. */
+.where .w-play{justify-content:center;gap:0;padding:2px 16px 10px}
+.where .w-play > *{flex:none;max-width:100%}
+.where .w-dots{justify-content:center;flex-wrap:wrap;gap:5px 8px;padding:3px 0}
+.where .w-dots i{width:clamp(7px,1.6vh,12px);height:clamp(7px,1.6vh,12px)}
+.w-head{margin:var(--w-gap) 0 0;min-height:1.4em;text-align:center;font-weight:700;color:var(--deep);font-size:clamp(1.25rem,min(4.6vh,7vw),2.6rem);line-height:1.4;cursor:pointer}
 .where .w-play[data-kind="show"] .w-head{min-height:0}
-.w-stage{flex:1 1 0;min-height:150px;width:100%;display:grid;justify-content:center;align-content:center;gap:14px}
-.w-frame{position:relative;aspect-ratio:3/2;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);background:#fff;touch-action:none}
-.w-frame .w-scene{display:block;width:100%;height:100%}
+.w-big{font-size:clamp(2.6rem,min(9.5vh,15vw),6rem);line-height:1.25}
+/* Room above the large word for its marks: the fatha on the hamza of أَمَامَ
+   stands higher than the line and was drawn across the dots. */
+.w-head .w-big{display:inline-block;padding-top:.2em}
+
+.where .w-play > .w-room{position:relative;flex:1 1 0;min-height:0;width:100%;margin-top:var(--w-gap);overflow:hidden}
+.where .w-play > .w-room[data-n="1"]{max-height:calc((100vw - 32px) * .676)}
+/* The pictures' own boxes: one fills the room; several share it in a grid
+   (where.js says in how many columns, and draws them close together). */
+.w-stage{position:absolute;top:0;right:0;bottom:0;left:0;margin:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:12px}
+.w-frame{position:relative;min-width:0;min-height:0;grid-column:1 / -1;touch-action:none}
+.w-scene{position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .w-pick{cursor:pointer;transition:opacity .3s ease,transform .3s ease}
 .w-pick.tried{opacity:.45}
-.w-frame.right{box-shadow:0 0 0 6px #F2B84B,var(--shadow)}
 .w-pick.away{opacity:.25;transform:scale(.94)}
-.w-line{margin:0;text-align:center;font-weight:700;color:var(--ink);font-size:clamp(1.7rem,min(6vh,8.4vw),3rem);line-height:1.6;opacity:0;transition:opacity .35s ease;cursor:pointer}
+
+.w-line{margin:var(--w-gap) 0 0;min-height:1.55em;text-align:center;font-weight:700;color:var(--ink);font-size:clamp(1.3rem,min(5vh,9vw),3rem);line-height:1.55;opacity:0;transition:opacity .35s ease;cursor:pointer}
 .w-line.on{opacity:1}
 .w-line span{white-space:nowrap}
 .w-gap{display:inline-block;width:2.6em;height:1em;vertical-align:-.1em;border-bottom:4px dashed var(--gold);border-radius:4px}
-.w-choices{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 16px}
+.w-choices{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 12px;margin-top:var(--w-gap)}
 .w-choices:empty{display:none}
-.w-choice{min-width:3.4em;min-height:64px;padding:.05em .7em;border:4px solid var(--c);border-radius:999px;background:var(--surface);color:var(--c);box-shadow:var(--shadow);font:inherit;font-weight:700;font-size:clamp(1.9rem,min(6.4vh,9vw),2.8rem);line-height:1.4;cursor:pointer;transition:opacity .3s ease,transform .2s ease}
+.w-choice{display:inline-flex;align-items:center;justify-content:center;min-width:3em;min-height:clamp(42px,7.4vh,64px);padding:.02em .6em .08em;border:3px solid var(--c);border-radius:999px;background:var(--surface);color:var(--c);box-shadow:var(--shadow);font:inherit;font-weight:700;font-size:clamp(1.2rem,min(4.6vh,8vw),2.6rem);line-height:1.4;cursor:pointer;transition:opacity .3s ease,transform .2s ease,box-shadow .2s ease}
+.w-choice.w-lit{transform:scale(1.08);box-shadow:0 0 0 5px #F2B84B,var(--shadow)}
 .w-choice.tried{opacity:.35}
 .w-choice.right{background:var(--c);color:#fff;transform:scale(1.08)}
+.w-choice.right .w-mark{color:#fff}
 .w-choice.away{opacity:.2}
-.w-controls{display:flex;gap:18px;justify-content:center;align-items:center}
-.w-round{width:clamp(56px,9vh,76px);height:clamp(56px,9vh,76px);padding:14px;border:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);cursor:pointer}
+.w-controls{display:flex;gap:clamp(12px,3vw,18px);justify-content:center;align-items:center;margin-top:var(--w-gap)}
+.w-round{width:clamp(46px,8.5vh,76px);height:clamp(46px,8.5vh,76px);padding:clamp(10px,1.7vh,14px);border:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);cursor:pointer}
 .w-round svg{display:block;width:100%;height:100%}
 .w-next{background:#35A85A;color:#fff}
 .w-next.call{animation:breathe 1.4s ease-in-out infinite}
 
-/* Put: the thing waiting to be dragged breathes; held, it grows a little. */
-.w-thing.w-grab{animation:w-wait 1.6s ease-in-out infinite;cursor:grab}
-.w-thing.w-held{cursor:grabbing}
-.w-thing{transform-box:fill-box;transform-origin:center bottom}
-@keyframes w-wait{50%{filter:drop-shadow(0 0 10px #F2B84B)}}
-
-.wobble{animation:w-wobble .45s ease}
-@keyframes w-wobble{20%{translate:-8px 0}40%{translate:7px 0}60%{translate:-5px 0}80%{translate:3px 0}}
+.w-wobble{animation:w-wobble .45s ease}
+@keyframes w-wobble{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
 
 /* The end of a stage. */
-.where #view-done{justify-content:center}
-.w-done-words{display:flex;flex-wrap:wrap;justify-content:center;gap:.2em .8em;font-size:clamp(2.4rem,9vw,3.6rem);line-height:1.6}
-.w-done-buttons{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.where #view-done{justify-content:center;gap:clamp(8px,2vh,24px);padding-top:8px;padding-bottom:12px}
+.where .praise{font-size:clamp(3rem,min(22vmin,20vh),10rem);line-height:1.35}
+.w-done-words{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 .8em;font-size:clamp(1.7rem,min(9vw,8vh),3.6rem);line-height:1.6}
+.w-done-buttons{display:flex;flex-wrap:wrap;gap:clamp(8px,2vh,14px) 14px;justify-content:center}
+
+/* A screen wider than tall (a tablet or a phone on its side): the picture
+   beside the words. The words keep their column, on the right, under the ✕
+   and the ☰, which the padding at the top keeps clear; the picture's room
+   is pinned to the other side at the full height, by its four edges, the
+   plainest way there is. The words are sized by the column's width, so a
+   sentence fits it, and by the height, so the column fits the screen. */
+@media (min-aspect-ratio:5/4){
+  .where{--w-side:clamp(210px,33vw,440px);--w-gap:clamp(5px,2.2vh,20px);--w-between:clamp(10px,1.6vw,20px)}
+  .w-stages{flex-direction:row;align-items:stretch;max-width:1100px}
+  .w-stage-card{flex:1 1 0}
+  .w-stage-words{font-size:clamp(1.4rem,min(4.2vw,9vh),3.2rem)}
+  .where .w-play{position:relative;align-items:flex-start;padding:18px 16px 8px}
+  .where .w-play > *{width:var(--w-side)}
+  .where .w-play > .w-room,.where .w-play > .w-room[data-n="1"]{position:absolute;top:0;bottom:8px;left:16px;right:calc(16px + var(--w-side) + var(--w-between));width:auto;max-width:none;max-height:none;margin:0}
+  .w-head{font-size:clamp(1.15rem,min(5.6vh,calc(var(--w-side) * .12)),2.6rem)}
+  .w-big{font-size:clamp(2.2rem,min(17vh,calc(var(--w-side) * .3)),6rem)}
+  .w-line{font-size:clamp(1.1rem,min(6.2vh,calc(var(--w-side) * .098)),3rem);line-height:1.5}
+  .w-choice{min-height:clamp(40px,11vh,64px);font-size:clamp(1.1rem,min(5.6vh,calc(var(--w-side) * .09)),2.6rem)}
+  .w-round{width:clamp(44px,12vh,76px);height:clamp(44px,12vh,76px)}
+}
 
 @media (prefers-reduced-motion:reduce){
-  .w-stage-card.invite,.w-next.call,.w-thing.w-grab{animation:none}
+  .w-stage-card.invite,.w-next.call{animation:none}
   .w-next.call{box-shadow:0 0 0 5px #F2B84B,var(--shadow)}
-  .wobble{animation:none}
+  .w-wobble{animation:none}
 }

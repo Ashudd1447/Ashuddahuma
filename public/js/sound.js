@@ -280,6 +280,8 @@ const sound = (() => {
     } catch {
       // Private browsing: the choice lasts for this page only.
     }
+    /* A page that hides its Fusha text while Egyptian is spoken listens for this. */
+    try { window.dispatchEvent(new Event('dialectchange')); } catch { /* no events here */ }
   }
 
   const variants = (name) => (dialect() === 'masri' ? [`${name}-masri`, name] : [name]);
@@ -287,11 +289,67 @@ const sound = (() => {
   /* A spoken prompt in the chosen dialect; the Fusha recording plays when the
      Egyptian one does not exist. */
   function say(name) {
+    uses(name);
     return play(variants(name));
   }
 
+  /* Whether say(name) speaks Egyptian: the switch is on Egyptian and the
+     recording <name>-masri exists. A Promise of true or false. The father's
+     rule (2026-11-25): Fusha text is not on the screen while Egyptian is spoken. */
+  function masri(name) {
+    return dialect() === 'masri' ? load(`${name}-masri`).then(Boolean, () => false) : Promise.resolve(false);
+  }
+
   function preloadPrompts(names) {
+    uses(names);
     for (const name of names) for (const variant of variants(name)) load(variant);
+  }
+
+  /* Which prompts this page can say, and whether any of them is recorded in
+     both dialects: then app.js puts the dialect switch on the page itself,
+     beside the menu, from the start of the activity (the father, 2026-11-25).
+     A page announces its prompts through preloadPrompts(), say() or uses(); a
+     game announces all of them as it opens, so the switch is there from its
+     first screen. What is recorded is read from sw.js, whose FILES lists
+     every recording, and from the saved copy for a device that is offline:
+     nothing is fetched to find out. */
+  const announced = new Set();
+  let telling = 0;
+  function uses(names) {
+    let grew = false;
+    for (const name of [].concat(names)) {
+      if (typeof name !== 'string' || announced.has(name)) continue;
+      announced.add(name);
+      grew = true;
+    }
+    if (!grew) return;
+    clearTimeout(telling);
+    telling = setTimeout(() => {
+      try { window.dispatchEvent(new Event('promptsannounced')); } catch { /* no events here */ }
+    }, 0);
+  }
+
+  let recorded = null;
+  function recordings() {
+    if (recorded) return recorded;
+    const names = (paths) => paths.map((path) => (/\/audio\/([^/.]+)\.(?:m4a|wav|mp3)$/.exec(path) || [])[1]).filter(Boolean);
+    const fromFile = fetch('/sw.js').then((r) => r.text()).then((text) => names(text.match(/\/audio\/[^'"\s]+/g) || [])).catch(() => []);
+    const fromCopy = (typeof caches === 'undefined' ? Promise.resolve([]) : caches.keys()
+      .then((keys) => Promise.all(keys.map((key) => caches.open(key).then((copy) => copy.keys()))))
+      .then((lists) => names(lists.flat().map((request) => new URL(request.url).pathname)))).catch(() => []);
+    /* On the admin's own computer a test may name recordings that are not made yet. */
+    let pretend = [];
+    try {
+      if (['localhost', '127.0.0.1'].includes(location.hostname)) pretend = (localStorage.getItem('recordings-test') || '').split(',').filter(Boolean);
+    } catch { /* no storage */ }
+    recorded = Promise.all([fromFile, fromCopy]).then(([a, b]) => new Set([...a, ...b, ...pretend]));
+    return recorded;
+  }
+
+  /* A Promise of whether any prompt this page has announced is recorded in
+     Fusha and in Egyptian. */
+  function twoDialects() {
+    return recordings().then((set) => [...announced].some((name) => set.has(name) && set.has(`${name}-masri`)));
   }
 
   /* Keeps the page's sound session open for a made sound of this many seconds. */
@@ -817,7 +875,7 @@ const sound = (() => {
   });
 
   return {
-    preload, preloadPrompts, buffer, play, say, stop, pause, resume, paused, current, dialect, setDialect, unlock: warm,
+    preload, preloadPrompts, buffer, play, say, stop, pause, resume, paused, current, dialect, setDialect, masri, uses, twoDialects, unlock: warm,
     chime, buzz, tick, click, honk, pop, blink, eagle, knock, ratchet, thud, splash, backup, drill, spray, pour, rev, zip, spark, ambience, engine, engineOff, wrong,
     /* The two building blocks, for a game that makes a sound of its own in its own file:
        tone(frequency, startsIn, length, volume, type, slideTo) and rush(frequency, startsIn, length, volume, q, slideTo). */

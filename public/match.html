@@ -18,6 +18,8 @@
   <header class="sheet-head">
     <a id="home" href="numbers.html" aria-label="الْأَرْقَامُ وَالْحِسَابُ"><img class="logo" src="images/logo.webp" alt=""></a>
     <button class="sheet-line" id="line" type="button">صِلْ كُلَّ رَقْمٍ بِالصُّورَةِ الْمُنَاسِبَةِ لَهُ</button>
+    <!-- On Egyptian the Fusha words wait unseen until match.js knows which recording will play (showLine). -->
+    <script>try { if (localStorage.getItem('dialect') === 'masri') document.getElementById('line').classList.add('mt-wait'); } catch (e) { /* no storage: Fusha */ }</script>
   </header>
   <main class="sheet-board" id="board">
     <div class="sheet-slot mt-slot" id="slot"></div>

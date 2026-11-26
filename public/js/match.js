@@ -14,30 +14,37 @@
    the English names (en-1 …), which the father records; nothing English is
    ever written. After the last round: أحسنت.
 
-   Hands, chairs and the cards' art are drawn here; every other picture is the
-   books' own clip art (sheets/img). numbers.html loads this file too, to draw
-   the two cards and mark a finished batch with a star. */
+   The hands are pictures (images/hands); chairs and the cards' art are drawn
+   here; every other picture is the books' own clip art (sheets/img).
+   numbers.html loads this file too, to draw the two cards and mark a finished
+   batch with a star. */
 (() => {
   const $ = (id) => document.getElementById(id);
   const KEY = 'match';
   const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 
-  /* The hands, counted from the thumb, the father's way (2026-11-25): one is
-     the thumb up from a fist, two the thumb and the index, three adds the
-     middle finger, four the ring finger, five the open hand. They are
-     pictures made with the family's Recraft plan (images/hands/hand-1 to 5,
-     raw copies in recraft/hands-raw), after two drawings in code were sent
-     back the same day as strange and confusing. Each picture's width (its
-     height is HAND_H) and its raised fingertips, thumb first, as shares of
-     its width and height: counting aloud lights them in that order. Six to
-     ten are the open hand and the hand of the rest, mirrored beside it. */
+  /* The hands, counted from the index finger, the father's word
+     (2026-11-25, "index alone is number one"): one is the index finger up,
+     the other three folded under the thumb; two adds the middle finger (a
+     V), three the ring finger, four the little finger, the thumb still
+     across the palm; five is the open hand. They are pictures made with the
+     family's Recraft plan, all five cut from one sheet so that they are one
+     hand (images/hands/hand-1 to 5, the sheets in recraft/hands-raw): two
+     sets drawn in code and a set of pictures that counted another way were
+     sent back the same day. Every picture is the palm toward us with the
+     thumb side on our right, at one scale, the wrist on the bottom line.
+     Each picture's width (its height is HAND_H) and its raised fingertips
+     as shares of its width and height, in the order they are counted: the
+     index, the middle, the ring and the little finger, and for five the
+     thumb last. Counting aloud lights them in that order. Six to ten are
+     the open hand and the hand of the rest beside it. */
   const HAND_H = 640;
   const HANDS = {
-    1: { w: 261, tips: [[0.43, 0.08]] },
-    2: { w: 439, tips: [[0.08, 0.47], [0.52, 0.07]] },
-    3: { w: 449, tips: [[0.08, 0.48], [0.37, 0.08], [0.63, 0.07]] },
-    4: { w: 382, tips: [[0.08, 0.4], [0.37, 0.11], [0.62, 0.06], [0.84, 0.12]] },
-    5: { w: 441, tips: [[0.07, 0.46], [0.29, 0.11], [0.57, 0.06], [0.8, 0.09], [0.93, 0.2]] },
+    1: { w: 293, tips: [[0.82, 0.08]] },
+    2: { w: 303, tips: [[0.9, 0.1], [0.4, 0.07]] },
+    3: { w: 296, tips: [[0.89, 0.13], [0.63, 0.07], [0.3, 0.1]] },
+    4: { w: 308, tips: [[0.89, 0.14], [0.66, 0.07], [0.37, 0.07], [0.11, 0.15]] },
+    5: { w: 455, tips: [[0.66, 0.12], [0.45, 0.07], [0.23, 0.11], [0.07, 0.22], [0.92, 0.47]] },
   };
 
   /* What the child sees and hears; the parents approve every line. */
@@ -73,6 +80,7 @@
   const NEXT = 900; // after a round's last number is said, before the next round
   const REST = 900; // the praise, before the buttons
   const TAP = 10; // a finger that moves less than this many CSS pixels taps
+  const LINE_WAIT = 2500; // the longest the line at the top stays unseen while its recording is looked for
 
   const INK = '#26283F';
   const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
@@ -126,16 +134,17 @@
     return out;
   }
 
-  /* The hands for a number. One to five: one hand, its thumb on our left.
-     Six to ten: the open hand on the right, counted first, and the hand of
-     the rest on the left, mirrored, so the two thumbs face each other as on
-     a person holding up both hands. */
+  /* The hands for a number. One to five: one hand as it was made, its thumb
+     side on our right. Six to ten: the open hand on the right, mirrored and
+     counted first, and the hand of the rest on our left as it was made, so
+     the two thumbs are toward each other, as on one person holding up both
+     hands to us. */
   const GAP = 40;
   function handsMarkup(n) {
     if (n <= 5) return { width: HANDS[n].w, height: HAND_H, markup: handMarkup(n, 0, false, 0) };
     const rest = n - 5;
     const left = HANDS[rest].w;
-    const markup = handMarkup(5, left + GAP, false, 0) + handMarkup(rest, 0, true, 5);
+    const markup = handMarkup(5, left + GAP, true, 0) + handMarkup(rest, 0, false, 5);
     return { width: left + GAP + HANDS[5].w, height: HAND_H, markup };
   }
 
@@ -472,6 +481,51 @@
     });
   }
 
+  /* The line at the top is a button that says the line again. The father's
+     rule (2026-11-25): the site shows Fusha only, so when the Egyptian
+     recording is the one that will play, the Fusha words must not show, or
+     the child would read one wording and hear another. A speaker mark then
+     stands in their place, still the button. sound.masri(name) answers
+     (true when the switch is on Egyptian and <name>-masri exists), and the
+     switch in the menu sends 'dialectchange', which is followed at once.
+     Without sound.masri the words always show. The numbers are digits, the
+     same in both, and stay. */
+  const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  let lineAsked = 0; // the newest question about the line; an older answer is dropped
+  function showLine() {
+    const line = $('line');
+    const mine = ++lineAsked;
+    const show = (spoken) => {
+      if (mine !== lineAsked) return;
+      line.classList.remove('mt-wait');
+      if (spoken === line.classList.contains('mt-spoken')) return;
+      line.classList.toggle('mt-spoken', spoken);
+      if (spoken) {
+        line.innerHTML = SPEAKER;
+        line.setAttribute('aria-label', 'اِسْتَمِعْ');
+      } else {
+        line.textContent = TEXT.line.text;
+        line.removeAttribute('aria-label');
+      }
+    };
+    if (typeof sound.masri !== 'function') {
+      show(false);
+      return;
+    }
+    // On Egyptian, until the answer comes, the words wait unseen (match.html
+    // hides them the same way before this file runs); an answer that is long
+    // in coming leaves the mark meanwhile, which is right for either recording.
+    if (!line.classList.contains('mt-spoken') && sound.dialect() === 'masri') {
+      line.classList.add('mt-wait');
+      setTimeout(() => {
+        if (line.classList.contains('mt-wait')) show(true);
+      }, LINE_WAIT);
+    }
+    Promise.resolve()
+      .then(() => sound.masri(TEXT.line.clip))
+      .then((yes) => show(yes === true), () => show(false));
+  }
+
   /* Marks under the paper: rounds done, the round now, rounds to come. */
   function showMarks(done) {
     const marks = $('marks');
@@ -680,6 +734,7 @@
     slot.addEventListener('contextmenu', (event) => event.preventDefault());
     slot.addEventListener('dragstart', (event) => event.preventDefault());
     $('line').addEventListener('click', () => sound.say(TEXT.line.clip));
+    addEventListener('dialectchange', showLine);
     $('again').addEventListener('click', startBatch);
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden || !drag) return;
@@ -738,6 +793,7 @@
   if (batch === 'ar') for (let n = 1; n <= 10; n++) clips.push(`count-${n}`);
   else sound.preload(Array.from({ length: 10 }, (_, i) => `en-${i + 1}`));
   sound.preloadPrompts(clips);
+  showLine();
   sound.say(TEXT.line.clip);
   startBatch();
 })();

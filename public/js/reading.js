@@ -58,7 +58,7 @@ for (const entry of WORDS) {
   const card = document.createElement('button');
   card.type = 'button';
   card.className = 'card';
-  card.innerHTML = `<img src="images/${entry.id}.jpg" alt=""><span class="word">${entry.word}</span>`;
+  card.innerHTML = `<img src="images/reading/${entry.id}.webp" alt=""><span class="word">${entry.word}</span>`;
   card.addEventListener('click', () => growCard(card, entry));
   $('grid').append(card);
 }
@@ -72,7 +72,7 @@ function showPicture() {
   reading = false;
   $('solo').classList.remove('reading');
   $('read-prompt').hidden = true;
-  $('solo-img').src = `images/${entry.id}.jpg`;
+  $('solo-img').src = `images/reading/${entry.id}.webp`;
   $('solo-word').textContent = entry.word;
   $('dots').innerHTML = WORDS.map((_, i) => `<i class="${i <= practiceIndex ? 'on' : ''}"></i>`).join('');
   play(entry.id);
@@ -115,7 +115,7 @@ function startMatching() {
     board.append(makeItem(entry, 'name', 1, row + 1, `<span class="word">${entry.word}</span>`));
   });
   pictures.forEach((entry, row) => {
-    board.append(makeItem(entry, 'picture', 2, row + 1, `<img src="images/${entry.id}.jpg" alt="" draggable="false">`));
+    board.append(makeItem(entry, 'picture', 2, row + 1, `<img src="images/reading/${entry.id}.webp" alt="" draggable="false">`));
   });
   show('view-match');
   play('match');
