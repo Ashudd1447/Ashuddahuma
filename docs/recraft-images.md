@@ -91,3 +91,16 @@ Made on 2026-11-24 and 25 through Claude's Recraft connector, with the father wa
 - **Files.** `recraft/save-picture.js` keeps the picture as Recraft gave it in `recraft/salah-raw/` and writes a 768 px WebP into `public/images/salah/` (through `tools/to-webp.js`, a headless Chrome's canvas: nothing to install). The archer for the sports door and the microscope for the lab door were made the same way (`recraft/sports-raw/`, `recraft/doors-raw/`).
 - **The five skies** (`time-fajr` to `time-isha`): one picture of a small town at midday from Recraft's own model in the stories' style (2 credits), then four edits of it (dawn, afternoon, sunset, night), so the town is the same in all five. The dawn's crescent has its bright edge toward the coming sun.
 - **Cost.** About 620 credits went on the first evening for 21 station pictures, the skies and the archer, most of it on corrections; the father added 800 on 2026-11-25.
+
+## The counting hands (number matching game)
+
+Five raster pictures (recraftv4_1_raster, 3:4, 2 credits each), made on 2026-11-25 after the father sent back two sets drawn in code and showed a picture of hands as they should look: palm on, a warm brown outline, light skin, knuckle and palm lines. His son counts from the thumb, and image models draw the common index-first gestures by habit: asked for a thumb-first one, a model drew the index finger; asked for a thumb-first two, it drew the horn sign (never to be used). What worked was naming a gesture the model knows, or spelling out every finger:
+
+- One: "Thumbs up hand gesture: one human hand made into a fist with the thumb pointing straight up, seen from the front so the four curled fingers face the viewer."
+- Two: "One human hand making the letter L sign, palm facing the viewer: the index finger points straight up, the thumb points straight out to the side at a right angle with a wide open space between them, and the middle, ring and little fingers are curled down into the palm."
+- Three: "... showing three the German way: the thumb, the index finger and the middle finger are extended and spread apart, while the ring finger and the little finger are curled down into the palm."
+- Four (one try in seven was right): "The thumb points out to the side. The index finger, the middle finger and the ring finger point straight up, spread a little apart. The little finger alone is bent down and folded flat onto the palm, its fingertip touching the palm. So exactly three fingers point up, plus the thumb, and one small finger is folded."
+- Five: all five fingers extended and spread apart.
+
+Each ends with: "Children's book cartoon, thick warm brown outline, salmon peach skin, a few simple brown lines for knuckles and palm creases, flat colors, wrist ending at the bottom with no sleeve. Exactly one hand. Isolated on a plain white background, no text, no shadow." Count every finger of every try at full size. 20 tries, 48 credits. The kept ones were cut out of their white in the browser (a flood fill from the edges), cropped to 640 pixels high, the L mirrored so every thumb is on our left, and the first two retoned to the others' skin.
+

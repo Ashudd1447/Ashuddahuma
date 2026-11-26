@@ -22,8 +22,9 @@
 .mt-thing.mt-lit img,.mt-thing.mt-lit svg{animation:mt-hop .3s ease-out}
 @keyframes mt-hop{40%{transform:translateY(-8%) scale(1.08)}}
 .mt-hands{position:absolute;overflow:visible}
-.mt-hands .mt-finger{transition:fill .18s ease}
-.mt-hands .mt-finger.mt-lit{fill:#FFC93C}
+.mt-finger{fill:transparent;stroke:transparent}
+.mt-hands .mt-finger{fill:transparent;stroke:transparent;stroke-width:6;transition:fill .18s ease,stroke .18s ease}
+.mt-hands .mt-finger.mt-lit{fill:#FFC93C;fill-opacity:.75;stroke:#fff}
 .mt-badge{position:absolute;box-sizing:border-box;border-radius:24%;border:3px dashed #A3ADB8;background:#fff;pointer-events:none}
 .mt-card.mt-over .mt-badge{border-color:var(--accent);background:#fff}
 .mt-card.mt-done .mt-badge{border-color:transparent}

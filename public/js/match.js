@@ -22,17 +22,23 @@
   const KEY = 'match';
   const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 
-  /* The fingers that stand for each number on one hand, from the thumb: the
-     father's way (2026-11-25). Six to ten are the right hand open and the
-     left hand showing the rest. Change these lists to change every hand. */
-  const FINGERS = {
-    1: ['thumb'],
-    2: ['thumb', 'index'],
-    3: ['thumb', 'index', 'middle'],
-    4: ['thumb', 'index', 'middle', 'ring'],
-    5: ['thumb', 'index', 'middle', 'ring', 'pinky'],
+  /* The hands, counted from the thumb, the father's way (2026-11-25): one is
+     the thumb up from a fist, two the thumb and the index, three adds the
+     middle finger, four the ring finger, five the open hand. They are
+     pictures made with the family's Recraft plan (images/hands/hand-1 to 5,
+     raw copies in recraft/hands-raw), after two drawings in code were sent
+     back the same day as strange and confusing. Each picture's width (its
+     height is HAND_H) and its raised fingertips, thumb first, as shares of
+     its width and height: counting aloud lights them in that order. Six to
+     ten are the open hand and the hand of the rest, mirrored beside it. */
+  const HAND_H = 640;
+  const HANDS = {
+    1: { w: 261, tips: [[0.43, 0.08]] },
+    2: { w: 439, tips: [[0.08, 0.47], [0.52, 0.07]] },
+    3: { w: 449, tips: [[0.08, 0.48], [0.37, 0.08], [0.63, 0.07]] },
+    4: { w: 382, tips: [[0.08, 0.4], [0.37, 0.11], [0.62, 0.06], [0.84, 0.12]] },
+    5: { w: 441, tips: [[0.07, 0.46], [0.29, 0.11], [0.57, 0.06], [0.8, 0.09], [0.93, 0.2]] },
   };
-  const handsFor = (n) => (n <= 5 ? [{ side: 'right', up: FINGERS[n] }] : [{ side: 'right', up: FINGERS[5] }, { side: 'left', up: FINGERS[n - 5] }]);
 
   /* What the child sees and hears; the parents approve every line. */
   const TEXT = {
@@ -69,9 +75,6 @@
   const TAP = 10; // a finger that moves less than this many CSS pixels taps
 
   const INK = '#26283F';
-  const SKIN = '#E8B98F';
-  const FOLDED = '#D9A577'; // a curled finger, a shade darker so the raised ones stand out
-  const SLEEVE = '#3E76C2';
   const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
 
   const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
@@ -108,89 +111,32 @@
 
   /* Drawings */
 
-  /* One hand held up, seen from the back, as the child sees his own hand when
-     he holds it up: the right hand's thumb is on our left, the left hand is
-     its mirror image. The father found the first hands, palm on, confusing
-     (2026-11-25): curled fingers that seemed to stick out at him, a short
-     thumb, and a two that looked rude with no space between thumb and
-     index. So now: the raised fingers long, fanned a little apart, with
-     their nails; the curled ones only low knuckles, a shade darker, with no
-     nail; the thumb long and well out to the side, never against the index.
-     viewBox HAND_W by HAND_H. The raised fingers carry data-i, their place
-     in the counting. */
-  const HAND_W = 140;
-  const HAND_H = 172;
-  const BASE = 86; // where the fingers spring from the back of the hand
-  /* Each finger: its middle where it springs from the hand, its width, its
-     length when raised, and how far it leans out (degrees). */
-  const FINGER = {
-    index: { x: 57, w: 16, len: 62, lean: -8 },
-    middle: { x: 74, w: 16.5, len: 68, lean: -1 },
-    ring: { x: 90, w: 15.5, len: 62, lean: 6 },
-    pinky: { x: 105, w: 13.5, len: 50, lean: 14 },
-  };
-  const THUMB = { x: 52, y: 124, w: 19, len: 60, lean: -28, tucked: 24, tuckLean: -74 };
-  const CURLED = 17; // how much of a curled finger shows: its knuckle
-  const NAIL = '#F7D9C8';
-  const ORDER = ['thumb', 'index', 'middle', 'ring', 'pinky'];
-
-  function handMarkup(side, up, first) {
-    const raised = ORDER.filter((name) => up.includes(name));
-    const index = (name) => first + raised.indexOf(name);
-    const back = 'M48 84Q48 76 56 76H108Q116 76 115 86L112 128Q110 148 92 150H66Q50 148 48 132Z';
-    const lit = (name) => ` class="mt-finger" data-i="${index(name)}"`;
-    /* A finger as a rounded bar from (x, y) upward, leaning about that point. */
-    const bar = (x, y, w, len, lean, extra = '') => `<rect${extra} x="${x - w / 2}" y="${y - len}" width="${w}" height="${len}" rx="${w / 2}" transform="rotate(${lean} ${x} ${y})"/>`;
-    const thumbUp = up.includes('thumb');
-    const shapes = (fill) => {
-      const parts = [`<path d="${back}"/>`, '<rect x="60" y="140" width="38" height="20"/>'];
-      for (const name of ['index', 'middle', 'ring', 'pinky']) {
-        const f = FINGER[name];
-        if (up.includes(name)) parts.push(bar(f.x, BASE, f.w, f.len, f.lean, fill ? lit(name) : ''));
-      }
-      if (thumbUp) parts.push(bar(THUMB.x, THUMB.y, THUMB.w, THUMB.len, THUMB.lean, fill ? lit('thumb') : ''));
-      else parts.push(bar(THUMB.x, THUMB.y, THUMB.w, THUMB.tucked, THUMB.tuckLean));
-      return parts.join('');
-    };
-    // The outline first, drawn thick, then the same shapes filled over it: one hand with one edge.
-    let out = `<g fill="${INK}" stroke="${INK}" stroke-width="7" stroke-linejoin="round">${shapes(false)}</g>`;
-    out += `<g fill="${SKIN}">${shapes(true)}</g>`;
-    // Curled fingers: only their knuckles show above the back of the hand.
-    for (const name of ['index', 'middle', 'ring', 'pinky']) {
-      if (up.includes(name)) continue;
-      const f = FINGER[name];
-      const kw = f.w + 1.5;
-      out += `<rect x="${f.x - kw / 2}" y="${BASE + 4 - CURLED}" width="${kw}" height="${CURLED}" rx="${kw / 2.8}" transform="rotate(${f.lean / 3} ${f.x} ${BASE})" fill="${FOLDED}" stroke="${INK}" stroke-width="3"/>`;
-    }
-    // Nails and the creases of the middle joints on the raised fingers.
-    const nail = (x, y, w, len, lean) => {
-      const nw = w * 0.58;
-      return `<g transform="rotate(${lean} ${x} ${y})"><rect x="${x - nw / 2}" y="${y - len + 5}" width="${nw}" height="${Math.min(14, len * 0.24)}" rx="${nw / 2.4}" fill="${NAIL}" stroke="${INK}" stroke-width="1.6"/>`
-        + `<path d="M${x - w * 0.28} ${y - len * 0.5}q${w * 0.28} 3 ${w * 0.56} 0" fill="none" stroke="${INK}" stroke-width="1.5" opacity=".4"/></g>`;
-    };
-    for (const name of ['index', 'middle', 'ring', 'pinky']) {
-      const f = FINGER[name];
-      if (up.includes(name)) out += nail(f.x, BASE, f.w, f.len, f.lean);
-    }
-    if (thumbUp) out += nail(THUMB.x, THUMB.y, THUMB.w, THUMB.len, THUMB.lean);
-    out += `<rect x="54" y="152" width="52" height="19" rx="4" fill="${SLEEVE}" stroke="${INK}" stroke-width="3"/>`;
-    return side === 'left' ? `<g transform="translate(${HAND_W} 0) scale(-1 1)">${out}</g>` : out;
+  /* One hand: its picture, mirrored or not, and over each raised fingertip
+     a ring that lights when that finger is counted (data-i, its place in
+     the counting). */
+  function handMarkup(n, x, mirror, first) {
+    const hand = HANDS[n];
+    const w = hand.w;
+    const flip = mirror ? ` transform="translate(${x + w} 0) scale(-1 1)"` : ` transform="translate(${x} 0)"`;
+    let out = `<g${flip}><image href="images/hands/hand-${n}.webp" width="${w}" height="${HAND_H}"/></g>`;
+    hand.tips.forEach(([tx, ty], i) => {
+      const cx = x + (mirror ? 1 - tx : tx) * w;
+      out += `<circle class="mt-finger" data-i="${first + i}" cx="${cx.toFixed(1)}" cy="${(ty * HAND_H).toFixed(1)}" r="34"/>`;
+    });
+    return out;
   }
 
-  /* The hands for a number, side by side as the child holds up his own: the
-     right hand on the right, read first, the left hand on our left. Counted
-     thumb first, the right hand before the left. */
-  const GAP = 6;
+  /* The hands for a number. One to five: one hand, its thumb on our left.
+     Six to ten: the open hand on the right, counted first, and the hand of
+     the rest on the left, mirrored, so the two thumbs face each other as on
+     a person holding up both hands. */
+  const GAP = 40;
   function handsMarkup(n) {
-    const hands = handsFor(n);
-    const width = hands.length * HAND_W + (hands.length - 1) * GAP;
-    let first = 0;
-    const parts = hands.map((hand, i) => {
-      const part = `<g transform="translate(${(hands.length - 1 - i) * (HAND_W + GAP)} 0)">${handMarkup(hand.side, hand.up, first)}</g>`;
-      first += hand.up.length;
-      return part;
-    });
-    return { width, height: HAND_H, markup: parts.join('') };
+    if (n <= 5) return { width: HANDS[n].w, height: HAND_H, markup: handMarkup(n, 0, false, 0) };
+    const rest = n - 5;
+    const left = HANDS[rest].w;
+    const markup = handMarkup(5, left + GAP, false, 0) + handMarkup(rest, 0, true, 5);
+    return { width: left + GAP + HANDS[5].w, height: HAND_H, markup };
   }
 
   /* A chair, seen from the front and a little above. viewBox 100 by 100. */
