@@ -1,5 +1,7 @@
 # Egyptian recordings and the text on screen
 
+**2026-11-26, later: the rule changed.** The father found the speaker marks could not be told apart (in `أَيْنَ؟` three of them on one screen) and asked for the Egyptian text instead: when the Egyptian recording plays, its Egyptian text, exactly as on the recording card, shows in place of the Fusha. `sound.caption()` does it for every page but `أَيْنَ؟`, which has its own; the cards are written to `public/egyptian.json` by `tools/list-egyptian.js`. The rest of this file describes the earlier rule.
+
 **Status, 2026-11-26:** done everywhere, at the father's word ("Apply the Egyptian rule to the other 11 pages now"). The reciter and the clock have their own code; the books' games, the mazes, light, archery, the driving games, the safety gear, the building game and the car factory go through `sound.caption()` in `sound.js`: a label is hidden keeping its room, and a line that is a button or an instruction that stays up becomes a speaker mark that says it again when tapped (his open question about a stand-in for the plain instruction lines, answered by Claude's default: the mark). The salah door (wudu, the prayer, the five prayers, the qibla, the quiz) is no longer in this list: the father took Egyptian out of it altogether the same day, so its sections below are history. The rest of this file is the survey as it was written on 2026-11-25.
 
 Written 2026-11-25, for the father to decide from. Nothing in the games listed here has been changed yet.

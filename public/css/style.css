@@ -118,9 +118,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 .word-lit{border-radius:12px;padding:0 .08em;transition:background .12s ease,color .12s ease}
 .word-lit.on{background:var(--gold);color:#fff}
 .controls{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;padding-bottom:8px}
-#controls-ayah{display:none}
-.mode-ayah #controls-ayah{display:flex}
-.mode-ayah #controls-surah{display:none}
 .button .icon{width:.85em;height:.85em;fill:currentColor;flex:none}
 .button.playing{background:var(--gold)}
 @media (max-width:430px){.controls .button{font-size:1.15rem;padding:.45em 1.1em}}
@@ -718,11 +715,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .game-card .cover-card{flex:1 1 0;min-width:0;background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
 .game-card .cover-card .word{padding:0;font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.7}
 
-/* sound.caption(): a text whose Egyptian recording plays is not shown (the father's rule, 2026-11-25) */
+/* sound.caption(): on Egyptian, a text waits unseen until it is known which recording plays (then the Egyptian or the Fusha text shows) */
 .caption-quiet,.caption-wait{visibility:hidden}
-.spoken-mark{cursor:pointer;pointer-events:auto}
-.spoken-mark svg{display:inline-block;box-sizing:content-box;width:1.3em;height:1.3em;padding:.3em;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);vertical-align:middle}
-.spoken-mark:active svg{transform:scale(.94)}
 
 /* The dialect switch on the page (app.js buildDialectSwitch): beside the two round buttons when the open activity is recorded in both dialects */
 .dialect-switch{position:fixed;top:10px;right:122px;z-index:40;display:flex;align-items:center;gap:2px;height:46px;padding:4px;border:0;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);font:inherit;cursor:pointer;direction:rtl}

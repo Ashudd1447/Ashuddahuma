@@ -50,7 +50,7 @@ const timing = (() => {
   const IZHAR = new Set('ءأإآهعحغخ');
   const WINDOW = 0.01;
   const MIN_GAP = 0.12;
-  const PAUSE_UNITS = 2;
+  const PAUSE_UNITS = 1.5; // harakat. It was 2 while the noise floor sat in the speech; that made the voiced time, and so the haraka, come out short, and a story's short comma pause still counted
   const MIN_RUN = 0.05;
   const MIN_STEP = 0.04;
   const BREAK_COST = 0.3; // s²: what a stretch ending away from the text's punctuation costs (about half a second of misfit)
@@ -151,6 +151,28 @@ const timing = (() => {
     return [...out].sort((a, b) => a - b);
   }
 
+  /* The name of Allah is written without the small alif, in the Madinah
+     Mushaf, the Quran.com text and Modern Standard spelling alike, yet its
+     lam is read with a natural madd (Al-laah), as a dagger alif would give.
+     With opts.nameMadd (the reciter's), the lam of a word that is the Name,
+     alone or after one of bi, ta, wa, fa, ka, li or a, is weighted as if the
+     alif were written: the Fatihah's reciter holds it, and leaving it out
+     lit رَبِّ 0.3 s early in ayah 2. The stories leave it off: there the
+     Name ending an exclamation was said short. */
+  const NAME_RE = /^[أء]?[وفبتك]?[اٱآ]?لله(?:م)?$/;
+  function markName(clusters, text) {
+    clusters.forEach((cluster, i) => {
+      const next = clusters[i + 1];
+      const marks = marksOf(cluster.text);
+      if (baseChar(cluster.text) !== LAM || !marks.includes(SHADDA) || !marks.includes(FATHA) || marks.includes(DAGGER_ALIF)) return;
+      if (!next || baseChar(next.text) !== 'ه') return;
+      const from = text.lastIndexOf(' ', cluster.start) + 1;
+      const space = text.indexOf(' ', cluster.start);
+      const word = text.slice(from, space < 0 ? text.length : space);
+      if (NAME_RE.test([...word].filter((ch) => !MARK_RE.test(ch) && ch !== TATWEEL).join(''))) cluster.name = true;
+    });
+  }
+
   function audibleIndices(clusters, silent) {
     const skip = new Set(silent || []);
     return clusters.map((_, i) => i).filter((i) => !skip.has(i));
@@ -226,7 +248,7 @@ const timing = (() => {
       maddCounted = true;
     }
     if (marks.includes(SHADDA)) w += 0.8;
-    if (marks.includes(DAGGER_ALIF) && !maddCounted) w += maddLength(cluster, next);
+    if ((marks.includes(DAGGER_ALIF) || cluster.name) && !maddCounted) w += maddLength(cluster, next);
     if (isTanwin(marks) && !(hasSukoon(marks) || !hasVowel(marks))) w += TANWEEN_WEIGHT;
     if (marks.includes(SHADDA) && (base === NOON || base === MEEM)) {
       w += GHUNNA_WEIGHT;
@@ -277,6 +299,7 @@ const timing = (() => {
   /* Weights of the audible clusters of a text, in order. */
   function audibleWeights(text, opts = {}) {
     const clusters = splitClusters(text);
+    if (opts.nameMadd) markName(clusters, text);
     const silent = derivedSilent(clusters, text);
     const audible = audibleIndices(clusters, silent);
     const weights = audible.map((idx) => {
@@ -364,16 +387,47 @@ const timing = (() => {
     };
   }
 
+  /* The room's noise floor: the quietest 50 ms of the clip, leaving out
+     digital silence (the zeros a trim pads with). The floor was once the
+     15th percentile of all windows, which takes at least 15% of a clip to be
+     room tone. A recording trimmed close to a voice that never stops is not:
+     in the Fatihah's ayat 1 to 5 that percentile lay 10 to 16 dB under the
+     voice's peak, so nearly all the speech counted as quiet, a few loud
+     slivers were taken for the only voiced stretches, and the words were
+     crammed into them (إِيَّاكَ lit for 3.6 s, the rest in 0.1 s). */
+  function noiseFloor(env) {
+    const SPAN = 5;
+    let best = Infinity;
+    let sum = 0;
+    let live = 0;
+    for (let i = 0; i < env.rms.length; i++) {
+      const r = env.rms[i];
+      if (r === 0) {
+        sum = 0;
+        live = 0;
+        continue;
+      }
+      sum += r;
+      live += 1;
+      if (live > SPAN) {
+        sum -= env.rms[i - SPAN];
+        live = SPAN;
+      }
+      if (live === SPAN) best = Math.min(best, sum / SPAN);
+    }
+    return Number.isFinite(best) ? best : 0;
+  }
+
   /* The level below which the clip is quiet rather than voiced, as IQRA's
-     alignment script sets it: well above the room's noise floor (the 15th
-     percentile) yet low enough that a whispered consonant such as a sukoon
-     ح still counts as voice, which the 6% speech threshold does not. */
+     alignment script sets it: well above the room's noise floor yet low
+     enough that a whispered consonant such as a sukoon ح still counts as
+     voice, which the 6% speech threshold does not. It never rises above 6%
+     of the peak (-24 dB), the bottom of where such letters sit, so a clip
+     with no room tone at all cannot bring the old fault back. */
   function quietLevel(env) {
     let peak = 0;
     for (const r of env.rms) if (r > peak) peak = r;
-    const sorted = Float32Array.from(env.rms).sort();
-    const floor = sorted[Math.floor(sorted.length * 0.15)] || 0;
-    return Math.max(floor * 3.5, peak * 0.03, 0.0008);
+    return Math.min(peak * 0.06, Math.max(noiseFloor(env) * 3.5, peak * 0.03, 0.0008));
   }
 
   /* Voiced stretches of the clip inside the speech span: loud windows, with

@@ -6,6 +6,8 @@
    ashudd-YYYY-MM-DDTHH:MMZ (UTC). That makes every device fetch the new
    offline copy, and the home page shows the version as a date and a time in
    the device's own time zone (the father asked for a date, not a number).
+0. Writes public/egyptian.json from the recording cards (node
+   tools/list-egyptian.js), the Egyptian text the games show.
 2. Sizes the offline copy: every file in FILES, which each device saves to
    work in airplane mode. The father asked (2026-11-24) to be reminded when it
    passes 300 MB, so he can choose what becomes online only.
@@ -15,6 +17,7 @@ exits with 1). Standard library only."""
 import datetime
 import os
 import re
+import subprocess
 import sys
 
 LIMIT_MB = 300
@@ -61,5 +64,15 @@ def size(text):
     return 1 if missing else 0
 
 
+def egyptian():
+    """Writes public/egyptian.json (and docs/egyptian-names.md) from the
+    recording cards, so the Egyptian text a game shows is the card's wording."""
+    try:
+        subprocess.run(['node', os.path.join(HERE, 'list-egyptian.js')], check=True)
+    except (OSError, subprocess.CalledProcessError) as error:
+        sys.exit(f'node tools/list-egyptian.js failed: {error}')
+
+
 if __name__ == '__main__':
+    egyptian()
     sys.exit(size(stamp()))

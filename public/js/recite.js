@@ -1,18 +1,28 @@
 /* The reciter. Two modes, chosen with the tabs at the top:
-   - السورة كاملة: one button plays the surah through, each word lit as the
-     recording reaches it, for the daily "listen to the whole surah once".
-   - آية آية: each ayah on top carries a play sign; a tap plays it, then the
-     prompt "now you read it" shows and sounds, and the child's turn waits
-     for أعد الآية or الآية التالية. The last ayah has no "next".
-   In both, the whole surah sits on top and the ayah being played shows big
-   below. The text is quran/<surah>.json, copied from the Quran.com API and
-   never edited. Word timings are audio/<surah>.timings.json, made with
-   timing.html; an ayah without timings lights whole while it plays. */
+   - السورة كاملة: the surah plays through from the current ayah, each word
+     lit as the recording reaches it, for the daily "listen to the whole
+     surah once". The arrows beside the play button move between ayat:
+     while it plays it jumps there and plays on; paused or stopped, it only
+     moves the current ayah.
+   - آية آية: each ayah on top carries a play sign; a tap plays it, then,
+     a second after it ends, the prompt "now you read it" shows and sounds,
+     and the child's turn waits for أعد الآية or الآية التالية. The last ayah
+     has no "next".
+   In both, the big button plays and pauses (the clip and its lit word hold
+   exactly where they are, as the story reader pauses a page) and the square
+   one stops: the playing marks go and the current ayah waits to be played
+   from its start. The whole surah sits on top and the ayah being played
+   shows big below. The text is quran/<surah>.json, copied from the
+   Quran.com API and never edited. Word timings are audio/<surah>.timings.json,
+   made with timing.html; an ayah without them is timed from its recording
+   (timing.autoWords), and lights whole while that is not ready. */
 const SURAH = document.body.dataset.surah;
 const $ = (id) => document.getElementById(id);
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const PLAY = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.3v15.4a1 1 0 0 0 1.52.85l12.3-7.7a1 1 0 0 0 0-1.7L8.52 3.45A1 1 0 0 0 7 4.3z"/></svg>';
-const STOP = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>';
+const PROMPT = 'الْآنَ اقْرَأْهَا أَنْتَ';
+const LABELS = { listen: 'اِسْتَمِعْ', pause: 'تَوَقَّفْ', play: 'تَابِعْ' };
+const BREATH = 700; // between ayat in السورة كاملة
+const TURN_AFTER = 1000; // from the end of an ayah to "now you read it"
 
 let surah = null;
 let timings = {};
@@ -20,7 +30,7 @@ let auto = {};
 let current = 1;
 let run = 0;
 let mode = 'surah';
-let playingAll = false;
+let state = 'idle'; // 'idle', 'playing' or 'paused'
 
 const clip = (number) => `${SURAH}-${number}`;
 const onLast = () => current === surah.ayat.length;
@@ -53,45 +63,84 @@ function select(number) {
 }
 
 function updateControls() {
+  const play = $('play');
+  const look = state === 'playing' ? 'pause' : state === 'paused' ? 'play' : 'listen';
+  play.dataset.state = look;
+  play.setAttribute('aria-label', LABELS[look]);
+  $('stop').disabled = state === 'idle';
+  $('back').disabled = current === 1;
+  $('forward').disabled = onLast();
   $('next').hidden = onLast();
-  $('listen').innerHTML = playingAll ? `${STOP} قِفْ` : `${PLAY} اِسْتَمِعْ`;
-  $('listen').classList.toggle('playing', playingAll);
+  document.body.classList.toggle('held', state === 'paused');
+}
+
+function setState(next) {
+  state = next;
+  updateControls();
 }
 
 function markPlaying(number) {
   for (const item of $('ayat').children) item.classList.toggle('playing', Number(item.dataset.n) === number);
 }
 
-/* "Now you read it" shows only when its Fusha recording is the one that
-   plays. The father's rule (2026-11-25): the site shows Fusha text only, and
-   the text cannot stand on the screen while the Egyptian voice says it in
-   other words. sound.masri() says whether the Egyptian recording will play;
-   the switch sends 'dialectchange', followed at once. The buttons under the
-   line carry on without it. */
-let turnUp = false;
-async function showPrompt() {
-  turnUp = true;
-  const masri = typeof sound.masri === 'function' ? await sound.masri('read-it').catch(() => false) : false;
-  $('turn').hidden = !turnUp || masri === true;
+/* "Now you read it" shows only after the ayah has been heard, and goes when
+   anything stops. sound.caption() keeps it to the site's dialect rule (which
+   text stands beside which recording) and follows the switch by itself. */
+function showPrompt() {
+  const turn = $('turn');
+  if (typeof sound.caption === 'function') sound.caption(turn, PROMPT, 'read-it');
+  else turn.textContent = PROMPT;
+  turn.hidden = false;
 }
 
 function hidePrompt() {
-  turnUp = false;
   $('turn').hidden = true;
 }
 
-addEventListener('dialectchange', () => {
-  if (turnUp) showPrompt();
-});
+/* A wait that stands still while the reciter is paused and ends at once when
+   the run it belongs to is stopped. */
+function wait(ms, mine) {
+  return new Promise((resolve) => {
+    let left = ms;
+    let last = performance.now();
+    const step = () => {
+      const now = performance.now();
+      if (state !== 'paused') left -= now - last;
+      last = now;
+      if (mine !== run || left <= 0) resolve();
+      else setTimeout(step, 40);
+    };
+    setTimeout(step, 40);
+  });
+}
 
-/* Everything stops: the clip, the lights, the prompt, a run in progress. */
+/* Everything stops: the clip, the lights, the prompt, a run in progress. The
+   current ayah stays, ready to be played from its start. */
 function halt() {
   run += 1;
   sound.stop();
-  playingAll = false;
   hidePrompt();
   markPlaying(0);
-  updateControls();
+  setState('idle');
+}
+
+/* Holds the clip and its lit word where they are; the waits between clips
+   hold too. A clip still loading when the pause came is held as it starts. */
+function pause() {
+  if (state !== 'playing') return;
+  setState('paused');
+  const keep = () => {
+    if (state !== 'paused') return;
+    if (sound.current() && !sound.paused()) sound.pause();
+    requestAnimationFrame(keep);
+  };
+  keep();
+}
+
+function resume() {
+  if (state !== 'paused') return;
+  setState('playing');
+  sound.resume();
 }
 
 function setMode(next) {
@@ -108,10 +157,9 @@ function setMode(next) {
     tab.classList.toggle('on', on);
     tab.setAttribute('aria-selected', on ? 'true' : 'false');
   }
+  updateControls();
 }
 
-/* Plays one ayah and lights its words from the clip's clock. Resolves when the
-   clip ends, at once if the recording is missing. */
 /* The word times of an ayah: the parents' tapped timings from the file when
    they exist, else the automatic estimate from the recording. */
 function timesFor(number, count) {
@@ -122,13 +170,18 @@ function timesFor(number, count) {
 }
 
 /* The automatic timing of an ayah from its recording, computed once the
-   clip has decoded (and again after a failed download is retried). */
+   clip has decoded (and again after a failed download is retried). The
+   recitation stops at the ayah's end (waqf), and the name of Allah keeps
+   the madd it is read with though the Mushaf writes no alif for it. */
 function estimate(ayah) {
   sound.buffer(clip(ayah.number)).then((decoded) => {
-    if (decoded && !auto[ayah.number]) auto[ayah.number] = timing.autoWords(ayah.words, timing.envelope(decoded), { waqf: true });
+    if (decoded && !auto[ayah.number]) auto[ayah.number] = timing.autoWords(ayah.words, timing.envelope(decoded), { waqf: true, nameMadd: true });
   });
 }
 
+/* Plays one ayah and lights its words from the clip's clock, which stands
+   still while the sound is paused. Resolves when the clip ends, at once if
+   the recording is missing or the run is stopped. */
 function playAyah(number, mine) {
   const name = clip(number);
   const words = [...$('focus').querySelectorAll('.word-lit')];
@@ -164,46 +217,61 @@ function playAyah(number, mine) {
   return done;
 }
 
-/* Ayah mode: hear the ayah, then "now you read it". */
+/* Ayah mode: hear the ayah, a second's quiet, then "now you read it". */
 async function recite(number) {
   halt();
   const mine = run;
   select(number);
+  setState('playing');
   markPlaying(number);
   await playAyah(number, mine);
   if (mine !== run) return;
   markPlaying(0);
-  await showPrompt();
+  await wait(TURN_AFTER, mine);
   if (mine !== run) return;
+  showPrompt();
   await sound.say('read-it');
+  if (mine !== run) return;
+  setState('idle');
 }
 
-/* Surah mode: the whole surah through, with a breath between ayat. The same
-   button stops it. */
-async function listenAll() {
-  if (playingAll) {
-    halt();
-    return;
-  }
+/* Surah mode: from an ayah to the end of the surah, with a breath between
+   ayat; at the end the reciter goes back to the first ayah. */
+async function listenFrom(start) {
   halt();
   const mine = run;
-  playingAll = true;
-  updateControls();
-  for (const ayah of surah.ayat) {
-    select(ayah.number);
-    markPlaying(ayah.number);
-    await playAyah(ayah.number, mine);
+  setState('playing');
+  for (let number = start; number <= surah.ayat.length; number++) {
+    select(number);
+    markPlaying(number);
+    await playAyah(number, mine);
     if (mine !== run) return;
-    await delay(700);
+    markPlaying(0);
+    await wait(BREATH, mine);
     if (mine !== run) return;
   }
-  playingAll = false;
-  markPlaying(0);
+  setState('idle');
   select(1);
 }
 
-function next() {
-  if (!onLast()) recite(current + 1);
+/* The big button: play the current ayah (and on, in السورة كاملة), pause,
+   or carry on from where it was paused. */
+function playPause() {
+  if (state === 'playing') pause();
+  else if (state === 'paused') resume();
+  else if (mode === 'surah') listenFrom(current);
+  else recite(current);
+}
+
+/* The arrows of السورة كاملة. */
+function step(by) {
+  const target = current + by;
+  if (!surah || target < 1 || target > surah.ayat.length) return;
+  if (state === 'playing') listenFrom(target);
+  else {
+    halt();
+    select(target);
+  }
 }
 
 async function init() {
@@ -231,9 +299,14 @@ async function init() {
   $('focus').addEventListener('click', () => {
     if (mode === 'ayah') recite(current);
   });
+  $('play').addEventListener('click', playPause);
+  $('stop').addEventListener('click', halt);
+  $('back').addEventListener('click', () => step(-1));
+  $('forward').addEventListener('click', () => step(1));
   $('again').addEventListener('click', () => recite(current));
-  $('next').addEventListener('click', next);
-  $('listen').addEventListener('click', listenAll);
+  $('next').addEventListener('click', () => {
+    if (!onLast()) recite(current + 1);
+  });
   /* The clip stops when the page is hidden; the run it belonged to must not
      carry on behind a locked screen. */
   document.addEventListener('visibilitychange', () => {

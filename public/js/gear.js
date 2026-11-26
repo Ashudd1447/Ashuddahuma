@@ -195,9 +195,8 @@ const gear = (() => {
   function build() {
     box = document.getElementById('view-gear');
     box.innerHTML = SCENE;
-    /* The two lines are hidden, keeping their room, when their Egyptian
-       recording is the one said (the father's rule, 2026-11-25): the pegs
-       and the breathing glove show what to do. */
+    /* The two lines in Egyptian when their Egyptian recording is the one said
+       (sound.caption; the father's rule, 2026-11-26). */
     if (typeof sound.caption === 'function') {
       sound.caption(box.querySelector('#gear-prompt'), 'اِلْبَسْ مُعَدَّاتِ السَّلَامَةِ', 'gear');
       sound.caption(box.querySelector('#gear-hint'), 'اِبْدَأْ بِالْيَمِينِ', 'start-right');

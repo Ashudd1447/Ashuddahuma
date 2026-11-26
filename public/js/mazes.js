@@ -107,10 +107,9 @@ const beep = (name, ...values) => {
   if (typeof sound[name] === 'function') sound[name](...values);
 };
 
-/* A text that a recording says, by the father's rule (2026-11-25): it shows
-   only while its Fusha recording is the one that plays (sound.caption). With
-   { mark: true } a speaker mark stands in its place, and a tap on it says the
-   line again. An older saved copy of sound.js may lack it: then the text
+/* A text that a recording says: the Fusha, or the Egyptian text when the
+   Egyptian recording is the one said (sound.caption; the father's rule,
+   2026-11-26). An older saved copy of sound.js may lack it: then the text
    simply shows. */
 const caption = (el, text, clip, how) => (typeof sound.caption === 'function'
   ? sound.caption(el, text, clip, how)
@@ -460,7 +459,7 @@ function praise() {
 /* The printed page is gone and the child's line is alone: the question. */
 function ask() {
   sheet = 0;
-  caption($('line'), TEXT.what.text, TEXT.what.clip, { mark: true });
+  caption($('line'), TEXT.what.text, TEXT.what.clip);
   speak(TEXT.what.clip);
   enter('ask');
 }
@@ -895,7 +894,7 @@ function openMaze(number) {
   lift = null;
   const words = maze.help || (maze.picture ? TEXT.find : TEXT.draw);
   $('title').textContent = maze.title;
-  caption($('line'), words.text, words.clip, { mark: true });
+  caption($('line'), words.text, words.clip);
   $('name').hidden = true;
   $('buttons').hidden = true;
   const isLast = maze === mazes[mazes.length - 1];

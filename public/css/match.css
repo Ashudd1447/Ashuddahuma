@@ -45,6 +45,3 @@
    mark in place of the Fusha words (the father's rule, 2026-11-25), on a
    round button large enough for a small finger */
 .sheet-line.mt-wait{visibility:hidden}
-.sheet-line.mt-spoken{--mark:clamp(56px,9vh,68px);flex:none;display:grid;place-items:center;box-sizing:border-box;width:var(--mark);height:var(--mark);min-height:0;margin:2px 0 6px;padding:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);line-height:1}
-.sheet-line.mt-spoken:active{background:var(--surface);transform:scale(.95)}
-.sheet-line.mt-spoken svg{display:block;width:62%;height:62%}

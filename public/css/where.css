@@ -35,16 +35,9 @@ html{height:100%}
 /* The speaker mark that stands in for a Fusha text while Egyptian is
    spoken: in the color of the text it replaces; as a chip, white on the
    word's color. */
-.w-mark{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.3em;vertical-align:middle;color:var(--c,inherit)}
-.w-mark svg{display:block;width:1.25em;height:1.25em}
-.w-chip{width:2em;height:1.15em;border-radius:999px;background:var(--c);color:#fff}
-.w-chip svg{width:.8em;height:.8em}
 /* Three chips fit one row of a stage's card. */
-.w-stage-words .w-chip{width:1.5em}
-.w-choice .w-mark{height:1.15em}
-.w-choice .w-mark svg{width:1.1em;height:1.1em}
 /* A text that waits to learn whether its Egyptian recording exists keeps its room, unseen. */
-.w-hold .w-head,.w-hold .w-line,.w-hold .w-choice > *,.w-hold .w-word,.w-hold .w-mark{visibility:hidden}
+.w-hold .w-head,.w-hold .w-line,.w-hold .w-choice > *,.w-hold .w-word{visibility:hidden}
 
 /* The step on the screen. Upright: one column, the picture's room taking
    what the words leave, never more than a picture as wide as the screen needs. */
@@ -80,7 +73,6 @@ html{height:100%}
 .w-choice.w-lit{transform:scale(1.08);box-shadow:0 0 0 5px #F2B84B,var(--shadow)}
 .w-choice.tried{opacity:.35}
 .w-choice.right{background:var(--c);color:#fff;transform:scale(1.08)}
-.w-choice.right .w-mark{color:#fff}
 .w-choice.away{opacity:.2}
 .w-controls{display:flex;gap:clamp(12px,3vw,18px);justify-content:center;align-items:center;margin-top:var(--w-gap)}
 .w-round{width:clamp(46px,8.5vh,76px);height:clamp(46px,8.5vh,76px);padding:clamp(10px,1.7vh,14px);border:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);cursor:pointer}

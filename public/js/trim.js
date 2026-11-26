@@ -2,29 +2,35 @@
    each new take) and tools/trim-audio.js (for recordings already written to
    public/audio). In node it is module.exports.
 
-   The father, 2026-11-26: with the trim on, the start was cut too close; with
-   it off, the click of the Stop button was heard at the end. So:
-   - The voice's edges are found twice: its loud part (as IQRA's takeCheck),
-     then walked out over the soft edges (a breathy start, a plosive's quiet
-     build-up, the fall of a held letter) while the sound stays clearly above
-     the room, gaps under 30 ms bridged. LEAD seconds of room are kept before
-     the first sound and TAIL after the last; a take whose voice starts sooner
+   The father, 2026-11-26: with the first trim on, the start was cut too
+   close; with it off, the click of the Stop button was heard at the end. Then,
+   the same day, with the second trim: the first letters of التفاحة and the
+   last of some words were cut. So:
+   - The voice's loud part is found (as IQRA's takeCheck), then walked out at
+     both ends over everything that is clearly sound, across silences of up
+     to GAP: a word's own closures are silent (the tt of at-tuffaaha, the q of
+     -qi at the end of الصندوقِ, a final t), and the sound on their far side is
+     speech, however soft. A lone 10 ms blip does not count, nor anything more
+     than REACH beyond the loud part. LEAD seconds of room are kept before the
+     first sound and TAIL after the last; a take whose voice starts sooner
      than LEAD is given silence in front.
-   - The Stop click (mouse or key) is never kept, trimmed or not: a short burst
-     alone at the very end, after a quiet gap, is cut with what follows it,
-     and from a take straight off the microphone (raw) the last STOP seconds
-     go in any case, since the click can follow a breath with no gap.
-   - From a raw take, the sound of the Record key or button being let go, as
-     the microphone opens, is silenced too, when it stands apart from the
-     voice.
+   - Nothing before the voice is silenced: an early start of speech and the
+     sound of the Record key cannot be told apart, and speech comes first.
+   - The Stop click (mouse or key) is never kept, trimmed or not: from a take
+     straight off the microphone (raw) the last STOP seconds go, and a short
+     burst that begins in the last CLICK seconds, after a quiet gap, goes with
+     it. Speech that close to Stop cannot be told from the click: cut() says
+     so (tight), and the recording page asks for a beat before Stop.
    - A short fade at each end, so a cut never pops. */
 const takeTrim = (() => {
   const LEAD = 0.2;
-  const TAIL = 0.3;
+  const TAIL = 0.25;
   const STOP = 0.15;
+  const CLICK = 0.2;
   const FADE_IN = 0.01;
   const FADE_OUT = 0.03;
-  const BRIDGE = 3; // windows of 10 ms
+  const GAP = 25; // windows of 10 ms: the longest silence inside a word
+  const REACH = 60; // windows: the farthest the voice is walked out beyond its loud part
 
   /* As IQRA's takeCheck: 10 ms RMS windows, an adaptive threshold, peak,
      clipping and the noise floor. */
@@ -76,114 +82,89 @@ const takeTrim = (() => {
     return out;
   }
 
-  /* The runs that are voice: a record click in the first 0.3 s, well apart
-     from the voice, is dropped. */
-  function voice(p, end = p.rms.length) {
-    const found = runs(p, end);
-    if (found.length > 1 && found[0][1] * 0.01 <= 0.3 && (found[1][0] - found[0][1]) * 0.01 > 0.25) return found.slice(1);
-    return found;
-  }
-
-  /* Seconds before the voice's loud part begins. The old trim kept 0.12 s
+  /* Seconds before the voice's loud part begins. The first trim kept 0.12 s
      there, so a recording with less than 0.2 s was cut by it. */
   function voiceStart(p) {
-    const found = voice(p);
+    const found = runs(p);
     return found.length ? found[0][0] * 0.01 : 0;
   }
 
-  /* Where the take ends without its Stop click, in windows: a burst of sound
-     in the last 0.3 s with at least 50 ms of quiet before it, which began in
-     the last 0.4 s, is the click (a voice runs longer, or has no such gap). */
+  /* Where the take ends without its Stop click, in windows: a burst that
+     begins in the last CLICK seconds, with at least 50 ms of quiet before
+     it. A burst that begins earlier is kept: it is speech (a final release),
+     and the click itself comes within a tenth of a second or so of the end. */
   function endWithoutClick(p) {
     const n = p.rms.length;
+    const zone = Math.round(CLICK * 100);
     let last = n - 1;
-    while (last >= 0 && last >= n - 30 && p.rms[last] < p.soft) last--;
-    if (last < 0 || last < n - 30) return n;
+    while (last >= n - zone && last >= 0 && p.rms[last] < p.soft) last--;
+    if (last < 0 || last < n - zone) return n;
     let first = last;
-    let quiet = 0;
-    for (let w = last - 1; w >= 0 && w >= n - 40; w--) {
+    for (let w = last - 1, quiet = 0; w >= 0 && w >= n - zone - 10; w--) {
       if (p.rms[w] >= p.soft) {
         first = w;
         quiet = 0;
       } else if (++quiet >= 5) {
-        return Math.max(0, first - 2);
+        return first >= n - zone ? Math.max(0, first - 2) : n;
       }
     }
     return n;
   }
 
-  /* The sound of the Record key or button being let go, caught as the
-     microphone opens: in a raw take, a burst that begins within 0.15 s of
-     the recorder's first sound (it starts with exact zeros), lasts at most
-     0.25 s and is followed by 50 ms of quiet before the voice. Returns the
-     window where it ends (0 when there is none), never closer than 0.1 s to
-     the voice's loud part, so a soft start is never touched. */
-  function startClick(p, loud) {
-    let w = 0;
-    while (w < loud && p.rms[w] === 0) w++;
-    const first = w;
-    const edge = p.soft * 2;
-    while (w < loud && w < first + 15 && p.rms[w] < edge) w++;
-    if (w >= loud || w >= first + 15) return 0;
-    let last = w;
+  /* From the loud part's edge `from`, outward in direction `dir` (-1 or +1),
+     the farthest window that is clearly sound: next to the edge, or one of
+     two in a row, across silences of up to GAP, never past `stop` or more
+     than REACH beyond `from`. */
+  function walkOut(p, from, dir, stop) {
+    const rms = p.rms;
+    const on = (w) => w >= 0 && w < rms.length && rms[w] >= p.soft;
+    let edge = from;
     let quiet = 0;
-    for (let v = w + 1; v < loud && v <= w + 25 + 5; v++) {
-      if (p.rms[v] >= edge) {
-        if (v - w > 25) return 0;
-        last = v;
+    for (let w = from + dir; dir < 0 ? w >= stop : w < stop; w += dir) {
+      if (Math.abs(w - from) > REACH) break;
+      if (on(w) && (quiet === 0 || on(w + dir))) {
+        edge = w;
         quiet = 0;
-      } else if (++quiet >= 5) {
-        return Math.max(0, Math.min(last + 1, loud - 10));
-      }
+      } else if (++quiet > GAP) break;
     }
-    return 0;
+    return edge;
   }
 
   /* The take cut as described at the top. options: trim (cut the silence at
-     both ends), raw (straight off the microphone: drop the last STOP seconds
-     and silence the Record click), profile (already measured). Returns
-     { samples, lead, end, cut }: the seconds of silence added in front,
-     where the take now ends and how much was cut from its end, for a report. */
+     both ends), raw (straight off the microphone: drop the last STOP
+     seconds), profile (already measured). Returns { samples, lead, end, cut,
+     tight }: the seconds of silence added in front, where the take now ends
+     and how much was cut from its end, for a report, and whether the voice
+     ran up to where the Stop click was cut (perhaps cut with it). */
   function cut(samples, sampleRate, options = {}) {
     const p = options.profile || profile(samples, sampleRate);
     const n = p.rms.length;
-    let end = endWithoutClick(p);
-    if (options.raw) end = Math.min(end, n - Math.round(STOP * 100));
+    // Only a take from the recording page has a Stop click to cut: a phone's
+    // recording may end on the word's own last release (أحسنت's t).
+    let end = options.raw ? Math.min(endWithoutClick(p), n - Math.round(STOP * 100)) : n;
     end = Math.max(0, end);
     let from = 0;
     let to = Math.min(samples.length, end * p.win);
-    const found = voice(p, end);
-    const mute = options.raw ? startClick(p, found.length ? found[0][0] : end) : 0;
-    if (options.trim && found.length) {
-      let a = found[0][0];
-      for (let w = a - 1, quiet = 0; w >= mute; w--) {
-        if (p.rms[w] >= p.soft) {
-          a = w;
-          quiet = 0;
-        } else if (++quiet > BRIDGE) break;
+    let tight = false;
+    const found = runs(p, end);
+    if (found.length) {
+      const a = walkOut(p, found[0][0], -1, 0);
+      const b = walkOut(p, found[found.length - 1][1] - 1, 1, end) + 1;
+      tight = end - b < 10;
+      if (options.trim) {
+        from = a * p.win - Math.round(sampleRate * LEAD);
+        to = Math.min(to, b * p.win + Math.round(sampleRate * TAIL));
       }
-      let b = found[found.length - 1][1];
-      for (let w = b, quiet = 0; w < end; w++) {
-        if (p.rms[w] >= p.soft) {
-          b = w + 1;
-          quiet = 0;
-        } else if (++quiet > BRIDGE) break;
-      }
-      from = a * p.win - Math.round(sampleRate * LEAD);
-      to = Math.min(to, b * p.win + Math.round(sampleRate * TAIL));
     }
     const pad = Math.max(0, -from);
     from = Math.max(0, from);
     const out = new Float32Array(pad + Math.max(0, to - from));
     out.set(samples.subarray(from, Math.max(from, to)), pad);
-    // Silence before the voice is silence: the Record click, if any, goes.
-    const quietTo = Math.min(out.length, pad + Math.max(0, mute * p.win - from));
-    out.fill(0, pad, quietTo);
-    const fadeIn = Math.min(Math.round(sampleRate * FADE_IN), out.length - quietTo);
-    for (let i = 0; i < fadeIn; i++) out[quietTo + i] *= i / fadeIn;
+    const fadeIn = Math.min(Math.round(sampleRate * FADE_IN), out.length - pad);
+    for (let i = 0; i < fadeIn; i++) out[pad + i] *= i / fadeIn;
     const fadeOut = Math.min(Math.round(sampleRate * FADE_OUT), out.length);
     for (let i = 0; i < fadeOut; i++) out[out.length - 1 - i] *= i / fadeOut;
-    return { samples: out, lead: pad / sampleRate, end: to / sampleRate, cut: (samples.length - to) / sampleRate, click: mute * p.win / sampleRate };
+    return { samples: out, lead: pad / sampleRate, end: to / sampleRate, cut: (samples.length - to) / sampleRate, tight };
   }
 
   return { profile, runs, voiceStart, cut, LEAD, TAIL, STOP };

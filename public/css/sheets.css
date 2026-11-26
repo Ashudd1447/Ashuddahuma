@@ -21,10 +21,6 @@
 .sheet-line{min-height:44px;margin:0;padding:0 .7em;border:0;border-radius:999px;background:none;color:var(--ink);font-weight:700;font-size:clamp(1.15rem,min(3.4vh,5vw),1.9rem);line-height:1.75;text-align:center;text-wrap:balance}
 .sheet-line:active{background:var(--line)}
 .sheet.ended .sheet-line{visibility:hidden}
-/* The line's speaker mark when its Egyptian recording plays (sound.caption), as in the number matching game */
-.sheet-line.spoken-mark{--mark:clamp(56px,9vh,68px);flex:none;display:grid;place-items:center;box-sizing:border-box;width:var(--mark);height:var(--mark);min-height:0;margin:2px auto 6px;padding:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);line-height:1}
-.sheet-line.spoken-mark:active{background:var(--surface);transform:scale(.95)}
-.sheet-line.spoken-mark svg{display:block;width:62%;height:62%;padding:0;background:none;box-shadow:none}
 .sheet-board{position:relative;flex:1;min-height:0;align-self:stretch;border-radius:22px;background:#fff;box-shadow:var(--shadow);overflow:hidden;container-type:size}
 .sheet-slot{position:absolute;inset:0;touch-action:none}
 .sheet-marks{flex:none;display:flex;align-items:center;justify-content:center;gap:5px;width:100%;height:14px}

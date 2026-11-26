@@ -60,6 +60,30 @@ onActivity();
 if ('serviceWorker' in navigator) {
   addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 }
+
+/* A new version shows at once (the father, 2026-11-26: the tablet needed
+   several refreshes, as IQRA did). sw.js gives the pages and the code from
+   the network first, so opening or refreshing a page online shows what was
+   deployed. An installed app is mostly resumed, not opened, so the page in
+   memory stays as it was: when the app comes back after a minute or more
+   away, it asks for the deployed version (CACHE in sw.js) and, if it is not
+   the one this page was loaded with, loads the page again, once. It also
+   asks the browser to look for the new offline copy then. */
+const deployed = () => fetch('/sw.js', { cache: 'no-cache' }).then((r) => (r.ok ? r.text() : '')).then((text) => (/CACHE = '([^']+)'/.exec(text) || [])[1] || '');
+const loadedWith = deployed().catch(() => '');
+let awaySince = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    awaySince = Date.now();
+    return;
+  }
+  if (!awaySince || Date.now() - awaySince < 60000) return;
+  awaySince = 0;
+  if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration().then((r) => r && r.update()).catch(() => {});
+  Promise.all([loadedWith, deployed()]).then(([was, now]) => {
+    if (was && now && was !== now) location.reload();
+  }).catch(() => {});
+});
 if (navigator.storage && navigator.storage.persist && !/Firefox\//.test(navigator.userAgent)) {
   navigator.storage.persisted().then((kept) => kept || navigator.storage.persist()).catch(() => {});
 }
@@ -68,9 +92,9 @@ if (navigator.storage && navigator.storage.persist && !/Firefox\//.test(navigato
    can tell which one they have: the time of the deploy (CACHE in sw.js,
    stamped by tools/prepare-deploy.py), shown as a date and an hour in the
    device's own time zone; the father asked for a date, not a number. It is
-   asked of the service worker that serves the page; before one answers (a
-   first visit, or an older one that does not answer yet), it is read from
-   sw.js itself. An older copy still named by a number shows that number. */
+   read from sw.js as deployed when the device is online, and asked of the
+   service worker that serves the page when it is not. An older copy still
+   named by a number shows that number. */
 const MONTHS = ['يَنَايِر', 'فِبْرَايِر', 'مَارِس', 'أَبْرِيل', 'مَايُو', 'يُونْيُو', 'يُولْيُو', 'أَغُسْطُس', 'سِبْتَمْبِر', 'أُكْتُوبَر', 'نُوفَمْبِر', 'دِيسَمْبِر'];
 const arabicDigits = (text) => String(text).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
 const versionLine = document.getElementById('version');
@@ -90,13 +114,16 @@ if (versionLine) {
     const hour = `${when.getHours()}:${String(when.getMinutes()).padStart(2, '0')}`;
     versionLine.textContent = `الْإِصْدَارُ: ${arabicDigits(when.getDate())} ${MONTHS[when.getMonth()]} ${arabicDigits(when.getFullYear())}، ${arabicDigits(hour)}`;
   };
-  const fromFile = () => fetch('/sw.js').then((r) => r.text()).then((text) => showVersion((/CACHE = '([^']+)'/.exec(text) || [])[1])).catch(() => {});
+  /* Online, the page is what was deployed (sw.js gives pages and code from
+     the network first), so the version is read from sw.js as deployed;
+     offline, the service worker that serves the page is asked. */
   const worker = 'serviceWorker' in navigator && navigator.serviceWorker.controller;
-  if (worker) {
+  const askWorker = () => {
+    if (!worker) return;
     navigator.serviceWorker.addEventListener('message', (event) => { if (event.data && event.data.version) showVersion(event.data.version); });
     worker.postMessage('version');
-    setTimeout(() => { if (!shown) fromFile(); }, 1500);
-  } else fromFile();
+  };
+  loadedWith.then((name) => (name ? showVersion(name) : askWorker()), askWorker);
 }
 
 /* Install button on the home page. Android, and Chrome or Edge on computers,

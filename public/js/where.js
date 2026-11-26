@@ -44,16 +44,21 @@
    here, tick by tick, and it waits well inside the picture, on a pale tray
    that shows it has not been put anywhere yet.
 
-   Egyptian: the screen shows only Fusha, and never beside Egyptian speech.
-   Each step speaks one dialect. It is "said in Egyptian" when the switch is
-   on Egyptian and its sentence's Egyptian recording exists (sound.masri).
-   Then no Fusha text is on its screen: a speaker mark in the word's color
-   stands in for a word, a brown one for a sentence or a question, and each
-   says what the text would have, in Egyptian where that is recorded. Any
-   other step is all Fusha, text and voice: a word's Egyptian recording is
-   not played beside a sentence that is read in Fusha. dress() draws the
+   Egyptian: the words on the screen are the words the voice says. Each
+   step speaks one dialect. It is "said in Egyptian" when the switch is on
+   Egyptian and its sentence's Egyptian recording exists (sound.masri). Then
+   its texts are the Egyptian ones of where-words.js (the father, 2026-11-26:
+   the speaker marks that stood in for the Fusha could not be told apart, so
+   "show Egyptian text"), each in the dialect its own recording is heard in.
+   Any other step is all Fusha, text and voice: a word's Egyptian recording
+   is not played beside a sentence that is read in Fusha. dress() draws the
    texts of a step from what is known, again whenever the switch is flipped,
-   and speak() chooses the recording by the same rule. */
+   and speak() chooses the recording by the same rule.
+
+   The arrows go back and forth through a stage's steps (the father,
+   2026-11-26); the round button between them plays the step again: a play
+   mark where it moves the thing again (a show step), a speaker where it only
+   says the question again. */
 (() => {
   const $ = (id) => document.getElementById(id);
   const W = window.WHERE_WORDS;
@@ -874,21 +879,19 @@
     el.innerHTML = html;
   }
 
-  const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.3 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-  /* The speaker mark that stands in for a Fusha text while Egyptian is
-     spoken: in a word's color, or plain (the color of the text it replaces). */
-  const mark = (color, cls = '') => `<span class="w-mark${cls ? ` ${cls}` : ''}"${color ? ` style="--c:${color}"` : ''}>${SPEAKER}</span>`;
-  const wordSpan = (w, cls = 'w-word') => `<span class="${cls}" style="--c:${words[w].color}">${words[w].text}</span>`;
-  /* A word of place in a list of words: its text, or its color chip with a
-     speaker mark when its own Egyptian recording is what would be heard. */
-  const chip = (w) => `<span data-w="${w}">${isEgyptian(clipOf.word(w)) ? mark(words[w].color, 'w-chip') : wordSpan(w)}</span>`;
+  /* A word of place in its color, in Fusha or (eg) in Egyptian. */
+  const wordSpan = (w, cls = 'w-word', eg = false) => `<span class="${cls}" style="--c:${words[w].color}"${eg ? ' lang="arz"' : ''}>${eg ? words[w].masri : words[w].text}</span>`;
+  /* A word of place in a list of words, in the dialect its recording is heard in. */
+  const chip = (w) => `<span data-w="${w}">${wordSpan(w, 'w-word', inEgyptian(clipOf.word(w)))}</span>`;
   const GAPMARK = '<span class="w-gap"></span>';
 
-  /* The sentence by a picture, with something in the word's place. */
-  function sentence(s, middle) {
+  /* The sentence by a picture, with something in the word's place, in Fusha
+     or (eg) in Egyptian. */
+  function sentence(s, middle, eg = false) {
     const [thing, word, place] = s;
-    const where = word === 'between' ? W.places[place].two : W.places[place].text;
-    return `<span>${W.things[thing].text}</span> ${middle} <span>${where}</span>`;
+    const p = W.places[place];
+    const where = word === 'between' ? (eg ? p.masriTwo : p.two) : eg ? p.masri : p.text;
+    return `<span>${eg ? W.things[thing].masri : W.things[thing].text}</span> ${middle} <span>${where}</span>`;
   }
 
   const headClip = (step) => ({ show: clipOf.word(step.s[1]), fill: clipOf.ask(step.s[0]), find: clipOf.which, put: clipOf.put })[step.kind];
@@ -900,36 +903,37 @@
      learned, the step moves on (the sentence shown, the gap filled) or the
      switch is flipped.
 
-     said: the step is said in Egyptian, so no Fusha text shows: a speaker
-     mark stands in for each text that is tapped to be heard (the large
-     word, the question of a fill step, the sentence, a choice), in the
-     word's color where it is a word. Otherwise everything reads as in
-     Fusha, and speak() plays only Fusha. */
+     said: the step is said in Egyptian, so its sentence shows in Egyptian,
+     and every other text in the dialect its own recording is heard in
+     (inEgyptian): the large word, the question, a choice. Otherwise
+     everything reads as in Fusha, and speak() plays only Fusha. */
   function dress() {
     const { step } = current;
     const [thing, word] = step.s;
-    const color = words[word].color;
     const said = stepSaid();
     $('view-play').classList.toggle('w-hold', unsure([clipOf.sentence(step.s)]));
 
-    let head = '';
-    if (step.kind === 'show') head = said ? mark(color, 'w-big') : wordSpan(word, 'w-word w-big');
-    else if (said) head = step.kind === 'fill' ? mark('') : '';
-    else if (step.kind === 'fill') head = `${W.where.text} ${W.things[thing].text}؟`;
-    else head = step.kind === 'find' ? W.asks.which.text : W.asks.put.text;
+    let head;
+    if (step.kind === 'show') head = wordSpan(word, 'w-word w-big', inEgyptian(clipOf.word(word)));
+    else if (step.kind === 'fill') head = inEgyptian(clipOf.ask(thing)) ? `<span lang="arz">${W.where.masri} ${W.things[thing].masri}؟</span>` : `${W.where.text} ${W.things[thing].text}؟`;
+    else {
+      const ask = step.kind === 'find' ? W.asks.which : W.asks.put;
+      head = inEgyptian(step.kind === 'find' ? clipOf.which : clipOf.put) ? `<span lang="arz">${ask.masri}</span>` : ask.text;
+    }
     write($('head'), head);
 
     let line = '';
-    if (step.kind === 'fill') {
-      if (said) line = current.answered ? mark(color, 'w-chip w-filled') : GAPMARK;
-      else line = sentence(step.s, current.answered ? wordSpan(word, 'w-word w-filled') : GAPMARK);
-    } else if (step.kind !== 'show' || current.shown) {
-      line = said ? mark('') : sentence(step.s, wordSpan(word));
-    }
+    if (step.kind === 'fill') line = sentence(step.s, current.answered ? wordSpan(word, 'w-word w-filled', said) : GAPMARK, said);
+    else if (step.kind !== 'show' || current.shown) line = sentence(step.s, wordSpan(word, 'w-word', said), said);
     write($('line'), line);
     $('line').classList.toggle('on', Boolean(line));
+    if (said) $('line').setAttribute('lang', 'arz');
+    else $('line').removeAttribute('lang');
 
-    for (const b of $('choices').children) write(b, said ? mark(words[b.dataset.w].color) : `<span>${words[b.dataset.w].text}</span>`);
+    for (const b of $('choices').children) {
+      const eg = inEgyptian(clipOf.word(b.dataset.w));
+      write(b, `<span${eg ? ' lang="arz"' : ''}>${eg ? words[b.dataset.w].masri : words[b.dataset.w].text}</span>`);
+    }
   }
 
   /* Whatever shows is drawn again from what is known now. */
@@ -1041,7 +1045,13 @@
     $('head').onclick = null;
     $('line').onclick = null;
     $('again').onclick = null;
-    $('next').hidden = true;
+    // A play mark where the button moves the thing again, a speaker where it only says.
+    write($('again'), step.kind === 'show' ? PLAY_MARK : SPEAKER_MARK);
+    $('again').setAttribute('aria-label', step.kind === 'show' ? 'أَعِدْ' : 'اِسْتَمِعْ');
+    // Back and forth through the steps, at any time (the father, 2026-11-26).
+    $('back').hidden = index === 0;
+    $('next').hidden = false;
+    $('next').onclick = advance;
     $('next').classList.remove('call');
     ({ show: showStep, fill: fillStep, find: findStep, put: putStep })[step.kind](step);
     wonder();
@@ -1054,6 +1064,16 @@
     index++;
     play();
   }
+
+  function retreat() {
+    if (index <= 0) return;
+    index--;
+    play();
+  }
+  $('back').addEventListener('click', retreat);
+
+  const PLAY_MARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19.2 12z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+  const SPEAKER_MARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.3 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
   /* Runs once a scene's pictures are there, or after PICTURES at the latest
      (the thing then moves unseen and shows when its file comes). */
@@ -1144,8 +1164,6 @@
     $('again').onclick = run;
     $('head').onclick = () => say(clipOf.word(word));
     $('line').onclick = () => { if (mine.shown) tell(); };
-    $('next').hidden = false;
-    $('next').onclick = advance;
     whenDrawn(sc, () => later(run, 350));
   }
 

@@ -1312,8 +1312,7 @@ async function arrive(starX, starY) {
   save();
   sound.chime();
   flyStar(starX === undefined ? cx + trip.x * lane : starX, starY === undefined ? carY - lane : starY);
-  // Hidden, keeping its room, when the Egyptian recording is the one said
-  // (the father's rule, 2026-11-25): the place itself is in the picture.
+  // In Egyptian when the Egyptian recording is the one said (sound.caption).
   if (typeof sound.caption === 'function') sound.caption($('arrived-name'), road.goalName, road.goalClip);
   else $('arrived-name').textContent = road.goalName;
   $('arrived-stars').innerHTML = `${STAR}<span>${arabic(trip.earned)}</span>`;
@@ -1635,9 +1634,8 @@ fetch('dua/riding.json').then((response) => response.json()).then((data) => {
   buildDua();
 }).catch(() => {});
 /* Every line the drives can say, announced as the page opens, so the page's
-   dialect switch is there from the start. The seat belt's line is hidden,
-   keeping its room, when its Egyptian recording is the one said (the
-   father's rule, 2026-11-25): the belt in the picture shows what to do. */
+   dialect switch is there from the start. The seat belt's line is in
+   Egyptian when its Egyptian recording is the one said (sound.caption). */
 sound.preloadPrompts(['belt', ...ROADS.map((r) => r.goalClip).filter(Boolean)]);
 if (typeof sound.caption === 'function') sound.caption($('belt-prompt'), 'اِرْبِطْ حِزَامَ الْأَمَانِ', 'belt');
 sound.preload(['riding-dua', 'alhamdulillah']);

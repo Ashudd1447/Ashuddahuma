@@ -1,6 +1,6 @@
 # The Egyptian wording, for review
 
-Every prompt the site can say in Egyptian: 136 of them. On screen the text is always Fusha; the Egyptian line is only read aloud when recording, and played when the ☰ menu's switch is on Egyptian. All of the Egyptian lines are Claude's drafts until a parent corrects them.
+Every prompt the site can say in Egyptian: 136 of them. When the switch is on Egyptian and a line's Egyptian recording exists, that recording plays and its Egyptian text, exactly as on the card, shows in place of the Fusha (the father, 2026-11-26): record each line as the card reads, or change the card first. The salah door is Fusha only. All of the Egyptian lines are Claude's drafts until a parent corrects them.
 
 Where they live: the recording cards in `public/js/record.js` (each `-masri` card, and the lists `COUNT_MASRI` and `HOURS_MASRI` at its top), shown on the Record page (`/admin` → Record audio) beside their Fusha cards. Tell Claude what to change, or change the card; then `node tools/list-egyptian.js` writes this list again.
 
@@ -96,7 +96,7 @@ A prompt with no Egyptian card is said the same way in both settings (one record
 | The hidden picture of maze 3 | مُثَلَّجَات | آيس كريم | `maze-icecream-masri` |
 | Said when the maze with the car and the house opens | سَاعِدِ السَّيَّارَةَ لِتَصِلَ إِلَى الْبَيْتِ | ساعد العربية توصل البيت | `maze-help-car-masri` |
 | Said when the maze with the airplane and the cloud opens | سَاعِدِ الطَّائِرَةَ لِتَصِلَ إِلَى السَّحَابَةِ | ساعد الطيارة توصل للسحابة | `maze-help-plane-masri` |
-| Said when the maze with the bus and the masjid opens | سَاعِدِ الْحَافِلَةَ لِتَصِلَ إِلَى الْمَسْجِدِ | ساعد الأتوبيس يوصل الجامع | `maze-help-bus-masri` |
+| Said when the maze with the bus and the masjid opens | سَاعِدِ الْحَافِلَةَ لِتَصِلَ إِلَى الْمَسْجِدِ | ساعد الأتوبيس يوصل المسجد | `maze-help-bus-masri` |
 | Said when the maze with the bicycle and the tree opens | سَاعِدِ الدَّرَّاجَةَ لِتَصِلَ إِلَى الشَّجَرَةِ | ساعد العجلة توصل للشجرة | `maze-help-bike-masri` |
 | Said when the maze with the balloon and the sun opens | سَاعِدِ الْبَالُونَ لِيَصِلَ إِلَى الشَّمْسِ | ساعد البالونة توصل للشمس | `maze-help-balloon-masri` |
 | A hidden picture from the books: an airplane seen from above | طَائِرَة | طيارة | `maze-plane-masri` |
@@ -143,10 +143,10 @@ A prompt with no Egyptian card is said the same way in both settings (one record
 
 | Said when | On screen (Fusha) | Egyptian, to say | Clip |
 |---|---|---|---|
-| Pull the arrow, then let it go | اِسْحَبِ السَّهْمَ ثُمَّ أَطْلِقْهُ | اسحب السهم وسيبه | `archery-pull-masri` |
+| Pull the arrow, then let it go | اِسْحَبِ السَّهْمَ ثُمَّ أَطْلِقْهُ | اسحب السهم بعدين سيبه | `archery-pull-masri` |
 | Aim at the target | صَوِّبْ نَحْوَ الْهَدَفِ | نشِّن على الهدف | `archery-aim-masri` |
 | The swinging sandbag: wait for the right moment | اِنْتَظِرِ اللَّحْظَةَ الْمُنَاسِبَةَ | استنى اللحظة المناسبة | `archery-wait-masri` |
-| Hit the three clay pots | أَصِبِ الْجِرَارَ الثَّلَاثَ | صيب التلات قلل | `archery-pots-masri` |
+| Hit the three clay pots | أَصِبِ الْجِرَارَ الثَّلَاثَ | اضرب التلات قلل | `archery-pots-masri` |
 | Choose where to stand | اِخْتَرْ مَكَانَ الْوُقُوفِ | اختار مكان الوقوف | `archery-place-masri` |
 
 ## Numbers: صِلْ كُلَّ رَقْمٍ

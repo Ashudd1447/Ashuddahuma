@@ -1,0 +1,47 @@
+/* The reciter's control bar (fatihah.html), loaded after style.css.
+   One row, read from the right as the page is: in السورة كاملة the
+   previous ayah (an arrow pointing right, back), the big play / pause, stop,
+   and the next ayah (the green arrow pointing left, forward, as in the story
+   reader); in آية آية أعد الآية takes the back place and الآية التالية the
+   forward one, and on a narrow screen they drop to a second row. */
+.recite .view{padding-bottom:12px}
+.deck{flex:none;width:100%;max-width:760px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(10px,2vw,18px)}
+.deck-core{display:flex;align-items:center;gap:clamp(10px,2vw,18px)}
+.deck .round{width:clamp(52px,min(8vh,15vw),68px);height:clamp(52px,min(8vh,15vw),68px);padding:clamp(12px,min(1.9vh,3.5vw),16px);transition:opacity .2s ease,background .2s ease,transform .15s ease}
+.deck .round:disabled{opacity:.35;box-shadow:none;cursor:default}
+.deck .round:disabled:active{transform:none}
+.round.deck-play{width:clamp(68px,min(11vh,20vw),92px);height:clamp(68px,min(11vh,20vw),92px);padding:clamp(16px,min(2.6vh,4.7vw),22px);background:var(--deep);color:#fff}
+.round.deck-play[data-state="pause"]{background:var(--gold)}
+.round.deck-play[data-state="play"]{animation:breathe 1.3s ease-in-out infinite}
+.deck-play svg{display:none}
+.deck-play[data-state="listen"] .i-play,.deck-play[data-state="play"] .i-play,.deck-play[data-state="pause"] .i-pause{display:block}
+.round.deck-forward{background:#35A85A;color:#fff}
+.round.deck-forward:disabled{background:var(--surface);color:var(--deep)}
+.deck-next{background:#35A85A}
+.deck .button{flex:none}
+
+/* Which controls each mode shows. */
+.deck-again,.deck-next{display:none}
+.mode-ayah .deck-back,.mode-ayah .deck-forward{display:none}
+.mode-ayah .deck-again,.mode-ayah .deck-next{display:inline-flex}
+
+/* A paused ayah: its mark in the list stops pulsing too. */
+.held .ayah-item.playing .play-mark{animation:none}
+
+/* The prompt waits a second after the ayah, then fades in. */
+.recite .prompt:not([hidden]){animation:prompt-in .35s ease-out}
+@keyframes prompt-in{from{opacity:0;transform:translateY(6px)}}
+
+@media (max-width:640px){
+  .mode-ayah .deck{row-gap:8px}
+  .mode-ayah .deck-core{order:-1;flex-basis:100%;justify-content:center}
+  .deck .button{font-size:1.1rem;padding:.35em 1em}
+}
+/* A short phone: the list of ayat (which scrolls) gives up a little room for
+   the second row of buttons. */
+@media (max-width:640px) and (max-height:700px){
+  .mode-ayah .ayat{max-height:28svh}
+}
+@media (prefers-reduced-motion:reduce){
+  .round.deck-play[data-state="play"],.recite .prompt:not([hidden]){animation:none}
+}

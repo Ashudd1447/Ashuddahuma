@@ -14,7 +14,7 @@
    costs a quick question per file rather than the whole site again.
    A page asked for with a query (story.html?s=<id>) is found offline even if
    it was never opened online: the saved page without the query is used. */
-const CACHE = 'ashudd-2026-11-26T16:42Z'; // the version: the time of the deploy, stamped by tools/prepare-deploy.py; the home page shows it as a date
+const CACHE = 'ashudd-2026-11-26T17:51Z'; // the version: the time of the deploy, stamped by tools/prepare-deploy.py; the home page shows it as a date
 const FILES = [
   '/',
   '/arabic.html',
@@ -126,15 +126,15 @@ const FILES = [
   '/images/day/dinner.webp',
   '/images/day/teeth.webp',
   '/images/day/bed.webp',
-  '/audio/lion.m4a',
-  '/audio/rabbit.m4a',
-  '/audio/door.m4a',
-  '/audio/house.m4a',
-  '/audio/mosque.m4a',
-  '/audio/kaaba.m4a',
-  '/audio/read.m4a',
-  '/audio/match.m4a',
-  '/audio/well-done.m4a',
+  '/audio/lion.wav',
+  '/audio/rabbit.wav',
+  '/audio/door.wav',
+  '/audio/house.wav',
+  '/audio/mosque.wav',
+  '/audio/kaaba.wav',
+  '/audio/read.wav',
+  '/audio/match.wav',
+  '/audio/well-done.wav',
   '/audio/adhan-1.mp3',
   '/audio/zamzam-title.wav',
   '/audio/zamzam-1.wav',
@@ -355,6 +355,7 @@ const FILES = [
   '/images/hands/hand-4.webp',
   '/images/hands/hand-5.webp',
   '/css/match.css',
+  '/css/recite.css',
   '/pray.html',
   '/prayers.html',
   '/qibla.html',
@@ -431,11 +432,19 @@ const FILES = [
   '/sports.html',
   '/think.html',
   '/wudu.html',
+  '/egyptian.json',
   '/404.html',
 ];
 const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
-const DATA = /\.json$/; // read from the network first
-const WAIT = 3000; // ms the network has before the saved data file is used
+/* Read from the network first, the saved copy only when the network fails or
+   is slow: the pages, the code and the data. The father, 2026-11-26: the
+   tablet needed several refreshes to show a deploy (as IQRA did), because
+   everything came from the saved copy while the new copy was still being
+   filled in the background (416 files) and only took over after that. Now a
+   page opens as deployed whenever the device is online, and only pictures,
+   recordings and fonts come from the saved copy first. */
+const FIRST = /\.(?:html|js|css|json|webmanifest)$/;
+const WAIT = 3000; // ms the network has before the saved copy is used
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -488,8 +497,8 @@ async function respond(event) {
     || (request.mode === 'navigate' ? await cache.match(request, { ignoreVary: true, ignoreSearch: true }) : undefined);
   const fresh = save(cache, request.url);
   event.waitUntil(fresh.catch(() => {}));
-  const data = DATA.test(new URL(request.url).pathname);
-  if (cached && data) {
+  const first = request.mode === 'navigate' || FIRST.test(new URL(request.url).pathname);
+  if (cached && first) {
     const response = await Promise.race([fresh.catch(() => null), new Promise((resolve) => setTimeout(resolve, WAIT, null))]);
     return response && response.ok ? response : answer(request, cached);
   }

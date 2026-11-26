@@ -300,54 +300,51 @@ const sound = (() => {
     return dialect() === 'masri' ? load(`${name}-masri`).then(Boolean, () => false) : Promise.resolve(false);
   }
 
-  /* A text on the page that a recording says, kept to the father's rule
-     (2026-11-25): Fusha text never stands on the screen while the Egyptian
-     voice says it. caption(el, text, clip, how) puts the text in el and keeps
-     it right from then on:
-     - when the Egyptian recording is the one that plays (masri(clip)), the
-       text goes: with how.mark a speaker mark stands in its place (for a line
-       that is a button, or an instruction that stays up), and a tap on the
-       mark says the line again unless how.tap is false (the element already
-       says it when tapped); without how.mark the element is made invisible,
-       keeping its room so nothing jumps;
-     - otherwise the Fusha text shows.
-     On Egyptian the text waits unseen until the answer comes. It follows the
-     switch ('dialectchange'). A later caption() on the same element replaces
-     the earlier one. The clip is announced (uses), for the page's switch.
-     Returns a Promise of whether Egyptian plays. */
-  const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-  const captions = new Map(); // element -> { text, clip, how, asked }
+  /* A text on the page that a recording says, kept to the father's rule:
+     the words on the screen are the words the voice says. When the Egyptian
+     recording is the one that plays (masri(clip)), the Egyptian text shows in
+     place of the Fusha (the father, 2026-11-26: a page of speaker marks could
+     not be told apart, so "show Egyptian text"); otherwise the Fusha.
+     caption(el, text, clip) puts the right one in el and keeps it right: it
+     follows the switch ('dialectchange'), and on Egyptian the text waits
+     unseen until the answer comes. The Egyptian wording is the recording
+     card's, from egyptian.json (written by tools/list-egyptian.js from
+     record.js); a clip recorded in Egyptian whose text is missing there is
+     hidden, keeping its room, rather than shown in Fusha. A later caption()
+     on the same element replaces the earlier one. The clip is announced
+     (uses), for the page's dialect switch. Returns a Promise of whether
+     Egyptian plays. The fourth argument is kept for older callers. */
+  let egyptian = null;
+  function egyptianText(clip) {
+    if (!egyptian) egyptian = fetch('/egyptian.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+    return egyptian.then((all) => all[clip] || '');
+  }
+  const captions = new Map(); // element -> { text, clip, asked }
   function dress(el, entry) {
     const mine = ++entry.asked;
-    const put = (spoken) => {
-      if (captions.get(el) !== entry || mine !== entry.asked) return spoken;
+    const put = (shown, quiet) => {
+      if (captions.get(el) !== entry || mine !== entry.asked) return;
       el.classList.remove('caption-wait');
-      if (spoken && entry.how.mark) {
-        if (!el.classList.contains('spoken-mark')) el.innerHTML = SPEAKER;
-        el.classList.add('spoken-mark');
-        el.classList.remove('caption-quiet');
-        el.setAttribute('aria-label', 'اِسْتَمِعْ');
-      } else {
-        if (el.classList.contains('spoken-mark') || el.textContent !== entry.text) el.textContent = entry.text;
-        el.classList.remove('spoken-mark');
-        el.removeAttribute('aria-label');
-        el.classList.toggle('caption-quiet', spoken);
-      }
-      return spoken;
+      if (el.textContent !== shown) el.textContent = shown;
+      el.classList.toggle('caption-quiet', quiet);
+      if (shown === entry.text) el.removeAttribute('lang');
+      else el.setAttribute('lang', 'arz');
     };
-    if (dialect() === 'masri' && !el.classList.contains('spoken-mark')) el.classList.add('caption-wait');
-    else if (dialect() !== 'masri') put(false);
-    return masri(entry.clip).then((yes) => put(yes === true), () => put(false));
-  }
-  function caption(el, text, clip, how = {}) {
-    if (!el) return Promise.resolve(false);
-    const entry = { text: String(text), clip, how, asked: 0 };
-    if (!captions.has(el) && how.mark && how.tap !== false) {
-      el.addEventListener('click', () => {
-        const now = captions.get(el);
-        if (now && el.classList.contains('spoken-mark')) say(now.clip);
+    if (dialect() === 'masri') el.classList.add('caption-wait');
+    else put(entry.text, false);
+    return masri(entry.clip)
+      .then((yes) => (yes === true ? egyptianText(entry.clip).then((words) => {
+        put(words || entry.text, !words);
+        return true;
+      }) : (put(entry.text, false), false)))
+      .catch(() => {
+        put(entry.text, false);
+        return false;
       });
-    }
+  }
+  function caption(el, text, clip) {
+    if (!el) return Promise.resolve(false);
+    const entry = { text: String(text), clip, asked: 0 };
     captions.set(el, entry);
     uses(clip);
     return dress(el, entry);

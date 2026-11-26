@@ -481,49 +481,21 @@
     });
   }
 
-  /* The line at the top is a button that says the line again. The father's
-     rule (2026-11-25): the site shows Fusha only, so when the Egyptian
-     recording is the one that will play, the Fusha words must not show, or
-     the child would read one wording and hear another. A speaker mark then
-     stands in their place, still the button. sound.masri(name) answers
-     (true when the switch is on Egyptian and <name>-masri exists), and the
-     switch in the menu sends 'dialectchange', which is followed at once.
-     Without sound.masri the words always show. The numbers are digits, the
-     same in both, and stay. */
-  const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-  let lineAsked = 0; // the newest question about the line; an older answer is dropped
+  /* The line at the top is a button that says the line again. Its words are
+     the words the voice says: the Fusha, or the Egyptian text when the
+     Egyptian recording is the one that plays (sound.caption, which follows
+     the switch; the father's rule, 2026-11-26). match.html keeps the line
+     unseen on Egyptian until this file has answered (mt-wait). The numbers
+     are digits, the same in both, and stay. */
   function showLine() {
     const line = $('line');
-    const mine = ++lineAsked;
-    const show = (spoken) => {
-      if (mine !== lineAsked) return;
+    if (typeof sound.caption !== 'function') {
       line.classList.remove('mt-wait');
-      if (spoken === line.classList.contains('mt-spoken')) return;
-      line.classList.toggle('mt-spoken', spoken);
-      if (spoken) {
-        line.innerHTML = SPEAKER;
-        line.setAttribute('aria-label', 'اِسْتَمِعْ');
-      } else {
-        line.textContent = TEXT.line.text;
-        line.removeAttribute('aria-label');
-      }
-    };
-    if (typeof sound.masri !== 'function') {
-      show(false);
+      line.textContent = TEXT.line.text;
       return;
     }
-    // On Egyptian, until the answer comes, the words wait unseen (match.html
-    // hides them the same way before this file runs); an answer that is long
-    // in coming leaves the mark meanwhile, which is right for either recording.
-    if (!line.classList.contains('mt-spoken') && sound.dialect() === 'masri') {
-      line.classList.add('mt-wait');
-      setTimeout(() => {
-        if (line.classList.contains('mt-wait')) show(true);
-      }, LINE_WAIT);
-    }
-    Promise.resolve()
-      .then(() => sound.masri(TEXT.line.clip))
-      .then((yes) => show(yes === true), () => show(false));
+    sound.caption(line, TEXT.line.text, TEXT.line.clip).then(() => line.classList.remove('mt-wait'), () => line.classList.remove('mt-wait'));
+    setTimeout(() => line.classList.remove('mt-wait'), LINE_WAIT);
   }
 
   /* Marks under the paper: rounds done, the round now, rounds to come. */
@@ -734,7 +706,6 @@
     slot.addEventListener('contextmenu', (event) => event.preventDefault());
     slot.addEventListener('dragstart', (event) => event.preventDefault());
     $('line').addEventListener('click', () => sound.say(TEXT.line.clip));
-    addEventListener('dialectchange', showLine);
     $('again').addEventListener('click', startBatch);
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden || !drag) return;

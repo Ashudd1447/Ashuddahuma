@@ -289,11 +289,14 @@ function settled() {
   Promise.race([said, delay(4000)]).then(praise);
 }
 
+/* أحسنت is heard to its end before the next hour is said (a fixed 1.9 s once
+   cut its last letter off, the father, 2026-11-26), and stays up at least
+   that long; a stalled clip holds nothing up for more than 4 s. */
 async function praise() {
   sound.chime();
   await delay(350);
-  sound.play(PRAISE);
-  await delay(1900);
+  await Promise.all([delay(1900), Promise.race([sound.play(PRAISE), delay(4000)])]);
+  await delay(250);
   nextTarget(true);
   busy = false;
 }
@@ -323,33 +326,15 @@ function nextTarget(speak) {
   if (speak) sound.say(clip(target));
 }
 
-/* The hour's words on the card show only when its Fusha recording is the
-   one that plays. The father's rule (2026-11-25): Fusha text never stands on
-   the screen while the Egyptian voice says it in other words (Fusha says
-   "the second hour", Egyptian "two o'clock"). The speaker mark stays, so the
-   card is still the button that says the hour, and in "my day" the picture
-   stays too. On Egyptian the words wait unseen until sound.masri() answers;
-   the switch sends 'dialectchange', followed at once. */
-let textAsked = 0;
+/* The hour's words on the card are the words the voice says: the Fusha, or
+   the Egyptian text when the Egyptian recording is the one that plays
+   (sound.caption; the father's rule, 2026-11-26). Fusha says "the second
+   hour", Egyptian "two o'clock". */
 function showTargetText() {
   const text = $('target-text');
-  const mine = ++textAsked;
-  text.textContent = HOURS[target - 1];
-  if (typeof sound.masri !== 'function') {
-    text.hidden = false;
-    return;
-  }
-  if (sound.dialect() === 'masri') text.hidden = true;
-  Promise.resolve()
-    .then(() => sound.masri(clip(target)))
-    .then((yes) => yes === true, () => false)
-    .then((yes) => {
-      if (mine === textAsked) text.hidden = yes;
-    });
+  if (typeof sound.caption === 'function') sound.caption(text, HOURS[target - 1], clip(target));
+  else text.textContent = HOURS[target - 1];
 }
-addEventListener('dialectchange', () => {
-  if (target) showTargetText();
-});
 
 function showTarget() {
   showTargetText();

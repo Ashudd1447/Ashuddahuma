@@ -56,14 +56,15 @@
    The Egyptian half does not need recordings: it answers sound.masri() by
    itself, three ways (every Egyptian recording there, only the sentences',
    only the words' and questions'), and checks the father's rule as the game
-   keeps it: a step whose sentence has its Egyptian recording is said in
-   Egyptian, and then no Fusha text at all is on its screen (a speaker mark
-   stands in for the large word, the question of a fill step, the sentence
-   and each choice); any other step reads as in Fusha and asks for no
-   Egyptian recording, even of a word that has one. Whenever the page asks
-   sound.say() for a clip whose Egyptian recording exists, the texts on the
-   screen at that moment are read: any Fusha text there is a failure (the
-   head, the sentence and the choices are tapped to make them speak). The
+   keeps it (2026-11-26: the words on the screen are the words the voice
+   says): a step whose sentence has its Egyptian recording is said in
+   Egyptian, and then its sentence reads in Egyptian, and the large word, the
+   question and each choice read in the dialect their own recording is heard
+   in; any other step reads as in Fusha and asks for no Egyptian recording,
+   even of a word that has one. Whenever the page asks sound.say() for a clip
+   whose Egyptian recording exists, the text that clip says is read where it
+   shows: its Fusha there is a failure (the head, the sentence and the
+   choices are tapped to make them speak). The
    screen must change at once when the switch is flipped in the middle of a
    step, and everything above about pictures and texts still holds. With a
    voice made up the same way it checks that the choices of a question are
@@ -331,22 +332,24 @@ function things() {
   });
 }
 
-/* What the play view reads now, and which of its texts a speaker mark stands in for. */
+/* What the play view reads now. */
 function reads() {
   const $ = (id) => document.getElementById(id);
   const text = (el) => (el.innerText || '').replace(/\s+/g, ' ').trim();
-  const mark = (el) => Boolean(el.querySelector('.w-mark'));
   return {
-    head: text($('head')), headMark: mark($('head')),
-    line: text($('line')), lineMark: mark($('line')),
-    choices: [...$('choices').children].map((b) => ({ text: text(b), mark: mark(b) })),
+    head: text($('head')),
+    line: text($('line')),
+    choices: [...$('choices').children].map((b) => ({ text: text(b) })),
   };
 }
 
 /* Put into the page: from now on, whenever the game asks sound.say() for a
    clip of its own whose Egyptian recording exists (as `there` says) while
-   the switch is on Egyptian, the Fusha texts on the screen at that moment
-   are noted in window.__beside: the father's rule is that there are none. */
+   the switch is on Egyptian, the Fusha of what that clip says, where it
+   shows (a word in the head and the choices, or its chip on a list; a
+   question in the head; a sentence in the line), is noted in
+   window.__beside if it is on the screen: the father's rule is that the
+   screen reads what the voice says. */
 function listen(there) {
   window.__beside = [];
   const seen = (el) => {
@@ -364,14 +367,25 @@ function listen(there) {
     for (let node = walk.nextNode(); node; node = walk.nextNode()) if (seen(node.parentElement)) out += `${node.nodeValue} `;
     return out.replace(/\s+/g, ' ').trim();
   };
+  const W = window.WHERE_WORDS;
+  /* The Fusha a clip says, and the texts of the play view it shows in. */
+  const fushaOf = (name) => {
+    const m = name.slice('where-'.length);
+    if (m.startsWith('word-')) return { ids: ['head', 'choices'], part: W.words[m.slice(5)].text, chip: m.slice(5) };
+    if (m.startsWith('q-')) return { ids: ['head'], part: `${W.where.text} ${W.things[m.slice(2)].text}` };
+    if (m === 'which' || m === 'put') return { ids: ['head'], part: W.asks[m].text };
+    const [thing] = m.split('-');
+    return { ids: ['line'], part: W.things[thing].text };
+  };
   const say = sound.say;
   sound.say = (name) => {
     if (typeof name === 'string' && name.startsWith('where-') && sound.dialect() === 'masri' && there(name)) {
       const view = document.querySelector('.view:not([hidden])');
+      const { ids, part, chip } = fushaOf(name);
       let text = '';
-      if (view.id === 'view-play') text = ['head', 'line', 'choices'].map((id) => textOf(document.getElementById(id))).join(' ').trim();
-      else text = textOf(view.querySelector(`[data-w="${name.replace('where-word-', '')}"]`));
-      if (text) window.__beside.push(`${name}-masri is asked for while the screen reads «${text}»`);
+      if (view.id === 'view-play') text = ids.map((id) => textOf(document.getElementById(id))).join(' ').trim();
+      else if (chip) text = textOf(view.querySelector(`[data-w="${chip}"]`));
+      if (text.includes(part)) window.__beside.push(`${name}-masri is asked for while the screen reads its Fusha «${text}»`);
     }
     return say(name);
   };
@@ -470,6 +484,12 @@ async function run(width, height, mouse, half, way) {
       find: game.asks.which.text,
       put: game.asks.put.text,
     })[step.kind];
+    const headMasri = (step) => ({
+      show: game.words[step.s[1]].masri,
+      fill: `${game.where.masri} ${game.things[step.s[0]].masri}؟`,
+      find: game.asks.which.masri,
+      put: game.asks.put.masri,
+    })[step.kind];
     const placeWords = Object.values(game.words).map((w) => w.text);
     const nouns = [...Object.values(game.things).map((t) => t.text), ...Object.values(game.places).flatMap((p) => [p.text, p.two])];
 
@@ -492,9 +512,10 @@ async function run(width, height, mouse, half, way) {
       await page.eval('whereGame.settled().then(() => 1)');
     }
 
-    /* What must and must not be read on a step's screen: said in Egyptian
-       (its sentence has its Egyptian recording), no Fusha text at all;
-       otherwise, everything as in Fusha. */
+    /* What must be read on a step's screen: said in Egyptian (its sentence
+       has its Egyptian recording), the sentence in Egyptian and every other
+       text in the dialect its own recording is heard in; otherwise,
+       everything as in Fusha. */
     const rule = async (step, moment, { shown = true, answered = false, masri = half === 'egyptian' } = {}) => {
       const title = stepName(step);
       const r = await page.eval(`(${reads})()`);
@@ -502,11 +523,19 @@ async function run(width, height, mouse, half, way) {
       const [thing, word, place] = step.s;
       const noun = word === 'between' ? game.places[place].two : game.places[place].text;
       if (said) {
-        const everything = [r.head, r.line, ...r.choices.map((c) => c.text)].join(' ').trim();
-        if (everything) await fail(title, moment, `said in Egyptian, but the screen reads «${everything}»`);
-        if (step.kind !== 'fill' && shown && !r.lineMark) await fail(title, moment, 'no speaker mark stands in for the sentence');
-        if ((step.kind === 'show' || step.kind === 'fill') && !r.headMark) await fail(title, moment, `no speaker mark stands in for ${step.kind === 'show' ? 'the large word' : 'the question'}`);
-        if (r.choices.some((c) => !c.mark)) await fail(title, moment, 'a choice has no speaker mark');
+        if (shown) {
+          const gap = step.kind === 'fill' && !answered;
+          const where = word === 'between' ? game.places[place].masriTwo : game.places[place].masri;
+          const want = gap ? [game.things[thing].masri, where] : [game.things[thing].masri, game.words[word].masri, where];
+          if (want.some((part) => !r.line.includes(part)) || r.line.includes(game.things[thing].text)) await fail(title, moment, `said in Egyptian, but the sentence reads «${r.line}»`);
+        }
+        const head = egyptian(clip.head(step)) ? headMasri(step) : headText(step);
+        if (r.head !== head) await fail(title, moment, `the head reads «${r.head}», not «${head}»`);
+        for (let i = 0; i < r.choices.length; i++) {
+          const w = step.choices[i];
+          const want = egyptian(clip.word(w)) ? game.words[w].masri : game.words[w].text;
+          if (r.choices[i].text !== want) await fail(title, moment, `the choice «${want}» reads «${r.choices[i].text}»`);
+        }
         return;
       }
       if (shown) {
@@ -514,11 +543,11 @@ async function run(width, height, mouse, half, way) {
         const want = gap ? [game.things[thing].text, noun] : [game.things[thing].text, game.words[word].text, noun];
         if (want.some((part) => !r.line.includes(part)) || (gap && r.line.includes(game.words[word].text))) await fail(title, moment, `the sentence reads «${r.line}»`);
       }
-      if (r.head !== headText(step) || r.headMark) await fail(title, moment, `the head reads «${r.head}»${r.headMark ? ' with a speaker mark' : ''}`);
+      if (r.head !== headText(step)) await fail(title, moment, `the head reads «${r.head}»`);
       for (let i = 0; i < r.choices.length; i++) {
         const w = step.choices[i];
         const c = r.choices[i];
-        if (c.text !== game.words[w].text || c.mark) await fail(title, moment, `the choice «${game.words[w].text}» reads «${c.text}»${c.mark ? ' with a speaker mark' : ''}`);
+        if (c.text !== game.words[w].text) await fail(title, moment, `the choice «${game.words[w].text}» reads «${c.text}»`);
       }
     };
 
@@ -612,15 +641,14 @@ async function run(width, height, mouse, half, way) {
       if (n === 0) await turn('the end');
     }
     if (half === 'egyptian') {
-      const chips = await page.eval(`(() => { whereGame.list(); return whereGame.settled().then(() => [...document.querySelectorAll('#stages .w-stage-card')].map((c) => ({ text: c.innerText.replace(/\\s+/g, ' ').trim(), marks: c.querySelectorAll('.w-mark').length }))); })()`);
-      const hiddenWords = Object.keys(game.words).filter((w) => egyptian(clip.word(w)));
+      const chips = await page.eval(`(() => { whereGame.list(); return whereGame.settled().then(() => [...document.querySelectorAll('#stages .w-stage-card')].map((c) => ({ text: c.innerText.replace(/\\s+/g, ' ').trim() }))); })()`);
+      const masriWords = Object.keys(game.words).filter((w) => egyptian(clip.word(w)));
       const text = chips.map((c) => c.text).join(' ');
       for (const w of Object.keys(game.words)) {
-        const there = text.includes(game.words[w].text);
-        if (hiddenWords.includes(w) && there) await fail('the list', 'settled', `«${game.words[w].text}» has an Egyptian recording, but its Fusha text is on the list`);
-        if (!hiddenWords.includes(w) && !there) await fail('the list', 'settled', `«${game.words[w].text}» has no Egyptian recording, but its text is not on the list`);
+        const want = masriWords.includes(w) ? game.words[w].masri : game.words[w].text;
+        if (!text.includes(want)) await fail('the list', 'settled', `«${game.words[w].text}» should read «${want}» on the list`);
+        if (masriWords.includes(w) && text.includes(game.words[w].text)) await fail('the list', 'settled', `«${game.words[w].text}» has an Egyptian recording, but its Fusha text is on the list`);
       }
-      if (chips.reduce((sum, c) => sum + c.marks, 0) !== hiddenWords.length) await fail('the list', 'settled', 'not one speaker mark per word with an Egyptian recording');
     }
 
     /* A thing under a landmark and a thing in front of it draw alike. */

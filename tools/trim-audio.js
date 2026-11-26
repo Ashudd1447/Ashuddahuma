@@ -1,7 +1,10 @@
 /* Cuts recordings already in public/audio the way the recording tool now
    cuts a new take (public/js/trim.js): the Stop click at the end goes, 0.2 s
-   of room is kept before the voice and 0.3 s after it, with a short fade at
-   each end. Made on 2026-11-26 for the father's first big sitting, recorded
+   of room is kept before the voice's first sound and 0.25 s after its last,
+   across a word's silent closures, with a short fade at each end. (Run again
+   on 2026-11-26 after the father heard التفاحة lose its first letters and
+   words lose their last: the first version silenced an early start as the
+   Record key and stopped at a final closure.) Made on 2026-11-26 for the father's first big sitting, recorded
    partly with the old trim (cut too close at the start) and partly without
    it (the click heard at the end).
 
@@ -92,7 +95,7 @@ for (const name of names) {
     const was = samples.length / rate;
     const now = out.samples.length / rate;
     const note = raw ? '' : '  (cut before: room added in front)';
-    console.log(`${name.padEnd(38)} ${was.toFixed(2)} s -> ${now.toFixed(2)} s  voice began at ${lead.toFixed(2)} s, end cut ${out.cut.toFixed(2)} s${out.lead ? `, ${out.lead.toFixed(2)} s added` : ''}${out.click ? `, Record click silenced to ${out.click.toFixed(2)} s` : ''}${note}`);
+    console.log(`${name.padEnd(38)} ${was.toFixed(2)} s -> ${now.toFixed(2)} s  voice began at ${lead.toFixed(2)} s, end cut ${out.cut.toFixed(2)} s${out.lead ? `, ${out.lead.toFixed(2)} s added` : ''}${out.tight ? ', voice runs up to the cut end' : ''}${note}`);
     if (!check) writeWav(live, out.samples, rate);
   } catch (error) {
     failed++;

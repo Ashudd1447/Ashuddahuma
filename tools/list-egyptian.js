@@ -1,5 +1,8 @@
 /* Writes docs/egyptian-names.md: every Egyptian wording beside its Fusha
-   twin, for the parents to review before they record.
+   twin, for the parents to review before they record; and public/egyptian.json,
+   { clip: Egyptian text }, which the games read to show the Egyptian text when
+   its recording plays (sound.caption). tools/prepare-deploy.py runs this, so
+   what the child reads is always the card's wording.
 
        node tools/list-egyptian.js
 
@@ -52,7 +55,7 @@ const count = groups.reduce((sum, group) => sum + group.rows.length, 0);
 const lines = [
   '# The Egyptian wording, for review',
   '',
-  `Every prompt the site can say in Egyptian: ${count} of them. On screen the text is always Fusha; the Egyptian line is only read aloud when recording, and played when the ☰ menu's switch is on Egyptian. All of the Egyptian lines are Claude's drafts until a parent corrects them.`,
+  `Every prompt the site can say in Egyptian: ${count} of them. When the switch is on Egyptian and a line's Egyptian recording exists, that recording plays and its Egyptian text, exactly as on the card, shows in place of the Fusha (the father, 2026-11-26): record each line as the card reads, or change the card first. The salah door is Fusha only. All of the Egyptian lines are Claude's drafts until a parent corrects them.`,
   '',
   'Where they live: the recording cards in `public/js/record.js` (each `-masri` card, and the lists `COUNT_MASRI` and `HOURS_MASRI` at its top), shown on the Record page (`/admin` → Record audio) beside their Fusha cards. Tell Claude what to change, or change the card; then `node tools/list-egyptian.js` writes this list again.',
   '',
@@ -63,4 +66,7 @@ for (const group of groups) {
   for (const row of group.rows) lines.push(`| ${row.said} | ${row.fusha} | ${row.masri} | \`${row.clip}\` |`);
 }
 fs.writeFileSync(path.join(here, 'docs', 'egyptian-names.md'), `${lines.join('\n')}\n`);
+const shown = {};
+for (const group of groups) for (const row of group.rows) shown[row.clip.replace(/-masri$/, '')] = row.masri;
+fs.writeFileSync(path.join(here, 'public', 'egyptian.json'), `${JSON.stringify(shown, null, 1)}\n`);
 console.log(`${count} Egyptian lines in ${groups.length} groups`);

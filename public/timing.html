@@ -134,7 +134,7 @@ function finish() {
 /* The automatic estimate for this ayah, as the reciter computes it. */
 async function autoFor() {
   const decoded = await sound.buffer(clip());
-  return decoded ? timing.autoWords(ayah().words, timing.envelope(decoded), { waqf: true }) : null;
+  return decoded ? timing.autoWords(ayah().words, timing.envelope(decoded), { waqf: true, nameMadd: true }) : null;
 }
 
 async function preview() {
