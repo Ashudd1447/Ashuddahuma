@@ -19,13 +19,15 @@ Two additions to `public/js/sound.js`, made on 2026-11-25:
 
 In this round they are used in two games only: `أَيْنَ؟` (`where.html`) and the number matching game (`match.html`). Every other game is listed below and waits for the father's decision.
 
+**2026-11-26:** the father recorded `read-it` and the twelve hours in both dialects, so the reciter and the clock follow the rule now (their sections below say how). The count at the end is what is left: 78 texts in 11 pages, 59 of them with other words.
+
 ## The switch on the page
 
 Added the same day, at the father's word: "Where there is both Egyptian and Fusha recordings, there should be something to signal that you should toggle." He chose a switch on the page over a pop-up: a small two-sided switch (`فُصْحَى` and the flag) beside the ✕ and ☰, in the top left corner on a phone, which breathes twice as the page opens and then rests. `app.js` shows it when `sound.twoDialects()` says that anything the open activity can say is recorded in both dialects. For that, a game must announce all its prompts as it opens (`sound.preloadPrompts()` or `sound.uses(names)`); a game that only calls `sound.say()` when a line is first needed shows the switch late. Two things for the later round, game by game: announce every prompt at the start, and check that the page's top row leaves the switch its place (the clock, the driving games, the building game and the car factory keep their star counter in the top left corner, where the switch goes on a phone).
 
 ## Four things to know first
 
-1. **No Egyptian recording exists yet.** `public/audio` holds no `-masri` file today, so the switch changes nothing the child hears, and under the new rule no text would disappear until a recording is made. The rule takes effect clip by clip, as each Egyptian card is recorded.
+1. **Recordings come clip by clip.** On 2026-11-25 no `-masri` file existed; on 2026-11-26 the counting words, the hours, `read-it`, `masri` and `أَيْنَ؟`'s were recorded. The rule takes effect clip by clip, as each Egyptian card is recorded.
 2. **Nothing is painted.** Every text that an Egyptian recording speaks is put in the page as ordinary text (DOM), never drawn on a canvas, in every game, the driving and building games included. (The only painted words on the site are the mazes' `اِبْدَأْ هُنَا` and `النِّهَايَةُ`, which no recording says.) So hiding is the same small job everywhere: hide one element.
 3. **Three files do not use `sound.say()`.** `salah.js` (wudu, the prayer, the qibla) and `prayers.js` have their own `hear()` that looks for `<name>-masri` by itself. They need `sound.masri()` too, or their own answer about which recording was found.
 4. **Most instruction lines stay on screen for the whole round**, long after the voice has ended. If the line is hidden, the child has nothing to remind him what to do. Where the line is already a button that says it again (the books' games, the salah quiz, the qibla, the five prayers, the clock card), a speaker mark in its place does the job. Where it is plain text (the mazes, light, archery, the seat belt, the safety gear, the reciter), hiding it leaves nothing; a small speaker button that says the line again would be new there, and is the father's call.
@@ -37,7 +39,10 @@ In the tables, "differ" says how far the Egyptian wording is from the text:
 
 The order of the games is Claude's guess at what is played most; the father knows better.
 
-## The reciter (`fatihah.html`)
+## The reciter (`fatihah.html`): done 2026-11-26
+
+`showPrompt()` in `js/recite.js` leaves `#turn` hidden when `sound.masri('read-it')` is true, and follows `dialectchange`.
+
 
 Text: `fatihah.html` line 27 (`#turn`), shown by `js/recite.js` line 158. In the page (DOM). Not tapped; the buttons `أَعِدِ الْآيَةَ` and `الْآيَةُ التَّالِيَةُ` under it do the work, so the game goes on without it.
 How to hide: leave `#turn` hidden when `sound.masri('read-it')` is true. Nothing else is needed.
@@ -46,7 +51,10 @@ How to hide: leave `#turn` hidden when `sound.masri('read-it')` is true. Nothing
 |---|---|---|---|
 | `read-it` | الْآنَ اقْرَأْهَا أَنْتَ | دلوقتي اقراها أنت | words |
 
-## The clock (`clock.html`)
+## The clock (`clock.html`): done 2026-11-26
+
+`showTargetText()` in `js/clock.js` hides `#target-text` when `sound.masri('hour-N')` is true (on Egyptian it waits unseen for the answer) and follows `dialectchange`; the card keeps its speaker mark. On a phone the star counter steps down under the switch (`style.css`).
+
 
 Text: `js/clock.js` line 327 (`#target-text`, inside the card `#target`). In the page (DOM). The card **is tapped** to hear the hour again, and it is how the child knows which hour to make. It already carries a speaker icon beside the words, and in "my day" a picture.
 How to hide: empty or hide `#target-text` when `sound.masri('hour-N')` is true; the speaker icon stays, so the card is still a button. In the hours mode the child then knows the hour by ear only.
@@ -275,7 +283,7 @@ Outside `أَيْنَ؟` and the number matching game there are **102** Egyptian
 |---|---|---|---|---|---|
 | The books' games | 18 | 17 | 1 | yes | yes (the line is a button) |
 | The mazes | 14 | 9 | 5 | three places | the instruction has none today |
-| The clock | 12 | 11 | 1 | yes | no (the card has a speaker icon) |
+| ~~The clock~~ (done) | ~~12~~ | ~~11~~ | ~~1~~ | | |
 | The building game | 11 | 7 | 4 | yes | no |
 | The car factory | 9 | 7 | 2 | yes | no |
 | Light and mirrors | 6 | 6 | 0 | yes | none today |
@@ -284,9 +292,9 @@ Outside `أَيْنَ؟` and the number matching game there are **102** Egyptian
 | The driving games | 4 | 1 | 3 | two places | no |
 | The qibla | 3 | 3 | 0 | yes | yes (the bar is a button) |
 | The safety gear | 2 | 1 | 1 | two lines | no |
-| The reciter | 1 | 1 | 0 | yes | no |
+| ~~The reciter~~ (done) | ~~1~~ | ~~1~~ | ~~0~~ | | |
 | The "what comes next" quiz | 1 | 1 | 0 | two files, three pages | yes (the question is a button) |
-| **All** | **91** | **71** | **20** | | |
+| **Left** | **78** | **59** | **19** | | |
 
 71 of the 91 differ in words, the case the father named. The other 20 read the same words the Egyptian way; whether those are hidden too is his to decide (the rule as he wrote it hides every text whose Egyptian recording plays).
 

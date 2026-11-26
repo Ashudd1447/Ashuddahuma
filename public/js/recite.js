@@ -62,9 +62,27 @@ function markPlaying(number) {
   for (const item of $('ayat').children) item.classList.toggle('playing', Number(item.dataset.n) === number);
 }
 
+/* "Now you read it" shows only when its Fusha recording is the one that
+   plays. The father's rule (2026-11-25): the site shows Fusha text only, and
+   the text cannot stand on the screen while the Egyptian voice says it in
+   other words. sound.masri() says whether the Egyptian recording will play;
+   the switch sends 'dialectchange', followed at once. The buttons under the
+   line carry on without it. */
+let turnUp = false;
+async function showPrompt() {
+  turnUp = true;
+  const masri = typeof sound.masri === 'function' ? await sound.masri('read-it').catch(() => false) : false;
+  $('turn').hidden = !turnUp || masri === true;
+}
+
 function hidePrompt() {
+  turnUp = false;
   $('turn').hidden = true;
 }
+
+addEventListener('dialectchange', () => {
+  if (turnUp) showPrompt();
+});
 
 /* Everything stops: the clip, the lights, the prompt, a run in progress. */
 function halt() {
@@ -155,7 +173,8 @@ async function recite(number) {
   await playAyah(number, mine);
   if (mine !== run) return;
   markPlaying(0);
-  $('turn').hidden = false;
+  await showPrompt();
+  if (mine !== run) return;
   await sound.say('read-it');
 }
 

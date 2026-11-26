@@ -412,58 +412,9 @@ async function startRecording(deviceId) {
   };
 }
 
-/* Measurement, as IQRA's takeCheck: 10 ms RMS windows, an adaptive threshold,
-   peak, clipping, noise floor and signal-to-noise. */
-function profile(samples, sampleRate) {
-  const win = Math.max(1, Math.round(sampleRate * 0.01));
-  const n = Math.floor(samples.length / win);
-  const rms = new Float64Array(n);
-  let peakRms = 0;
-  let peakSample = 0;
-  let hot = 0;
-  for (let w = 0; w < n; w++) {
-    let sum = 0;
-    for (let i = w * win; i < (w + 1) * win; i++) {
-      const v = samples[i];
-      sum += v * v;
-      const a = Math.abs(v);
-      if (a > peakSample) peakSample = a;
-      if (a >= 0.999) hot++;
-    }
-    rms[w] = Math.sqrt(sum / win);
-    if (rms[w] > peakRms) peakRms = rms[w];
-  }
-  const sorted = Float64Array.from(rms).sort();
-  const noiseFloor = sorted[Math.floor(sorted.length * 0.15)] || 0;
-  return { rms, win, peakRms, peakSample, noiseFloor, clipped: hot > 3, threshold: Math.max(noiseFloor * 3.5, peakRms * 0.06, 0.0008) };
-}
-
-/* Runs of sound above the threshold, in windows; blips under 80 ms dropped. */
-function runs(p) {
-  const out = [];
-  let start = -1;
-  for (let w = 0; w <= p.rms.length; w++) {
-    const loud = w < p.rms.length && p.rms[w] >= p.threshold;
-    if (loud && start < 0) start = w;
-    if (!loud && start >= 0) {
-      if ((w - start) * 0.01 >= 0.08) out.push([start, w]);
-      start = -1;
-    }
-  }
-  return out;
-}
-
-/* Cut to the spoken part with 120 ms of room on each side. A record click in
-   the first 0.3 s, well apart from the voice, is dropped. */
-function trim(samples, sampleRate, p) {
-  let found = runs(p);
-  if (found.length > 1 && found[0][1] * 0.01 <= 0.3 && (found[1][0] - found[0][1]) * 0.01 > 0.25) found = found.slice(1);
-  if (!found.length) return samples;
-  const pad = Math.round(sampleRate * 0.12);
-  const from = Math.max(0, found[0][0] * p.win - pad);
-  const to = Math.min(samples.length, found[found.length - 1][1] * p.win + pad);
-  return samples.slice(from, to);
-}
+/* Measuring a take (profile) and cutting it (cut) are in js/trim.js, shared
+   with tools/trim-audio.js. */
+const profile = takeTrim.profile;
 
 async function resample(samples, from, to) {
   if (from === to) return samples;
@@ -593,7 +544,8 @@ async function stopRecording(slot) {
     return;
   }
   const p = profile(samples, sampleRate);
-  const cut = $('trim').checked ? trim(samples, sampleRate, p) : samples;
+  /* Trimmed or not, the Stop click at the end is never kept (js/trim.js). */
+  const cut = takeTrim.cut(samples, sampleRate, { trim: $('trim').checked, raw: true, profile: p }).samples;
   const target = Number($('rate').value);
   const final = await resample(cut, sampleRate, target);
   const duration = final.length / target;

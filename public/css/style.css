@@ -734,6 +734,8 @@ button{font:inherit;color:inherit;cursor:pointer}
   .dialect-switch,.dialect-switch.alone{left:10px;right:auto;height:44px;padding:3px}
   .dialect-switch .side{height:38px;min-width:42px;padding:0 9px;font-size:14px}
   .dialect-switch .flag{width:28px;height:19px}
+  /* a star counter in that corner (the clock) steps down under the switch */
+  body:has(.dialect-switch:not([hidden])) .score{top:62px}
 }
 @media (prefers-reduced-motion:reduce){
   .dialect-switch.hello{animation:none;box-shadow:0 0 0 5px rgba(242,184,75,.75),var(--shadow)}
