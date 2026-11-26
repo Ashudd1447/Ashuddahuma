@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>صِلْ كُلَّ رَقْمٍ بِالصُّورَةِ الْمُنَاسِبَةِ لَهُ</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/sheets.css">
+<link rel="stylesheet" href="css/match.css">
+</head>
+<body class="sheet-page" data-hub="numbers">
+<div class="sheet" id="sheet" data-hub="numbers">
+  <header class="sheet-head">
+    <a id="home" href="numbers.html" aria-label="الْأَرْقَامُ وَالْحِسَابُ"><img class="logo" src="images/logo.webp" alt=""></a>
+    <button class="sheet-line" id="line" type="button">صِلْ كُلَّ رَقْمٍ بِالصُّورَةِ الْمُنَاسِبَةِ لَهُ</button>
+  </header>
+  <main class="sheet-board" id="board">
+    <div class="sheet-slot mt-slot" id="slot"></div>
+    <section class="sheet-end" id="end" hidden>
+      <div class="sheet-crown">
+        <svg class="sheet-khatim" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2L64.1 16.1L83.9 16.1L83.9 35.9L98 50L83.9 64.1L83.9 83.9L64.1 83.9L50 98L35.9 83.9L16.1 83.9L16.1 64.1L2 50L16.1 35.9L16.1 16.1L35.9 16.1Z"/></svg>
+        <p class="sheet-praise mt-praise" id="praise">أحسنت</p>
+      </div>
+      <div class="sheet-buttons" id="buttons" hidden>
+        <a class="round sheet-go" id="to-hub" href="numbers.html" aria-label="الْأَرْقَامُ وَالْحِسَابُ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg></a>
+        <button class="round" id="again" type="button" aria-label="مَرَّةً أُخْرَى"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </section>
+  </main>
+  <div class="sheet-marks" id="marks" aria-hidden="true"></div>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/match.js"></script>
+</body>
+</html>

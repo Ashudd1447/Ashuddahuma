@@ -26,6 +26,24 @@ const HOURS_MASRI = [
   'الساعة واحدة', 'الساعة اتنين', 'الساعة تلاتة', 'الساعة أربعة', 'الساعة خمسة', 'الساعة ستة',
   'الساعة سبعة', 'الساعة تمانية', 'الساعة تسعة', 'الساعة عشرة', 'الساعة حداشر', 'الساعة اتناشر',
 ];
+/* أَيْنَ؟: every sentence, word and question of where-words.js, which
+   record.html loads first, in Fusha and in Egyptian. */
+function whereSlots() {
+  const W = window.WHERE_WORDS;
+  if (!W) return [];
+  const group = 'Arabic: أَيْنَ؟';
+  const pair = (file, text, masri, note) => [
+    { group, file, text, note: `${note} (Fusha)` },
+    { group, file: `${file}-masri`, text: masri, note: `${note} (Egyptian, spoken only)` },
+  ];
+  return [
+    ...W.sentences.flatMap((s) => pair(W.clip.sentence(s), W.say(s, false), W.say(s, true), `Sentence: ${s.join(' ')}`)),
+    ...Object.entries(W.words).flatMap(([key, w]) => pair(W.clip.word(key), w.text, w.masri, `The word alone, said when he taps it (${key})`)),
+    ...Object.entries(W.things).flatMap(([key, t]) => pair(W.clip.ask(key), `${W.where.text} ${t.text}؟`, `${W.where.masri} ${t.masri}؟`, `Question: where is the ${key}?`)),
+    ...pair(W.clip.which, W.asks.which.text, W.asks.which.masri, 'Question: which picture?'),
+    ...pair(W.clip.put, W.asks.put.text, W.asks.put.masri, 'Question: listen and move it'),
+  ];
+}
 const STATIC_SLOTS = [
   { group: 'Reciter prompts', file: 'read-it', text: 'الْآنَ اقْرَأْهَا أَنْتَ', note: 'After an ayah: now you read it (Fusha)' },
   { group: 'Reciter prompts', file: 'read-it-masri', text: 'دلوقتي اقراها أنت', note: 'After an ayah: now you read it (Egyptian, spoken only)' },
@@ -257,6 +275,12 @@ const STATIC_SLOTS = [
   { group: 'Salah: the five prayers', file: 'time-maghrib-masri', text: 'وقت غروب الشمس', note: 'At sunset (Egyptian, spoken only)' },
   { group: 'Salah: the five prayers', file: 'time-isha', text: 'فِي اللَّيْلِ', note: 'When Isha is prayed: at night (Fusha)' },
   { group: 'Salah: the five prayers', file: 'time-isha-masri', text: 'بالليل', note: 'At night (Egyptian, spoken only)' },
+  { group: 'Numbers: صِلْ كُلَّ رَقْمٍ', file: 'numbers-match', text: 'صِلْ كُلَّ رَقْمٍ بِالصُّورَةِ الْمُنَاسِبَةِ لَهُ', note: 'The name of the game, said at the start: join each number to its picture (Fusha)' },
+  { group: 'Numbers: صِلْ كُلَّ رَقْمٍ', file: 'numbers-match-masri', text: 'وصّل كل رقم بالصورة المناسبة ليه', note: 'The name of the game: join each number to its picture (Egyptian, spoken only)' },
+  ...['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'].map((word, i) => (
+    { group: 'Numbers: صِلْ كُلَّ رَقْمٍ', file: `en-${i + 1}`, text: word, note: `The 1 2 3 batch: the number ${i + 1} said in English (spoken only, never shown)` }
+  )),
+  ...whereSlots(),
 ];
 
 const WORKLET_SOURCE = `

@@ -1,6 +1,6 @@
 # The Egyptian wording, for review
 
-Every prompt the site can say in Egyptian: 102 of them. On screen the text is always Fusha; the Egyptian line is only read aloud when recording, and played when the ☰ menu's switch is on Egyptian. All of the Egyptian lines are Claude's drafts until a parent corrects them.
+Every prompt the site can say in Egyptian: 145 of them. On screen the text is always Fusha; the Egyptian line is only read aloud when recording, and played when the ☰ menu's switch is on Egyptian. All of the Egyptian lines are Claude's drafts until a parent corrects them.
 
 Where they live: the recording cards in `public/js/record.js` (each `-masri` card, and the lists `COUNT_MASRI` and `HOURS_MASRI` at its top), shown on the Record page (`/admin` → Record audio) beside their Fusha cards. Tell Claude what to change, or change the card; then `node tools/list-egyptian.js` writes this list again.
 
@@ -172,3 +172,56 @@ A prompt with no Egyptian card is said the same way in both settings (one record
 | When Asr is prayed: in the afternoon | بَعْدَ الظُّهْرِ | بعد الضهر | `time-asr-masri` |
 | When Maghrib is prayed: at sunset | عِنْدَ غُرُوبِ الشَّمْسِ | وقت غروب الشمس | `time-maghrib-masri` |
 | When Isha is prayed: at night | فِي اللَّيْلِ | بالليل | `time-isha-masri` |
+
+## Numbers: صِلْ كُلَّ رَقْمٍ
+
+| Said when | On screen (Fusha) | Egyptian, to say | Clip |
+|---|---|---|---|
+| The name of the game, said at the start: join each number to its picture | صِلْ كُلَّ رَقْمٍ بِالصُّورَةِ الْمُنَاسِبَةِ لَهُ | وصّل كل رقم بالصورة المناسبة ليه | `numbers-match-masri` |
+
+## Arabic: أَيْنَ؟
+
+| Said when | On screen (Fusha) | Egyptian, to say | Clip |
+|---|---|---|---|
+| Sentence: ball in box | الْكُرَةُ فِي الصُّنْدُوقِ | الكورة جوّه الصندوق | `where-ball-in-box-masri` |
+| Sentence: apple in basket | التُّفَّاحَةُ فِي السَّلَّةِ | التفاحة جوّه السَّبَت | `where-apple-in-basket-masri` |
+| Sentence: cat in box | الْقِطَّةُ فِي الصُّنْدُوقِ | القطة جوّه الصندوق | `where-cat-in-box-masri` |
+| Sentence: apple on table | التُّفَّاحَةُ عَلَى الطَّاوِلَةِ | التفاحة على الترابيزة | `where-apple-on-table-masri` |
+| Sentence: cat on chair | الْقِطَّةُ عَلَى الْكُرْسِيِّ | القطة على الكرسي | `where-cat-on-chair-masri` |
+| Sentence: bird on tree | الْعُصْفُورُ عَلَى الشَّجَرَةِ | العصفورة على الشجرة | `where-bird-on-tree-masri` |
+| Sentence: ball under table | الْكُرَةُ تَحْتَ الطَّاوِلَةِ | الكورة تحت الترابيزة | `where-ball-under-table-masri` |
+| Sentence: cat under chair | الْقِطَّةُ تَحْتَ الْكُرْسِيِّ | القطة تحت الكرسي | `where-cat-under-chair-masri` |
+| Sentence: apple under tree | التُّفَّاحَةُ تَحْتَ الشَّجَرَةِ | التفاحة تحت الشجرة | `where-apple-under-tree-masri` |
+| Sentence: balloon above table | الْبَالُونُ فَوْقَ الطَّاوِلَةِ | البلونة فوق الترابيزة | `where-balloon-above-table-masri` |
+| Sentence: plane above house | الطَّائِرَةُ فَوْقَ الْبَيْتِ | الطيارة فوق البيت | `where-plane-above-house-masri` |
+| Sentence: bird above tree | الْعُصْفُورُ فَوْقَ الشَّجَرَةِ | العصفورة فوق الشجرة | `where-bird-above-tree-masri` |
+| Sentence: car front house | السَّيَّارَةُ أَمَامَ الْبَيْتِ | العربية قدّام البيت | `where-car-front-house-masri` |
+| Sentence: ball front box | الْكُرَةُ أَمَامَ الصُّنْدُوقِ | الكورة قدّام الصندوق | `where-ball-front-box-masri` |
+| Sentence: cat front basket | الْقِطَّةُ أَمَامَ السَّلَّةِ | القطة قدّام السَّبَت | `where-cat-front-basket-masri` |
+| Sentence: cat behind box | الْقِطَّةُ خَلْفَ الصُّنْدُوقِ | القطة ورا الصندوق | `where-cat-behind-box-masri` |
+| Sentence: car behind house | السَّيَّارَةُ خَلْفَ الْبَيْتِ | العربية ورا البيت | `where-car-behind-house-masri` |
+| Sentence: ball behind basket | الْكُرَةُ خَلْفَ السَّلَّةِ | الكورة ورا السَّبَت | `where-ball-behind-basket-masri` |
+| Sentence: ball beside box | الْكُرَةُ بِجَانِبِ الصُّنْدُوقِ | الكورة جنب الصندوق | `where-ball-beside-box-masri` |
+| Sentence: cat beside basket | الْقِطَّةُ بِجَانِبِ السَّلَّةِ | القطة جنب السَّبَت | `where-cat-beside-basket-masri` |
+| Sentence: car beside house | السَّيَّارَةُ بِجَانِبِ الْبَيْتِ | العربية جنب البيت | `where-car-beside-house-masri` |
+| Sentence: ball between box | الْكُرَةُ بَيْنَ الصُّنْدُوقَيْنِ | الكورة بين الصندوقين | `where-ball-between-box-masri` |
+| Sentence: cat between chair | الْقِطَّةُ بَيْنَ الْكُرْسِيَّيْنِ | القطة بين الكرسيين | `where-cat-between-chair-masri` |
+| Sentence: car between tree | السَّيَّارَةُ بَيْنَ الشَّجَرَتَيْنِ | العربية بين الشجرتين | `where-car-between-tree-masri` |
+| The word alone, said when he taps it (in) | فِي | جوّه | `where-word-in-masri` |
+| The word alone, said when he taps it (on) | عَلَى | على | `where-word-on-masri` |
+| The word alone, said when he taps it (under) | تَحْتَ | تحت | `where-word-under-masri` |
+| The word alone, said when he taps it (above) | فَوْقَ | فوق | `where-word-above-masri` |
+| The word alone, said when he taps it (front) | أَمَامَ | قدّام | `where-word-front-masri` |
+| The word alone, said when he taps it (behind) | خَلْفَ | ورا | `where-word-behind-masri` |
+| The word alone, said when he taps it (beside) | بِجَانِبِ | جنب | `where-word-beside-masri` |
+| The word alone, said when he taps it (between) | بَيْنَ | بين | `where-word-between-masri` |
+| Question: where is the ball? | أَيْنَ الْكُرَةُ؟ | فين الكورة؟ | `where-q-ball-masri` |
+| Question: where is the apple? | أَيْنَ التُّفَّاحَةُ؟ | فين التفاحة؟ | `where-q-apple-masri` |
+| Question: where is the car? | أَيْنَ السَّيَّارَةُ؟ | فين العربية؟ | `where-q-car-masri` |
+| Question: where is the gift? | أَيْنَ الْهَدِيَّةُ؟ | فين الهدية؟ | `where-q-gift-masri` |
+| Question: where is the cat? | أَيْنَ الْقِطَّةُ؟ | فين القطة؟ | `where-q-cat-masri` |
+| Question: where is the bird? | أَيْنَ الْعُصْفُورُ؟ | فين العصفورة؟ | `where-q-bird-masri` |
+| Question: where is the balloon? | أَيْنَ الْبَالُونُ؟ | فين البلونة؟ | `where-q-balloon-masri` |
+| Question: where is the plane? | أَيْنَ الطَّائِرَةُ؟ | فين الطيارة؟ | `where-q-plane-masri` |
+| Question: which picture? | أَيُّ صُورَةٍ؟ | أنهي صورة؟ | `where-which-masri` |
+| Question: listen and move it | اِسْمَعْ وَحَرِّكْ | اسمع وحرّك | `where-put-masri` |

@@ -1,0 +1,41 @@
+/* صِلْ كُلَّ رَقْمٍ بِالصُّورَةِ الْمُنَاسِبَةِ لَهُ (match.html, js/match.js): numbers dragged onto groups of that many
+   things. The page wears the books' games' frame (css/sheets.css); this is
+   what sits on its paper. On numbers.html, the two cards before the books'. */
+.match-cards{display:contents}
+
+.mt-slot{--tile:72px}
+.mt-slot.mt-in{animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+.mt-tray{position:absolute;border-radius:20px;background:#F2F4F6}
+
+/* A group: its things, and the place its number goes */
+.mt-card{position:absolute;border-radius:20px;background:#F7FBF8;box-shadow:inset 0 0 0 2px #E1ECE4;cursor:pointer;transition:background .15s ease,box-shadow .15s ease}
+.mt-card.mt-over{background:var(--accent-pale);box-shadow:inset 0 0 0 3px var(--accent)}
+.mt-card.mt-done{background:#fff;box-shadow:inset 0 0 0 2px var(--accent-pale)}
+.mt-card.mt-no{animation:mt-no .44s ease-in-out}
+@keyframes mt-no{20%{transform:translateX(-8px)}50%{transform:translateX(8px)}80%{transform:translateX(-3px)}}
+.mt-things{position:absolute;pointer-events:none}
+.mt-thing{position:absolute}
+.mt-thing img,.mt-thing svg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;-webkit-user-drag:none}
+/* A counted thing lights: a warm disc behind it, and a small hop */
+.mt-thing::before{content:"";position:absolute;inset:-6%;border-radius:50%;background:#FFE7A0;opacity:0;transform:scale(.5);transition:opacity .18s ease,transform .18s ease}
+.mt-thing.mt-lit::before{opacity:1;transform:scale(1)}
+.mt-thing.mt-lit img,.mt-thing.mt-lit svg{animation:mt-hop .3s ease-out}
+@keyframes mt-hop{40%{transform:translateY(-8%) scale(1.08)}}
+.mt-hands{position:absolute;overflow:visible}
+.mt-hands .mt-finger{transition:fill .18s ease}
+.mt-hands .mt-finger.mt-lit{fill:#FFC93C}
+.mt-badge{position:absolute;box-sizing:border-box;border-radius:24%;border:3px dashed #A3ADB8;background:#fff;pointer-events:none}
+.mt-card.mt-over .mt-badge{border-color:var(--accent);background:#fff}
+.mt-card.mt-done .mt-badge{border-color:transparent}
+
+/* A number to carry */
+.mt-tile{position:absolute;z-index:2;display:grid;place-items:center;box-sizing:border-box;border-radius:24%;border:3px solid var(--accent);background:#fff;box-shadow:0 4px 0 var(--accent-deep),0 6px 14px rgba(31,36,51,.14);color:#1F2433;font-family:"Noto Naskh Arabic","Geeza Pro",serif;font-weight:700;font-size:calc(var(--tile) * .62);line-height:1;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:left .26s cubic-bezier(.2,.8,.2,1),top .26s cubic-bezier(.2,.8,.2,1),transform .15s ease,background .2s ease,color .2s ease}
+.mt-tile span{display:block;pointer-events:none}
+.mt-tile.mt-two{font-size:calc(var(--tile) * .5)}
+/* 1 2 3 in a plain round face: the Naskh font has none of its own */
+.mt-latin .mt-tile{font-family:system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:calc(var(--tile) * .56)}
+.mt-latin .mt-tile.mt-two{font-size:calc(var(--tile) * .46)}
+.mt-tile.mt-held{z-index:5;transition:transform .15s ease;transform:scale(1.12);box-shadow:0 6px 0 var(--accent-deep),0 14px 30px rgba(31,36,51,.25);cursor:grabbing}
+.mt-tile.mt-placed{z-index:1;background:var(--accent);border-color:var(--accent-deep);color:#fff;box-shadow:0 3px 0 var(--accent-deep);cursor:pointer}
+
+.mt-praise{font-size:calc(var(--size) * .15)}

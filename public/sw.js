@@ -14,10 +14,15 @@
    costs a quick question per file rather than the whole site again.
    A page asked for with a query (story.html?s=<id>) is found offline even if
    it was never opened online: the saved page without the query is used. */
-const CACHE = 'ashudd-2026-11-25T13:59Z'; // the version: the time of the deploy, stamped by tools/prepare-deploy.py; the home page shows it as a date
+const CACHE = 'ashudd-2026-11-26T00:50Z'; // the version: the time of the deploy, stamped by tools/prepare-deploy.py; the home page shows it as a date
 const FILES = [
   '/',
+  '/arabic.html',
   '/reading.html',
+  '/where.html',
+  '/js/where.js',
+  '/js/where-words.js',
+  '/css/where.css',
   '/fatihah.html',
   '/games.html',
   '/blocks.html',
@@ -202,6 +207,9 @@ const FILES = [
   '/lab.html',
   '/light.html',
   '/numbers.html',
+  '/match.html',
+  '/js/match.js',
+  '/css/match.css',
   '/pray.html',
   '/prayers.html',
   '/qibla.html',

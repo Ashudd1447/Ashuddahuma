@@ -176,7 +176,7 @@ buildMenu();
 /* The ✕ at the top of every page but the home page leaves it: a game for the
    games hub (the building game and the car factory for their own door, and
    that door for the hub), a game behind one of the home page's own doors
-   (prayer, numbers, the lab, sports) for that door, a story for the shelf of
+   (Arabic, prayer, numbers, the lab, sports) for that door, a story for the shelf of
    stories, anything else, those doors too, for the home page. A page may take
    the click first: the driving games leave a drive before they leave the page. */
 function buildExit() {
@@ -191,7 +191,8 @@ function buildExit() {
     blocks: hub, clock: hub, drive: hub, making: hub, mazes: hub, typing: hub, think: hub,
     build: 'making.html', factory: 'making.html', light: 'lab.html', archery: 'sports.html', qibla: 'salah.html', wudu: 'salah.html', pray: 'salah.html', prayers: 'salah.html',
     /* A worksheet game belongs to one of two doors; sheets.js points this at the right one once it knows the game. */
-    sheet: 'numbers.html',
+    sheet: 'numbers.html', match: 'numbers.html',
+    reading: 'arabic.html', where: 'arabic.html',
     story: 'stories.html',
   }[page] || '/';
   link.setAttribute('aria-label', 'خُرُوجٌ');
