@@ -107,6 +107,15 @@ const beep = (name, ...values) => {
   if (typeof sound[name] === 'function') sound[name](...values);
 };
 
+/* A text that a recording says, by the father's rule (2026-11-25): it shows
+   only while its Fusha recording is the one that plays (sound.caption). With
+   { mark: true } a speaker mark stands in its place, and a tap on it says the
+   line again. An older saved copy of sound.js may lack it: then the text
+   simply shows. */
+const caption = (el, text, clip, how) => (typeof sound.caption === 'function'
+  ? sound.caption(el, text, clip, how)
+  : Promise.resolve((el.textContent = text, false)));
+
 /* A recorded line, in the family's dialect; silent while it is not recorded. */
 function speak(clip) {
   const mine = ++turn;
@@ -436,14 +445,14 @@ function enter(name) {
   refresh();
 }
 
-function showName(text) {
+function showName(text, clip) {
   const name = $('name');
-  name.textContent = text;
+  caption(name, text, clip);
   name.hidden = false;
 }
 
 function praise() {
-  showName(TEXT.praise.text);
+  showName(TEXT.praise.text, TEXT.praise.clip);
   speak(TEXT.praise.clip);
   enter('praise');
 }
@@ -451,7 +460,7 @@ function praise() {
 /* The printed page is gone and the child's line is alone: the question. */
 function ask() {
   sheet = 0;
-  $('line').textContent = TEXT.what.text;
+  caption($('line'), TEXT.what.text, TEXT.what.clip, { mark: true });
   speak(TEXT.what.clip);
   enter('ask');
 }
@@ -554,7 +563,7 @@ function update(dt) {
     if (waited(ASK)) startMorph();
   } else if (phase === 'morph') {
     if (time < MORPH) return;
-    showName(maze.picture.name);
+    showName(maze.picture.name, maze.picture.clip);
     speak(maze.picture.clip);
     enter('name');
   } else if (waited(REST)) {
@@ -886,7 +895,7 @@ function openMaze(number) {
   lift = null;
   const words = maze.help || (maze.picture ? TEXT.find : TEXT.draw);
   $('title').textContent = maze.title;
-  $('line').textContent = words.text;
+  caption($('line'), words.text, words.clip, { mark: true });
   $('name').hidden = true;
   $('buttons').hidden = true;
   const isLast = maze === mazes[mazes.length - 1];
@@ -1044,6 +1053,8 @@ fetch('mazes/mazes.json')
   .then((data) => {
     // The order of the list: section by section, each in the order of the file.
     mazes = SECTIONS.flatMap((kind) => data.mazes.filter((m) => kindOf(m) === kind));
+    // Every line the mazes can say, announced at once, for the page's dialect switch.
+    if (typeof sound.uses === 'function') sound.uses(mazes.flatMap((m) => [m.help && m.help.clip, m.picture && m.picture.clip]).filter(Boolean));
     showList();
   })
   .catch(() => {

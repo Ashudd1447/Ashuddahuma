@@ -598,7 +598,10 @@ if (typeof document !== 'undefined') (() => {
     $('word').hidden = true;
     $('praise').hidden = true;
     $('again').hidden = true;
-    $('line').textContent = TEXT[level.say].text;
+    // A speaker mark in its place when the Egyptian recording is the one said
+    // (the father's rule, 2026-11-25); a tap on it says the line again.
+    if (typeof sound.caption === 'function') sound.caption($('line'), TEXT[level.say].text, TEXT[level.say].clip, { mark: true });
+    else $('line').textContent = TEXT[level.say].text;
     frame.classList.remove('away');
     paintSteps();
     see();

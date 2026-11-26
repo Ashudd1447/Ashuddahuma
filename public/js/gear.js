@@ -195,6 +195,13 @@ const gear = (() => {
   function build() {
     box = document.getElementById('view-gear');
     box.innerHTML = SCENE;
+    /* The two lines are hidden, keeping their room, when their Egyptian
+       recording is the one said (the father's rule, 2026-11-25): the pegs
+       and the breathing glove show what to do. */
+    if (typeof sound.caption === 'function') {
+      sound.caption(box.querySelector('#gear-prompt'), 'اِلْبَسْ مُعَدَّاتِ السَّلَامَةِ', 'gear');
+      sound.caption(box.querySelector('#gear-hint'), 'اِبْدَأْ بِالْيَمِينِ', 'start-right');
+    }
     for (const name of Object.keys(PIECES)) wire(name);
     box.querySelector('#gear').addEventListener('keydown', (event) => {
       if (event.key !== 'Enter' && event.key !== ' ') return;

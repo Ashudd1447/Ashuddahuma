@@ -1635,7 +1635,11 @@
     const now = words(round);
     if (now.clip !== line) {
       line = now.clip;
-      $('line').textContent = now.line;
+      // A speaker mark in its place when the Egyptian recording is the one
+      // said (the father's rule, 2026-11-25); the line is still the button
+      // that says it again.
+      if (typeof sound.caption === 'function') sound.caption($('line'), now.line, now.clip, { mark: true, tap: false });
+      else $('line').textContent = now.line;
       say(now.clip);
     }
     showMarks(index);

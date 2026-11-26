@@ -1986,7 +1986,10 @@ if (typeof document !== 'undefined') (() => {
       againButton.hidden = true;
       hideWord();
       setMarks();
-      lineEl.textContent = TEXT[level.say].line;
+      // A speaker mark in its place when the Egyptian recording is the one
+      // said (the father's rule, 2026-11-25); a tap on it says the line again.
+      if (typeof sound.caption === 'function') sound.caption(lineEl, TEXT[level.say].line, TEXT[level.say].clip, { mark: true });
+      else lineEl.textContent = TEXT[level.say].line;
       $('level-number').textContent = arabic(index + 1);
       placeButtons();
       save(index);

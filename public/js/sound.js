@@ -300,6 +300,62 @@ const sound = (() => {
     return dialect() === 'masri' ? load(`${name}-masri`).then(Boolean, () => false) : Promise.resolve(false);
   }
 
+  /* A text on the page that a recording says, kept to the father's rule
+     (2026-11-25): Fusha text never stands on the screen while the Egyptian
+     voice says it. caption(el, text, clip, how) puts the text in el and keeps
+     it right from then on:
+     - when the Egyptian recording is the one that plays (masri(clip)), the
+       text goes: with how.mark a speaker mark stands in its place (for a line
+       that is a button, or an instruction that stays up), and a tap on the
+       mark says the line again unless how.tap is false (the element already
+       says it when tapped); without how.mark the element is made invisible,
+       keeping its room so nothing jumps;
+     - otherwise the Fusha text shows.
+     On Egyptian the text waits unseen until the answer comes. It follows the
+     switch ('dialectchange'). A later caption() on the same element replaces
+     the earlier one. The clip is announced (uses), for the page's switch.
+     Returns a Promise of whether Egyptian plays. */
+  const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.6 8.6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  const captions = new Map(); // element -> { text, clip, how, asked }
+  function dress(el, entry) {
+    const mine = ++entry.asked;
+    const put = (spoken) => {
+      if (captions.get(el) !== entry || mine !== entry.asked) return spoken;
+      el.classList.remove('caption-wait');
+      if (spoken && entry.how.mark) {
+        if (!el.classList.contains('spoken-mark')) el.innerHTML = SPEAKER;
+        el.classList.add('spoken-mark');
+        el.classList.remove('caption-quiet');
+        el.setAttribute('aria-label', 'اِسْتَمِعْ');
+      } else {
+        if (el.classList.contains('spoken-mark') || el.textContent !== entry.text) el.textContent = entry.text;
+        el.classList.remove('spoken-mark');
+        el.removeAttribute('aria-label');
+        el.classList.toggle('caption-quiet', spoken);
+      }
+      return spoken;
+    };
+    if (dialect() === 'masri' && !el.classList.contains('spoken-mark')) el.classList.add('caption-wait');
+    else if (dialect() !== 'masri') put(false);
+    return masri(entry.clip).then((yes) => put(yes === true), () => put(false));
+  }
+  function caption(el, text, clip, how = {}) {
+    if (!el) return Promise.resolve(false);
+    const entry = { text: String(text), clip, how, asked: 0 };
+    if (!captions.has(el) && how.mark && how.tap !== false) {
+      el.addEventListener('click', () => {
+        const now = captions.get(el);
+        if (now && el.classList.contains('spoken-mark')) say(now.clip);
+      });
+    }
+    captions.set(el, entry);
+    uses(clip);
+    return dress(el, entry);
+  }
+  window.addEventListener('dialectchange', () => {
+    for (const [el, entry] of captions) dress(el, entry);
+  });
+
   function preloadPrompts(names) {
     uses(names);
     for (const name of names) for (const variant of variants(name)) load(variant);
@@ -875,7 +931,7 @@ const sound = (() => {
   });
 
   return {
-    preload, preloadPrompts, buffer, play, say, stop, pause, resume, paused, current, dialect, setDialect, masri, uses, twoDialects, unlock: warm,
+    preload, preloadPrompts, buffer, play, say, stop, pause, resume, paused, current, dialect, setDialect, masri, caption, uses, twoDialects, unlock: warm,
     chime, buzz, tick, click, honk, pop, blink, eagle, knock, ratchet, thud, splash, backup, drill, spray, pour, rev, zip, spark, ambience, engine, engineOff, wrong,
     /* The two building blocks, for a game that makes a sound of its own in its own file:
        tone(frequency, startsIn, length, volume, type, slideTo) and rush(frequency, startsIn, length, volume, q, slideTo). */

@@ -222,12 +222,20 @@ function award(count, x, y) {
    of them yet on the first launch after an update. */
 const beep = (name, ...values) => (typeof sound[name] === 'function' ? sound[name](...values) : undefined);
 
+/* A text that a recording says, by the father's rule (2026-11-25): it shows
+   only while its Fusha recording is the one that plays (sound.caption). An
+   older saved copy of sound.js may lack it: then the text simply shows. */
+const caption = (el, text, clip, how) => (typeof sound.caption === 'function'
+  ? sound.caption(el, text, clip, how)
+  : Promise.resolve((el.textContent = text, false)));
+
 /* A word at the top of the floor, shown and said. */
 let wordTimer = 0;
 function word(name, quiet = false) {
   const entry = WORDS[name];
   const pill = $('word');
-  pill.textContent = entry.text;
+  // Hidden, keeping its room, when the Egyptian recording is the one said.
+  caption(pill, entry.text, entry.clip);
   pill.hidden = false;
   clearTimeout(wordTimer);
   wordTimer = setTimeout(() => { pill.hidden = true; }, 2600);
