@@ -102,15 +102,18 @@ const salah = (() => {
   };
 
   const FETCH_MOST = 4000; // ms to wait for a recording to arrive
-  /* Plays a recording to its end and tells whether there was one. A prompt is
-     looked for in the family's dialect first. still() is asked just before
+  /* Plays a recording to its end and tells whether there was one. The salah
+     door is Fusha only, whatever the dialect switch says (the father,
+     2026-11-26: "Remove Egyptian text/recording from the Salah activity
+     altogether"), so <name>-masri is never looked for, even for a clip that
+     has one elsewhere (the qibla's place-masjid is the driving game's).
+     `prompt` is kept for the callers and changes nothing. still() is asked just before
      the sound starts: a page that has moved on meanwhile plays nothing, and
      neither does a hidden one. The wait is never longer than the recording
      itself. */
   function hear(name, { prompt = false, still = () => true } = {}) {
     if (typeof sound === 'undefined' || !name) return Promise.resolve(false);
-    const names = prompt && sound.dialect() === 'masri' ? [`${name}-masri`, name] : [name];
-    const found = names.reduce(
+    const found = [name].reduce(
       (chain, one) => chain.then((hit) => hit || sound.buffer(one).then((buffer) => (buffer ? { name: one, buffer } : null))),
       Promise.resolve(null),
     );

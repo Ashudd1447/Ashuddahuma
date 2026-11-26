@@ -253,7 +253,8 @@ salah.data().then((fetched) => {
 $('art-do').append(salah.picture(salah.STATIONS.qiyam));
 $('art-quiz').append(salah.quizArt(salah.STATIONS.ruku));
 salah.preload(ORDER);
-sound.preloadPrompts([TEXT.takbir.clip, TEXT.next.clip, TEXT.rakah[1].clip, TEXT.rakah[2].clip, ...new Set(ORDER.map((station) => station.clip))]);
+// Fusha only, as the whole salah door: preload, not preloadPrompts, so no dialect switch shows.
+sound.preload([TEXT.takbir.clip, TEXT.next.clip, TEXT.rakah[1].clip, TEXT.rakah[2].clip, ...new Set(ORDER.map((station) => station.clip))]);
 sound.preload([1, 2, 3, 4, 5, 6, 7].map((n) => `fatihah-${n}`).concat(
   ['salah-ruku', 'salah-sami', 'salah-rabbana', 'salah-sujud', 'salah-julus', 'salah-tashahhud', 'salah-ibrahimiyya', 'salah-salam', TEXT.praise.clip],
 ));

@@ -874,7 +874,8 @@ if (salah.LOCAL) {
 
 /* Start */
 $('takbir').append(salah.picture(salah.STATIONS.takbir));
-sound.preloadPrompts([salah.TEXT.takbir.clip, ...Object.values(PLACES).flatMap((place) => [place.nameClip, place.askClip])]);
+// Fusha only, as the whole salah door: preload, not preloadPrompts, so no dialect switch shows.
+sound.preload([salah.TEXT.takbir.clip, ...Object.values(PLACES).flatMap((place) => [place.nameClip, place.askClip])]);
 sound.preload([salah.TEXT.praise.clip]);
 layout();
 startRound(0);

@@ -1,6 +1,6 @@
 # The Egyptian wording, for review
 
-Every prompt the site can say in Egyptian: 145 of them. On screen the text is always Fusha; the Egyptian line is only read aloud when recording, and played when the ☰ menu's switch is on Egyptian. All of the Egyptian lines are Claude's drafts until a parent corrects them.
+Every prompt the site can say in Egyptian: 136 of them. On screen the text is always Fusha; the Egyptian line is only read aloud when recording, and played when the ☰ menu's switch is on Egyptian. All of the Egyptian lines are Claude's drafts until a parent corrects them.
 
 Where they live: the recording cards in `public/js/record.js` (each `-masri` card, and the lists `COUNT_MASRI` and `HOURS_MASRI` at its top), shown on the Record page (`/admin` → Record audio) beside their Fusha cards. Tell Claude what to change, or change the card; then `node tools/list-egyptian.js` writes this list again.
 
@@ -148,30 +148,6 @@ A prompt with no Egyptian card is said the same way in both settings (one record
 | The swinging sandbag: wait for the right moment | اِنْتَظِرِ اللَّحْظَةَ الْمُنَاسِبَةَ | استنى اللحظة المناسبة | `archery-wait-masri` |
 | Hit the three clay pots | أَصِبِ الْجِرَارَ الثَّلَاثَ | صيب التلات قلل | `archery-pots-masri` |
 | Choose where to stand | اِخْتَرْ مَكَانَ الْوُقُوفِ | اختار مكان الوقوف | `archery-place-masri` |
-
-## Salah: wudu
-
-| Said when | On screen (Fusha) | Egyptian, to say | Clip |
-|---|---|---|---|
-| The question of the "what comes next" quiz in wudu, the prayer and the five prayers | مَاذَا بَعْدُ؟ | إيه اللي بعد كده؟ | `whats-next-masri` |
-
-## Salah: the qibla
-
-| Said when | On screen (Fusha) | Egyptian, to say | Clip |
-|---|---|---|---|
-| In Makkah: face the Kaaba | اِتَّجِهْ نَحْوَ الْكَعْبَةِ | اتَّجه ناحية الكعبة | `qibla-kaaba-masri` |
-| In the masjid: face the mihrab | اِتَّجِهْ نَحْوَ الْمِحْرَابِ | اتَّجه ناحية المحراب | `qibla-mihrab-masri` |
-| At home: face the way the qibla arrow points | اِتَّجِهْ نَحْوَ الْقِبْلَةِ | اتَّجه ناحية القبلة | `qibla-sign-masri` |
-
-## Salah: the five prayers
-
-| Said when | On screen (Fusha) | Egyptian, to say | Clip |
-|---|---|---|---|
-| When Fajr is prayed: before sunrise | قَبْلَ شُرُوقِ الشَّمْسِ | قبل طلوع الشمس | `time-fajr-masri` |
-| When Dhuhr is prayed: in the middle of the day | فِي وَسَطِ النَّهَارِ | في نص النهار | `time-dhuhr-masri` |
-| When Asr is prayed: in the afternoon | بَعْدَ الظُّهْرِ | بعد الضهر | `time-asr-masri` |
-| When Maghrib is prayed: at sunset | عِنْدَ غُرُوبِ الشَّمْسِ | وقت غروب الشمس | `time-maghrib-masri` |
-| When Isha is prayed: at night | فِي اللَّيْلِ | بالليل | `time-isha-masri` |
 
 ## Numbers: صِلْ كُلَّ رَقْمٍ
 

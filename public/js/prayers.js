@@ -34,9 +34,8 @@
    circle of the day. Then أحسنت, and the cards.
 
    A line of words is marked while its recording plays, so he sees which words
-   he hears. A prayer's name has one recording for both dialect settings; its
-   time and the question are prompts, said in the family's dialect as
-   sound.say() says them. The words on screen are always Fusha.
+   he hears. Every line has one recording, in Fusha: the salah door has no
+   Egyptian (the father, 2026-11-26). The words on screen are always Fusha.
 
    The page stands on its own: it has the look of the door's other games but
    none of their code. Nothing here waits on a recording without a limit: a
@@ -49,8 +48,8 @@
   const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 
   /* What the child sees and hears: each prayer's name and its time of day,
-     with their recordings. clip is the name's one recording; timeClip is a
-     prompt, which may have an Egyptian twin. The parents approve every line. */
+     with their recordings. clip is the name's recording, timeClip the
+     time's. The parents approve every line. */
   const TIMES = [
     { id: 'fajr', name: 'صَلَاةُ الْفَجْرِ', clip: 'prayer-fajr', time: 'قَبْلَ شُرُوقِ الشَّمْسِ', timeClip: 'time-fajr' },
     { id: 'dhuhr', name: 'صَلَاةُ الظُّهْرِ', clip: 'prayer-dhuhr', time: 'فِي وَسَطِ النَّهَارِ', timeClip: 'time-dhuhr' },
@@ -108,18 +107,16 @@
   };
   const quiet = () => beep('stop');
 
-  /* Says a recording to its end and tells whether there was one. A prompt is
-     looked for in the family's dialect first (<name>-masri, then <name>), as
-     sound.say() does; anything else has the one recording. still() is
+  /* Says a recording to its end and tells whether there was one. Fusha only,
+     as the whole salah door is (the father, 2026-11-26): <name>-masri is never
+     looked for. `prompt` is kept for the callers and changes nothing. still() is
      asked just before the sound starts: a page that has moved on meanwhile
      says nothing, and neither does a hidden one. begin() is called as the
      sound starts. The wait is never longer than the recording and a moment
      more. */
   function hear(name, { prompt = true, still = () => true, begin = null } = {}) {
     if (typeof sound === 'undefined' || !name) return Promise.resolve(false);
-    const masri = prompt && typeof sound.dialect === 'function' && sound.dialect() === 'masri';
-    const names = masri ? [`${name}-masri`, name] : [name];
-    const found = names.reduce(
+    const found = [name].reduce(
       (chain, one) => chain.then((hit) => hit || sound.buffer(one).then((buffer) => (buffer ? { name: one, buffer } : null))),
       Promise.resolve(null),
     );
@@ -136,7 +133,7 @@
   /* Says a line of the page, and marks the line while its recording plays.
      One line is marked at a time: a saying that starts takes the mark from
      the one before, and each saying takes away only its own mark when it ends.
-     prompt: whether the recording may have an Egyptian twin. */
+     prompt: kept from when a prompt had an Egyptian twin; it changes nothing. */
   let marked = null; // { line, by }: the line marked now, and the saying that marked it
   function sayLine(line, clip, still, prompt = true) {
     const mine = {};
@@ -670,8 +667,8 @@
   stars();
   /* The recordings are fetched ahead of the first tap. */
   if (typeof sound !== 'undefined') {
-    if (typeof sound.preloadPrompts === 'function') sound.preloadPrompts([...TIMES.map((time) => time.timeClip), ASK.clip]);
-    if (typeof sound.preload === 'function') sound.preload([...TIMES.map((time) => time.clip), PRAISE]);
+    // Fusha only (no dialect switch on the page): preload, not preloadPrompts.
+    if (typeof sound.preload === 'function') sound.preload([...TIMES.map((time) => time.timeClip), ASK.clip, ...TIMES.map((time) => time.clip), PRAISE]);
   }
 
   /* For trying the game by hand on the family's computer. */

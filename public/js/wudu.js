@@ -183,7 +183,8 @@ const page = salah.twoParts({ root, names: ['wudu', 'wudu-quiz'], stations: WUDU
 $('art-do').append(salah.picture(WUDU[1]));
 $('art-quiz').append(salah.quizArt(WUDU[4]));
 salah.preload(WUDU);
-sound.preloadPrompts([...WUDU.map((station) => station.clip), salah.TEXT.next.clip]);
+// Fusha only, as the whole salah door: preload, not preloadPrompts, so no dialect switch shows.
+sound.preload([...WUDU.map((station) => station.clip), salah.TEXT.next.clip]);
 sound.preload([salah.TEXT.praise.clip]);
 
 /* For trying the game by hand on the family's computer. */
