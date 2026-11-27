@@ -334,6 +334,7 @@ let workletUrl = null;
 let lastMic = ''; // the microphone of the take before, to warn when it changes
 const takes = new Map(); // file: [take], every take of this computer's sittings
 const kept = new Map(); // file: the number of the take to write
+const chosen = new Map(); // file: when that take was chosen (recorded, or picked with "Keep this"), as an ISO time
 
 /* Kept on this computer between visits, as IQRA's intake keeps its session:
    every take (its WAV and its check), which take is kept for each card, and
@@ -364,10 +365,15 @@ const store = (() => {
     allTakes: () => run('takes', 'readonly', (s) => s.getAll()),
     get: (key) => run('meta', 'readonly', (s) => s.get(key)),
     put: (key, value) => run('meta', 'readwrite', (s) => s.put(value, key)),
-    clear: async () => { await run('takes', 'readwrite', (s) => s.clear()); await run('meta', 'readwrite', (s) => s.delete('kept')); },
+    clear: async () => { await run('takes', 'readwrite', (s) => s.clear()); await run('meta', 'readwrite', (s) => s.delete('kept')); await run('meta', 'readwrite', (s) => s.delete('chosen')); },
   };
 })();
-const saveKept = () => store.put('kept', [...kept]).catch(() => {});
+const saveKept = () => Promise.all([store.put('kept', [...kept]), store.put('chosen', [...chosen])]).catch(() => {});
+const keep = (file, no, at = new Date().toISOString()) => {
+  kept.set(file, no);
+  chosen.set(file, at);
+  saveKept();
+};
 
 /* Capture */
 async function startRecording(deviceId) {
@@ -589,9 +595,8 @@ async function stopRecording(slot) {
   }
   list.push(take);
   takes.set(slot.file, list);
-  kept.set(slot.file, take.no);
   store.putTake(slot.file, take).catch(() => setStatus('This take could not be kept on the computer: write it to the folder before closing the page.'));
-  saveKept();
+  keep(slot.file, take.no, take.recordedAt);
   render();
   levelAdvice();
   setStatus(`Take ${take.no} of ${slot.file}: ${duration.toFixed(2)} s, peak ${take.peak.toFixed(1)} dBFS${take.check.notes.length ? ', ' + take.check.notes.join(', ') : ''}.`);
@@ -709,7 +714,16 @@ function downloadTake(slot, take) {
   setTimeout(() => URL.revokeObjectURL(link.href), 30000);
 }
 
-/* Writing into public/audio with the File System Access API (Chrome, Edge). */
+/* Writing into public/audio with the File System Access API (Chrome, Edge).
+   Only what is new goes in. The takes stay on the computer after they are
+   written, so on 2026-11-27 a second sitting's Write wrote the first
+   sitting's takes again, cards hidden as recorded included, over the files
+   that had been cut since (tools/trim-audio.js). Now a kept take is written
+   only when its file is missing, or when the take was chosen (recorded, or
+   picked with "Keep this") after the file in the folder was last changed: a
+   file that is the same as the take, or newer than it (written before, cut
+   by a tool, put back from git), is left as it is. A card recorded again
+   replaces its file only after a yes. */
 async function writeAll() {
   if (typeof window.showDirectoryPicker !== 'function') {
     setStatus('This browser cannot write into a folder. Use Chrome or Edge on a computer, or download each take.');
@@ -717,22 +731,46 @@ async function writeAll() {
   }
   const dir = await folder(false);
   if (!dir) return;
-  const written = [];
-  const replaced = [];
+  setStatus('Comparing the kept takes with the folder…');
+  const fresh = [];
+  const again = [];
+  let same = 0;
+  let newer = 0;
   for (const slot of slots) {
     const take = keptTake(slot);
     if (!take) continue;
     const name = `${slot.file}.wav`;
-    const there = await dir.getFileHandle(name).then(() => true, () => false);
+    const there = await dir.getFileHandle(name).then((handle) => handle.getFile(), () => null);
+    if (!there) fresh.push({ name, take });
+    else if (await sameBytes(there, take.blob)) same++;
+    else if (there.lastModified >= (Date.parse(chosen.get(slot.file) || take.recordedAt || '') || 0)) newer++;
+    else again.push({ name, take });
+  }
+  const replace = again.length && confirm(`${again.length} card(s) were recorded again, or given another kept take, after their file was written:\n\n${again.map((w) => w.name).join(', ')}\n\nReplace these files with the new takes? (Cancel writes only the files that are not in the folder yet.)`) ? again : [];
+  const written = [];
+  for (const { name, take } of [...fresh, ...replace]) {
     const handle = await dir.getFileHandle(name, { create: true });
     const stream = await handle.createWritable();
     await stream.write(take.blob);
     await stream.close();
     written.push(name);
-    if (there) replaced.push(name);
   }
-  $('written').textContent = written.length ? `Written: ${written.join(', ')}${replaced.length ? `. Replaced: ${replaced.join(', ')}` : ''}` : 'Nothing to write yet.';
-  setStatus(written.length ? `Wrote ${written.length} file(s) into ${dir.name}${replaced.length ? `, ${replaced.length} of them replacing a file already there` : ''}.` : 'No kept takes to write.');
+  const lines = [];
+  if (fresh.length) lines.push(`New: ${fresh.map((w) => w.name).join(', ')}.`);
+  if (replace.length) lines.push(`Replaced (recorded again): ${replace.map((w) => w.name).join(', ')}.`);
+  if (again.length && !replace.length) lines.push(`Not replaced (you chose Cancel): ${again.map((w) => w.name).join(', ')}.`);
+  if (same + newer) lines.push(`Left as they are: ${same + newer} file(s) already in the folder${newer ? `, ${newer} of them newer than the kept take (cut or put back since it was written)` : ''}.`);
+  $('written').textContent = lines.join(' ') || 'Nothing to write yet.';
+  setStatus(written.length ? `Wrote ${written.length} file(s) into ${dir.name}: ${fresh.length} new${replace.length ? `, ${replace.length} replacing a file` : ''}.`
+    : same + newer + again.length ? `Nothing new to write into ${dir.name}.` : 'No kept takes to write.');
+}
+
+/* Whether a file in the folder holds exactly a take's bytes. */
+async function sameBytes(file, blob) {
+  if (file.size !== blob.size) return false;
+  const [a, b] = (await Promise.all([file.arrayBuffer(), blob.arrayBuffer()])).map((buffer) => new Uint8Array(buffer));
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
 }
 
 /* The folder to write into: the one used last time, asked for again only
@@ -820,7 +858,7 @@ function render() {
       if (button.dataset.rec) toggleRecording(slot);
       else if (button.dataset.play) togglePlay(slot, take(button.dataset.play));
       else if (button.dataset.stop) stopPlayback();
-      else if (button.dataset.keep) { kept.set(slot.file, Number(button.dataset.keep)); saveKept(); render(); levelAdvice(); }
+      else if (button.dataset.keep) { keep(slot.file, Number(button.dataset.keep)); render(); levelAdvice(); }
       else if (button.dataset.download) downloadTake(slot, take(button.dataset.download));
     });
     root.append(card);
@@ -962,6 +1000,7 @@ async function restore() {
       takes.set(take.file, list);
     }
     for (const [file, no] of (await store.get('kept')) || []) if (takes.has(file)) kept.set(file, no);
+    for (const [file, at] of (await store.get('chosen')) || []) if (kept.has(file)) chosen.set(file, at);
     const count = [...takes.values()].reduce((n, list) => n + list.length, 0);
     if (count) setStatus(`${count} take(s) from earlier sittings are back on their cards. Write the kept ones to the folder, or discard them.`);
   } catch {
@@ -977,6 +1016,7 @@ async function discard() {
   await store.clear().catch(() => {});
   takes.clear();
   kept.clear();
+  chosen.clear();
   render();
   levelAdvice();
   setStatus('Saved takes discarded.');
