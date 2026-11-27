@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>اِجْمَعْ وَعُدَّ</title>
+<link rel="icon" href="images/logo.webp">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="أَشُدَّهُمَا">
+<meta name="theme-color" content="#FEF9EF">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/sheets.css">
+<link rel="stylesheet" href="css/collect.css">
+</head>
+<body class="sheet-page" data-hub="think">
+<div class="sheet" id="sheet" data-hub="think">
+  <header class="sheet-head">
+    <a id="home" href="think.html" aria-label="فَكِّرْ"><img class="logo" src="images/logo.webp" alt=""></a>
+    <button class="sheet-line" id="line" type="button"></button>
+    <!-- On Egyptian the Fusha words wait unseen until sound.caption knows which recording will play. -->
+    <script>try { if (localStorage.getItem('dialect') === 'masri') document.getElementById('line').classList.add('caption-wait'); } catch (e) { /* no storage: Fusha */ }</script>
+  </header>
+  <main class="sheet-board" id="board">
+    <div class="sheet-slot co-slot" id="slot"></div>
+    <section class="sheet-end" id="end" hidden>
+      <div class="sheet-crown">
+        <svg class="sheet-khatim" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2L64.1 16.1L83.9 16.1L83.9 35.9L98 50L83.9 64.1L83.9 83.9L64.1 83.9L50 98L35.9 83.9L16.1 83.9L16.1 64.1L2 50L16.1 35.9L16.1 16.1L35.9 16.1Z"/></svg>
+        <p class="sheet-praise" id="praise">أحسنت</p>
+      </div>
+      <div class="sheet-buttons" id="buttons" hidden>
+        <a class="round sheet-go" id="to-hub" href="think.html" aria-label="فَكِّرْ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg></a>
+        <button class="round" id="again" type="button" aria-label="مَرَّةً أُخْرَى"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </section>
+  </main>
+  <nav class="sheet-nav" id="nav">
+    <button class="nav-btn" id="prev" type="button" aria-label="السَّابِقُ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="sheet-marks" id="marks" aria-hidden="true"></div>
+    <button class="nav-btn" id="replay" type="button" aria-label="مِنْ جَدِيدٍ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="nav-btn nav-next" id="next" type="button" aria-label="التَّالِي"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </nav>
+</div>
+<script src="js/app.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/collect-words.js"></script>
+<script src="js/collect.js"></script>
+</body>
+</html>

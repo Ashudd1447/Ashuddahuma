@@ -1,6 +1,6 @@
 # The Egyptian wording, for review
 
-Every prompt the site can say in Egyptian: 136 of them. When the switch is on Egyptian and a line's Egyptian recording exists, that recording plays and its Egyptian text, exactly as on the card, shows in place of the Fusha (the father, 2026-11-26): record each line as the card reads, or change the card first. The salah door is Fusha only. All of the Egyptian lines are Claude's drafts until a parent corrects them.
+Every prompt the site can say in Egyptian: 185 of them. When the switch is on Egyptian and a line's Egyptian recording exists, that recording plays and its Egyptian text, exactly as on the card, shows in place of the Fusha (the father, 2026-11-26): record each line as the card reads, or change the card first. The salah door is Fusha only. All of the Egyptian lines are Claude's drafts until a parent corrects them.
 
 Where they live: the recording cards in `public/js/record.js` (each `-masri` card, and the lists `COUNT_MASRI` and `HOURS_MASRI` at its top), shown on the Record page (`/admin` → Record audio) beside their Fusha cards. Tell Claude what to change, or change the card; then `node tools/list-egyptian.js` writes this list again.
 
@@ -201,3 +201,62 @@ A prompt with no Egyptian card is said the same way in both settings (one record
 | Question: where is the plane? | أَيْنَ الطَّائِرَةُ؟ | فين الطيارة؟ | `where-q-plane-masri` |
 | Question: which picture? | أَيُّ صُورَةٍ؟ | أنهي صورة؟ | `where-which-masri` |
 | Question: listen and move it | اِسْمَعْ وَحَرِّكْ | اسمع وحرّك | `where-put-masri` |
+
+## Thinking: رَتِّبِ الدَّوَائِرَ
+
+| Said when | On screen (Fusha) | Egyptian, to say | Clip |
+|---|---|---|---|
+| The color board, said when it opens and when the line is tapped: arrange the circles as in the picture (Fusha; the words the father gave) | رَتِّبِ الدَّوَائِرَ كَمَا فِي الصُّورَةِ | رتب الدوائر زي الصورة | `circles-line-masri` |
+
+## Thinking: اِجْمَعْ وَعُدَّ
+
+| Said when | On screen (Fusha) | Egyptian, to say | Clip |
+|---|---|---|---|
+| Round 1 of 50. Load the train | اِجْمَعْ ثَلَاثَ دَوَائِرَ | لِمّ تلات دواير | `collect-3-circle-masri` |
+| Round 2 of 50. How many? (night sky) | كَمْ مُثَلَّثًا؟ | كام مثلث؟ | `howmany-triangle-masri` |
+| Round 3 of 50. Catch the bubbles | اِلْتَقِطْ ثَلَاثَةَ نُجُومٍ | امسك تلات نجوم | `catch-3-star-masri` |
+| Round 4 of 50. Build the picture | اِبْنِ الشَّجَرَةَ | ابني الشجرة | `build-tree-masri` |
+| Round 5 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَكْثَرُ: الدَّوَائِرُ أَمِ الْمُرَبَّعَاتُ؟ | مين أكتر: الدواير ولا المربعات؟ | `more-circle-square-masri` |
+| Round 6 of 50. Load the train | اِجْمَعْ أَرْبَعَةَ مُرَبَّعَاتٍ حَمْرَاءَ | لِمّ أربع مربعات حمرا | `collect-4-square-red-masri` |
+| Round 7 of 50. How many? (night sky) | كَمْ نَجْمًا أَصْفَرَ؟ | كام نجمة صفرا؟ | `howmany-star-yellow-masri` |
+| Round 8 of 50. Catch the bubbles | اِلْتَقِطْ أَرْبَعَةَ قُلُوبٍ حَمْرَاءَ | امسك أربع قلوب حمرا | `catch-4-heart-red-masri` |
+| Round 9 of 50. Build the picture | اِبْنِ الْبَيْتَ | ابني البيت | `build-house-masri` |
+| Round 10 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَقَلُّ: النُّجُومُ أَمِ الْأَهِلَّةُ؟ | مين أقل: النجوم ولا الأهلّة؟ | `fewer-star-crescent-masri` |
+| Round 11 of 50. Load the train | اِجْمَعْ ثَلَاثَةَ مُثَلَّثَاتٍ كَبِيرَةٍ | لِمّ تلات مثلثات كبيرة | `collect-3-triangle-large-masri` |
+| Round 12 of 50. How many? (night sky) | كَمْ دَائِرَةً صَغِيرَةً؟ | كام دايرة صغيرة؟ | `howmany-circle-small-masri` |
+| Round 13 of 50. Catch the bubbles | اِلْتَقِطْ خَمْسَةَ أَشْكَالٍ زَرْقَاءَ | امسك خمس أشكال زرقا | `catch-5-shape-blue-masri` |
+| Round 14 of 50. Build the picture | اِبْنِ السَّيَّارَةَ | ابني العربية | `build-car-masri` |
+| Round 15 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَكْثَرُ: الْأَشْكَالُ الْحَمْرَاءُ أَمِ الزَّرْقَاءُ؟ | مين أكتر: الأشكال الحمرا ولا الزرقا؟ | `more-red-blue-masri` |
+| Round 16 of 50. Load the train | اِجْمَعْ دَائِرَتَيْنِ حَمْرَاوَيْنِ وَمُرَبَّعًا أَزْرَقَ | لِمّ دايرتين حُمر ومربع أزرق | `collect-2-circle-red-and-1-square-blue-masri` |
+| Round 17 of 50. How many? (night sky) | كَمْ قَلْبًا كَبِيرًا؟ | كام قلب كبير؟ | `howmany-heart-large-masri` |
+| Round 18 of 50. Catch the bubbles | اِلْتَقِطْ أَرْبَعَةَ نُجُومٍ صَغِيرَةٍ | امسك أربع نجوم صغيرة | `catch-4-star-small-masri` |
+| Round 19 of 50. Build the picture | اِبْنِ الْمُثَلَّجَاتِ | ابني الآيس كريم | `build-icecream-masri` |
+| Round 20 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَكْثَرُ: الْأَشْكَالُ الْكَبِيرَةُ أَمِ الصَّغِيرَةُ؟ | مين أكتر: الأشكال الكبيرة ولا الصغيرة؟ | `more-large-small-masri` |
+| Round 21 of 50. Load the train | اِجْمَعْ ثَلَاثَ دَوَائِرَ كَبِيرَةٍ حَمْرَاءَ | لِمّ تلات دواير كبيرة حمرا | `collect-3-circle-large-red-masri` |
+| Round 22 of 50. How many? (night sky) | كَمْ مُرَبَّعًا أَزْرَقَ؟ | كام مربع أزرق؟ | `howmany-square-blue-masri` |
+| Round 23 of 50. Catch the bubbles | اِلْتَقِطْ خَمْسَةَ أَهِلَّةٍ صَفْرَاءَ | امسك خمس أهلّة صفرا | `catch-5-crescent-yellow-masri` |
+| Round 24 of 50. Build the picture | اِبْنِ الْقَارِبَ | ابني المركب | `build-boat-masri` |
+| Round 25 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَقَلُّ: الْمُثَلَّثَاتُ أَمِ الْمُرَبَّعَاتُ؟ | مين أقل: المثلثات ولا المربعات؟ | `fewer-triangle-square-masri` |
+| Round 26 of 50. Load the train | اِجْمَعْ ثَلَاثَةَ نُجُومٍ صَغِيرَةٍ وَقَلْبَيْنِ كَبِيرَيْنِ | لِمّ تلات نجوم صغيرة وقلبين كبار | `collect-3-star-small-and-2-heart-large-masri` |
+| Round 27 of 50. How many? (night sky) | كَمْ نَجْمًا كَبِيرًا أَصْفَرَ؟ | كام نجمة كبيرة صفرا؟ | `howmany-star-large-yellow-masri` |
+| Round 28 of 50. Catch the bubbles | اِلْتَقِطْ سِتَّةَ أَشْكَالٍ صَغِيرَةٍ حَمْرَاءَ | امسك ست أشكال صغيرة حمرا | `catch-6-shape-small-red-masri` |
+| Round 29 of 50. Build the picture | اِبْنِ الصَّارُوخَ | ابني الصاروخ | `build-rocket-masri` |
+| Round 30 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَقَلُّ: الْأَشْكَالُ الْخَضْرَاءُ أَمِ الصَّفْرَاءُ؟ | مين أقل: الأشكال الخضرا ولا الصفرا؟ | `fewer-green-yellow-masri` |
+| Round 31 of 50. Load the train | اِجْمَعْ سِتَّةَ مُسْتَطِيلَاتٍ بُرْتُقَالِيَّةٍ | لِمّ ست مستطيلات برتقاني | `collect-6-rectangle-orange-masri` |
+| Round 32 of 50. How many? (night sky) | كَمْ مُثَلَّثًا أَزْرَقَ؟ | كام مثلث أزرق؟ | `howmany-triangle-blue-masri` |
+| Round 33 of 50. Catch the bubbles | اِلْتَقِطْ خَمْسَ دَوَائِرَ كَبِيرَةٍ خَضْرَاءَ | امسك خمس دواير كبيرة خضرا | `catch-5-circle-large-green-masri` |
+| Round 34 of 50. Build the picture | اِبْنِ الْفَانُوسَ | ابني الفانوس | `build-lantern-masri` |
+| Round 35 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَكْثَرُ: الْقُلُوبُ أَمِ الْأَهِلَّةُ؟ | مين أكتر: القلوب ولا الأهلّة؟ | `more-heart-crescent-masri` |
+| Round 36 of 50. Load the train | اِجْمَعْ أَرْبَعَةَ مُرَبَّعَاتٍ حَمْرَاءَ وَثَلَاثَةَ مُثَلَّثَاتٍ خَضْرَاءَ | لِمّ أربع مربعات حمرا وتلات مثلثات خضرا | `collect-4-square-red-and-3-triangle-green-masri` |
+| Round 37 of 50. How many? (night sky) | كَمْ قَلْبًا صَغِيرًا بَنَفْسَجِيًّا؟ | كام قلب صغير بنفسجي؟ | `howmany-heart-small-purple-masri` |
+| Round 38 of 50. Catch the bubbles | اِلْتَقِطْ سِتَّةَ نُجُومٍ كَبِيرَةٍ بَنَفْسَجِيَّةٍ | امسك ست نجوم كبيرة بنفسجي | `catch-6-star-large-purple-masri` |
+| Round 39 of 50. Build the picture | اِبْنِ الْمَسْجِدَ | ابني المسجد | `build-masjid-masri` |
+| Round 40 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَقَلُّ: الْأَشْكَالُ الْكَبِيرَةُ أَمِ الصَّغِيرَةُ؟ | مين أقل: الأشكال الكبيرة ولا الصغيرة؟ | `fewer-large-small-masri` |
+| Round 41 of 50. Load the train | اِجْمَعْ دَائِرَتَيْنِ كَبِيرَتَيْنِ زَرْقَاوَيْنِ وَمُثَلَّثًا صَغِيرًا أَحْمَرَ | لِمّ دايرتين كبار زُرق ومثلث صغير أحمر | `collect-2-circle-large-blue-and-1-triangle-small-red-masri` |
+| Round 42 of 50. How many? (night sky) | كَمْ مُسْتَطِيلًا بُرْتُقَالِيًّا؟ | كام مستطيل برتقاني؟ | `howmany-rectangle-orange-masri` |
+| Round 43 of 50. Catch the bubbles | اِلْتَقِطْ سَبْعَةَ قُلُوبٍ حَمْرَاءَ | امسك سبع قلوب حمرا | `catch-7-heart-red-masri` |
+| Round 45 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَكْثَرُ: الْمُثَلَّثَاتُ أَمِ الْمُسْتَطِيلَاتُ؟ | مين أكتر: المثلثات ولا المستطيلات؟ | `more-triangle-rectangle-masri` |
+| Round 46 of 50. Load the train | اِجْمَعْ دَائِرَةً حَمْرَاءَ وَمُرَبَّعَيْنِ أَزْرَقَيْنِ وَثَلَاثَةَ نُجُومٍ صَفْرَاءَ | لِمّ دايرة حمرا ومربعين زُرق وتلات نجوم صفرا | `collect-1-circle-red-and-2-square-blue-and-3-star-yellow-masri` |
+| Round 47 of 50. How many? (night sky) | كَمْ دَائِرَةً صَغِيرَةً حَمْرَاءَ؟ | كام دايرة صغيرة حمرا؟ | `howmany-circle-small-red-masri` |
+| Round 48 of 50. Catch the bubbles | اِلْتَقِطْ ثَمَانِيَةَ أَشْكَالٍ كَبِيرَةٍ | امسك تمن أشكال كبيرة | `catch-8-shape-large-masri` |
+| Round 50 of 50. Which are more (or fewer)? (night sky) | أَيُّهُمَا أَكْثَرُ: الْأَشْكَالُ الْحَمْرَاءُ أَمِ الْبَنَفْسَجِيَّةُ؟ | مين أكتر: الأشكال الحمرا ولا البنفسجي؟ | `more-red-purple-masri` |

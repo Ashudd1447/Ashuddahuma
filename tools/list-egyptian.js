@@ -9,8 +9,9 @@
    Nothing is typed here: the words are read out of the recording cards in
    public/js/record.js, which is where they live. A correction goes into the
    card there (the `-masri` entry, or COUNT_MASRI and HOURS_MASRI; for
-   أَيْنَ؟, the `masri` words in public/js/where-words.js), and this list is
-   then written again. */
+   أَيْنَ؟, the `masri` words in public/js/where-words.js; for اِجْمَعْ وَعُدَّ, the
+   `masri` words in public/js/collect-words.js), and this list is then
+   written again. */
 const fs = require('fs');
 const path = require('path');
 
@@ -32,10 +33,12 @@ for (let i = text.indexOf('[', start); i < text.length; i++) {
     }
   }
 }
-/* The sentences of أَيْنَ؟ live in where-words.js, which record.html loads
-   before record.js: load it the same way here. */
+/* The sentences of أَيْنَ؟ live in where-words.js, and those of اِجْمَعْ وَعُدَّ in
+   collect-words.js, which record.html loads before record.js: load them the
+   same way here. */
 global.window = global.window || {};
 require(path.join(here, 'public', 'js', 'where-words.js'));
+require(path.join(here, 'public', 'js', 'collect-words.js'));
 const slots = new Function(`${text.slice(from, end)}; return STATIC_SLOTS;`)();
 const byFile = new Map(slots.map((slot) => [slot.file, slot]));
 

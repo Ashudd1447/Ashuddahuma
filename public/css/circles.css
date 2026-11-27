@@ -1,0 +1,12 @@
+/* «رَتِّبِ الدَّوَائِرَ» (circles.html, js/circles.js): the wooden color board. The page
+   wears the books' games' frame (css/sheets.css); this is what sits on its
+   paper. Everything on the board is drawn into one svg by circles.js. */
+.ci-slot.ci-in{animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+.ci-art{position:absolute;inset:0;display:block;width:100%;height:100%;touch-action:none}
+.ci-art text{font-family:"Noto Naskh Arabic","Geeza Pro",serif;font-weight:700;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+
+/* The bulb: it comes out on the card's corner after ten wrong moves, pulses three times, and stays */
+.round.ci-hint{position:absolute;z-index:2;display:block;padding:0;background:#FFF3CF;color:#B07A1E;box-shadow:0 0 0 3px #F2B84B,var(--shadow)}
+.round.ci-hint svg{width:60%;height:60%;margin:auto}
+.round.ci-hint.ci-pulse{animation:ci-pulse .9s ease-in-out 3}
+@keyframes ci-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.22)}}

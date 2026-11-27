@@ -46,6 +46,23 @@ function whereSlots() {
     ...pair(W.clip.put, W.asks.put.text, W.asks.put.masri, 'Question: listen and move it'),
   ];
 }
+/* اِجْمَعْ وَعُدَّ: every round's sentence in collect-words.js, which record.html
+   loads first, in Fusha and in Egyptian. A sentence asked in two rounds has
+   one card. */
+function collectSlots() {
+  const C = window.COLLECT_WORDS;
+  if (!C) return [];
+  const group = 'Thinking: اِجْمَعْ وَعُدَّ';
+  const what = { train: 'Load the train', count: 'How many? (night sky)', catch: 'Catch the bubbles', build: 'Build the picture', compare: 'Which are more (or fewer)? (night sky)' };
+  const seen = new Set();
+  return C.rounds.filter((r) => !seen.has(r.clip) && seen.add(r.clip)).flatMap((r) => {
+    const note = `Round ${r.index + 1} of ${C.rounds.length}. ${what[r.kind]}`;
+    return [
+      { group, file: r.clip, text: r.text, note: `${note} (Fusha)` },
+      { group, file: `${r.clip}-masri`, text: r.masri, note: `${note} (Egyptian: shown and said exactly as written here)` },
+    ];
+  });
+}
 const STATIC_SLOTS = [
   { group: 'Reciter prompts', file: 'read-it', text: 'الْآنَ اقْرَأْهَا أَنْتَ', note: 'After an ayah: now you read it (Fusha)' },
   { group: 'Reciter prompts', file: 'read-it-masri', text: 'دلوقتي اقراها أنت', note: 'After an ayah: now you read it (Egyptian: shown and said exactly as written here)' },
@@ -274,6 +291,9 @@ const STATIC_SLOTS = [
     { group: 'Numbers: صِلْ كُلَّ رَقْمٍ', file: `en-${i + 1}`, text: word, note: `The 1 2 3 batch: the number ${i + 1} said in English (spoken only, never shown)` }
   )),
   ...whereSlots(),
+  { group: 'Thinking: رَتِّبِ الدَّوَائِرَ', file: 'circles-line', text: 'رَتِّبِ الدَّوَائِرَ كَمَا فِي الصُّورَةِ', note: 'The color board, said when it opens and when the line is tapped: arrange the circles as in the picture (Fusha; the words the father gave)' },
+  { group: 'Thinking: رَتِّبِ الدَّوَائِرَ', file: 'circles-line-masri', text: 'رتب الدوائر زي الصورة', note: 'Arrange the circles like the picture (Egyptian, the words the father gave: shown and said exactly as written here)' },
+  ...collectSlots(),
 ];
 
 const WORKLET_SOURCE = `

@@ -1,0 +1,88 @@
+/* «اِجْمَعْ وَعُدَّ» (collect.html, js/collect.js): five little games that take
+   turns: a train to load, shapes to count under a night sky, bubbles to
+   pop, a picture to build, two kinds to compare. The page wears the books'
+   games' frame (css/sheets.css); this is what sits on its paper. --t is a
+   seat, a jar's place or an answer, --u a large shape lying about, both set
+   by collect.js for the paper's size. */
+.co-slot{--t:72px;--u:80px;transition:background .4s ease}
+.co-slot.co-in{animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+
+/* A shape: dragged or flown to its place, wobbling when it is not asked for, lit when counted */
+.co-item{position:absolute;z-index:2;cursor:grab;touch-action:none;transition:left .45s cubic-bezier(.3,.7,.2,1),top .45s cubic-bezier(.3,.7,.2,1),width .45s ease,height .45s ease}
+.co-item svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.co-item.co-drag{z-index:20;transition:none;cursor:grabbing}
+.co-item.co-drag svg{scale:1.1}
+.co-item.co-in-tray{z-index:4;cursor:pointer}
+.co-item.co-no{animation:co-no .44s ease-in-out}
+@keyframes co-no{20%{translate:-8px 0}50%{translate:8px 0}80%{translate:-3px 0}}
+.co-item::before{content:"";position:absolute;inset:-8%;border-radius:50%;background:#FFE7A0;opacity:0;transform:scale(.5);transition:opacity .18s ease,transform .18s ease}
+.co-item.co-lit::before{opacity:1;transform:scale(1)}
+.co-item.co-chosen{z-index:19}
+.co-item.co-chosen::before{opacity:1;transform:scale(1.08);background:none;box-shadow:0 0 0 4px #F2B84B}
+.co-item.co-chosen svg{translate:0 -6%}
+.co-place{position:relative;flex:none;width:var(--t);height:var(--t);border-radius:22%;background:rgba(255,255,255,.75);box-shadow:inset 0 2px 5px rgba(80,50,20,.18)}
+
+/* The train: an engine and a wagon per kind, one empty seat per shape, on rails */
+.co-rails{position:absolute;z-index:1;background:repeating-linear-gradient(90deg,#8A6A45 0 6px,transparent 6px 22px),linear-gradient(#9AA1AB 0 30%,transparent 30% 70%,#9AA1AB 70%);border-radius:2px}
+.co-train{position:absolute;z-index:3;display:flex;align-items:flex-end;gap:calc(var(--t) * .2);direction:ltr;cursor:pointer;will-change:transform}
+.co-loco{flex:none;width:calc(var(--t) * 2.4);height:calc(var(--t) * 2);margin-bottom:calc(var(--t) * -.02)}
+.co-wagon{position:relative;flex:none;display:flex;flex-direction:column;align-items:center}
+.co-seats{display:flex;gap:calc(var(--t) * .12);padding:0 calc(var(--t) * .2);margin-bottom:calc(var(--t) * -.06)}
+.co-seats .co-place{background:rgba(255,255,255,.85);border-radius:18%;box-shadow:inset 0 2px 5px rgba(80,50,20,.18),0 0 0 2px rgba(36,39,47,.15)}
+.co-bed{align-self:stretch;height:calc(var(--t) * .42);border-radius:6px;background:var(--paint);box-shadow:inset 0 0 0 3px #24272F}
+.co-wheels{align-self:stretch;display:flex;justify-content:space-around;height:calc(var(--t) * .4)}
+.co-wheels i{width:calc(var(--t) * .4);height:calc(var(--t) * .4);margin-top:calc(var(--t) * -.06);border-radius:50%;background:radial-gradient(#C9CFD6 0 20%,#4A4F5C 22%);box-shadow:0 0 0 2px #24272F}
+.co-item.co-seated{z-index:1;transition:none;cursor:default}
+
+/* The night sky of the count and compare rounds: the shapes glow and twinkle */
+.co-slot.co-mode-count,.co-slot.co-mode-compare{background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.7) 0 1px,transparent 2px) 0 0/90px 70px,radial-gradient(circle at 70% 60%,rgba(255,255,255,.5) 0 1px,transparent 2px) 0 0/130px 110px,linear-gradient(#1E2A5A,#2E3F7C 70%,#3B4E8E)}
+.co-item.co-glow svg{filter:drop-shadow(0 0 6px rgba(255,255,255,.35));animation:co-twinkle 3.2s ease-in-out infinite;animation-delay:var(--delay,0s)}
+@keyframes co-twinkle{50%{scale:1.06}}
+.co-item.co-glow{cursor:pointer}
+.co-badge{position:absolute;z-index:1;top:-14%;left:-14%;display:none;place-items:center;width:max(46%,22px);height:max(46%,22px);border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px #fff;color:#fff;font-weight:700;font-size:max(calc(var(--u) * .25),13px);line-height:1;pointer-events:none}
+.co-item.co-marked .co-badge{display:grid}
+.co-item.co-marked::before{opacity:1;transform:scale(1.05);background:radial-gradient(rgba(255,236,150,.9),rgba(255,236,150,0) 70%)}
+.co-item.co-marked[data-group="1"] .co-badge{background:#C26A12}
+.co-item.co-marked[data-group="1"]::before{background:radial-gradient(rgba(150,220,255,.9),rgba(150,220,255,0) 70%)}
+.co-sparkle .co-item.co-marked svg{animation:co-hop .5s ease-out 2}
+@keyframes co-hop{40%{translate:0 -14%;scale:1.12}}
+.co-answers{position:absolute;z-index:3;display:flex;align-items:center;justify-content:center;gap:calc(var(--t) * .35);border-radius:22px;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.co-answers.co-side{flex-direction:column}
+.co-tile{flex:none;display:grid;place-items:center;width:var(--t);height:var(--t);padding:0;box-sizing:border-box;border-radius:24%;border:3px solid #F2B84B;background:#fff;box-shadow:0 4px 0 #B07A1E;color:#1F2433;font-weight:700;font-size:calc(var(--t) * .58);line-height:1;transition:background .2s ease,color .2s ease,opacity .2s ease}
+.co-tile svg{width:74%;height:74%}
+.co-tile.co-right{background:#35A85A;border-color:#1D7435;color:#fff}
+.co-tile.co-faded{opacity:.3}
+.co-tile.co-no{animation:co-no .44s ease-in-out}
+
+/* Bubbles over the water, and the jar their shapes drop into */
+.co-slot.co-mode-catch{background:linear-gradient(#E4F6FF,#BFE6F7 60%,#9BD4EE)}
+.co-bubble{position:absolute;left:0;top:0;z-index:2;border-radius:50%;cursor:pointer;touch-action:none;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.95) 0 9%,rgba(255,255,255,.25) 10% 45%,rgba(160,215,245,.25) 70%,rgba(255,255,255,.55) 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.85),0 4px 10px rgba(30,90,130,.12);will-change:transform}
+.co-in-bubble{position:absolute;left:50%;top:50%;width:var(--shape,64%);height:var(--shape,64%);translate:-50% -50%;pointer-events:none}
+.co-in-bubble svg{display:block;width:100%;height:100%;overflow:visible}
+.co-bubble.co-no{animation:co-no .44s ease-in-out}
+.co-bubble.co-popped{animation:co-pop .3s ease-out forwards;pointer-events:none}
+@keyframes co-pop{to{scale:1.5;opacity:0}}
+.co-jar{position:absolute;z-index:3;display:flex;border-radius:18px 18px 30px 30px;background:linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.25) 40%,rgba(255,255,255,.5));box-shadow:inset 0 0 0 3px rgba(255,255,255,.9),0 6px 16px rgba(30,90,130,.18);cursor:pointer}
+.co-jar-in{flex:1;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:calc(var(--t) * .2);max-width:calc(var(--per,6) * var(--t) * 1.2 + var(--t) * .6);margin:auto;padding:calc(var(--t) * .3)}
+.co-jar .co-place{background:rgba(255,255,255,.5)}
+
+/* Building: the outlines, the shelf of pieces, and the picture coming alive */
+.co-slot.co-mode-build{background:linear-gradient(#FFFDF6,#F7F0E2)}
+/* The picture makes no layer of its own, so its outlines (above) and the pieces set on them (below) share the paper's */
+.co-picture{position:absolute}
+.co-outline{position:absolute;inset:0;z-index:15;width:100%;height:100%;overflow:visible;pointer-events:none}
+.co-shelf{position:absolute;z-index:0;border-radius:22px;background:#F1E4CC;box-shadow:inset 0 0 0 3px #E2CDA6,inset 0 8px 16px rgba(120,80,30,.1)}
+.co-item.co-piece{z-index:3}
+.co-item.co-set{cursor:default}
+.co-picture.co-drive{animation:co-drive 2.2s cubic-bezier(.5,0,.9,.6) forwards}
+@keyframes co-drive{15%{translate:0 -2%}100%{translate:var(--away) 0}}
+.co-picture.co-launch{animation:co-launch 2.2s cubic-bezier(.5,0,.9,.5) forwards}
+@keyframes co-launch{10%{translate:-1% 0}20%{translate:1% 0}30%{translate:0 0}100%{translate:0 var(--up)}}
+.co-picture.co-launch::after{content:"";position:absolute;left:38%;right:38%;top:96%;height:30%;border-radius:0 0 50% 50%;background:linear-gradient(#FFD45E,#F58A2B 60%,rgba(245,138,43,0));animation:co-flame .15s ease-in-out infinite alternate}
+@keyframes co-flame{to{scale:1 1.25}}
+.co-picture.co-sail{animation:co-sail 2.4s ease-in forwards}
+@keyframes co-sail{20%{translate:0 -2%;rotate:-2deg}40%{translate:-6% 1%;rotate:2deg}100%{translate:var(--away) 0;rotate:0deg}}
+.co-picture.co-shine{animation:co-shine 1.6s ease-in-out 2}
+@keyframes co-shine{50%{scale:1.06;filter:drop-shadow(0 0 18px rgba(255,214,90,.95))}}
+.co-picture.co-pop{animation:co-bounce .6s ease-out 3}
+@keyframes co-bounce{30%{translate:0 -6%;scale:1.05}60%{translate:0 0;scale:.98}}

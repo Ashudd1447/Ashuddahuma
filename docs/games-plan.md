@@ -299,6 +299,57 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 
 **Claude's suggestions for the prayer door, asked for and not built:** the number of rak'at of each prayer (a counting game: 2, 4, 4, 3, 4); "hear it, find it" once he knows what is said (a zikr plays, he touches its posture); the adhan as the call that opens each prayer's time; what comes before the prayer (clean clothes and place, wudu, the time, the qibla) as a short checklist game; the du'a after wudu and the surah after Al-Fatihah when the parents choose them.
 
+## 10. Two games for `فَكِّرْ` (2026-11-26): the color board and `اِجْمَعْ وَعُدَّ`
+
+**What he asked for.** With a photo of the family's wooden toy (a LiKee color slide puzzle: a ring binder of cards above a board of four columns of colored discs): "Make me a game like this. 33 cards. Ascending difficulty. Appropriate for a 4 year old. House under ألعاب > فكر", the voice saying `رتب الدوائر كما في الصورة` and `رتب الدوائر زي الصورة`. And: "a game which combines maths, shapes, and colors in ascending difficulty. Start by collect/select three circles, then advance to four red squares, etc. Use your intelligence to design the game, the progression, etc. This also goes under فكر."
+
+**What was built** is described in `CLAUDE.md` (`circles.html`, `collect.html`). Both stand first on the `فَكِّرْ` door, before the books' games. Nothing was committed or deployed.
+
+**The color board, Claude's choices**
+- The board works as the toy does: a column holds five discs, the fifth in the lane across the top, and a disc resting in the lane closes the way past its column. On the screen the board stands up, so a disc falls to the bottom of its column. A move can be dragged (the disc follows the finger inside the grooves, never through another disc) or tapped (tap a column, its top disc rises; tap another, it slides there; a blocked way gives a knock and the disc comes back).
+- Each card starts from a mixed board a known number of moves away: one move for cards 1 to 4, two for 5 to 8, and so on to nine for card 33 (`tools/make-circles.js` finds them with a full search, three boards per card, one picked at random). The toy instead starts each card from the board the last card left; that cannot be kept easy at the start. The cards: whole columns (the photo's card first), rows, squares, blocks, L, T and S shapes, slanted stripes, then patterns where each color is scattered.
+- The light bulb shows the next move of a shortest way (a dotted path and a ring), and breathes after 25 seconds without a move. The card's number shows small in its corner, for the parents. `مِنَ الْبِدَايَةِ` in the ☰ menu starts over; the card reached is kept.
+
+**`اِجْمَعْ وَعُدَّ`, Claude's design.** Eight stages of five rounds. A tap on a shape that is asked for sends it to the tray and says its number; any other wobbles with the buzzer. There are always one to three more of the shapes asked for than asked, so he must count and stop.
+1. A shape, all one color (three circles first, as he said): circle, square, triangle; one to three; the tray's places show the shape's outline.
+2. A shape in four colors (the color does not matter); two to five; outlines.
+3. A color, any shape (`ثَلَاثَةَ أَشْكَالٍ حَمْرَاءَ`); the places show the color.
+4. A shape and a color (his `أَرْبَعَةَ مُرَبَّعَاتٍ حَمْرَاءَ` first); empty places.
+5. New shapes and colors: star, heart, crescent, rectangle, orange, purple; up to six; the places show the new shape, the color is only heard.
+6. No places: he collects and presses ✓ when he thinks he has enough; too few or too many gives the buzzer and the tray is counted aloud; a tap on a shape in the tray puts it back. Up to eight.
+7. Two kinds at once (`دَائِرَتَيْنِ حَمْرَاوَيْنِ وَمُرَبَّعًا أَزْرَقَ`).
+8. `كَمْ …؟`: a tap marks each one with its number; then he presses the number among three.
+
+**For the parents to check**
+1. The color board: starting each card from a mixed board a few moves away (Claude's choice) or, as with the toy, from the last card's board; whether nine moves is too hard for the last cards, or too easy; the hint bulb; drag and tap both.
+2. The two titles on the door: `رَتِّبِ الدَّوَائِرَ` and `اِجْمَعْ وَعُدَّ`.
+3. Every sentence of `اِجْمَعْ وَعُدَّ` (40, listed in `docs/egyptian-names.md` beside the Egyptian, and on the Record page). Two grammar points: a color after a plural of things is written feminine singular (`مُرَبَّعَاتٍ حَمْرَاءَ`; `مُرَبَّعَاتٍ حُمْرٍ` is also correct), and the star is `نَجْم` / `نُجُوم` in Fusha (masculine, so `ثَلَاثَةَ نُجُومٍ`) and `نجمة` / `نجوم` in Egyptian.
+4. The Egyptian verb: `لِمّ` (collect) for `اِجْمَعْ`; `هات` (bring) would also fit.
+5. (Replaced by round two below.) The stages, five rounds each.
+6. (Replaced by round two below.) Recordings.
+
+**His second round, the same night** (after playing the color board past half way, on the laptop): "The circle board game is too easy … He has to dig it up and move things around"; the hint only after 10 wrong moves, gone again after it is used, pulsing three times and then still; adaptive ("skip a level when the user gets it right away", faster in the early stages, "Still don't start with 1 move … Maybe start with 3"), 50 boards with most of the additions at the hard end; arrows between boards and replaying a board. For `اِجْمَعْ وَعُدَّ`: the tray's outlines gave the answer away ("You ask for 5 red squares and the empty slots … are all square-shaped") or looked as if they did (dotted circles that took triangles): only the number of places; "boringly easy", so the same skipping and harder rounds; "3 large red circles"; "put 3 purple squares under the table"; "Almost change the tested subject every card"; drag as well as tap; and the Egyptian text of every instruction.
+
+**What changed** (described in `CLAUDE.md`): the color board has 50 new boards (3 to 20 moves, each chosen for the most digging there is at its length), skipping ahead (3 boards at a time among the first ten when solved with at most about one wrong move in seven and no hint, 2 among the next fifteen, 1 after), the bulb earned by ten wrong moves (a wrong move: one after which the fewest moves left are not fewer), and the bar of arrows under the paper. `اِجْمَعْ وَعُدَّ` was redone as 60 rounds of four kinds that take turns (collect, put in a scene, count, compare), with sizes and negations; plain places; drag or tap; the same skipping and arrows; every sentence written in both dialects by the same grammar tables. Nothing was committed or deployed.
+
+**For the parents to check, round two**
+1. The color board: whether board 1 (3 moves, 1 of them digging) is a good start, and whether the jumps (3, then 2, then 1) suit him. A wrong move is one that does not bring the board nearer its card.
+2. `اِجْمَعْ وَعُدَّ`: the 60 sentences (`docs/egyptian-names.md`, or the Record page). Grammar to confirm: `ثَلَاثَ دَوَائِرَ لَيْسَتْ حَمْرَاءَ`, `أَرْبَعَةَ أَشْكَالٍ لَيْسَتْ دَوَائِرَ`, `ثَلَاثَ دَوَائِرَ كَبِيرَةٍ حَمْرَاءَ` (size before color), `أَيُّهُمَا أَكْثَرُ: الْأَشْكَالُ الْحَمْرَاءُ أَمِ الزَّرْقَاءُ؟`. Egyptian: `لِمّ`, `حُطّ`, `جوّه السبت` (as in `أَيْنَ؟`), `كبار` / `صغيرين` after two, `مين أكتر … ولا …؟`.
+3. The places: on and under the table, in the box, in the basket. «بَيْنَ» and «بِجَانِبِ» were left out: on a phone the gap between two things is too small to drop several shapes into, and «بِجَانِبِ» has two sides.
+4. A round with no places at all (he says when he has enough, with ✓) was in the first version; it was left out of this one, as the father wants the number of places shown. It can come back as one kind among the others.
+5. Recordings: `circles-line` and the 60 sentences, each in both dialects (122 cards).
+
+**His third round, the same night.** The color board: "good. No comments/edits." `اِجْمَعْ وَعُدَّ`: a screenshot of «ثَلَاثَةَ مُثَلَّثَاتٍ كَبِيرَةٍ صَفْرَاءَ» with no small triangle on the screen ("the prompt is confusing/redundant. Fix systematically"); and "now more difficult but it's not fun … trying to make it difficult without it being mentally stimulating. Three non-red circles for example. Don't like that patterns. Make it more fun for a 4 year old. I struggle to keep him away from video game style games. Boring educational games don't help … Edit as you see best." He will review this round before anything is deployed.
+
+**What changed** (described in `CLAUDE.md`): the rounds are five little games that take turns, each with something that moves and answers back: a train that rolls in, is loaded and whistles away; counting under a twinkling night sky; bubbles to pop as they rise, their shapes dropping into a jar; pictures to build from shapes (tree, house, car, ice cream, boat, rocket, lantern, masjid) that come alive when whole; comparing under the night sky. The negations are gone, and so are the table, box and basket rounds (the least game-like). Every trait a sentence names has look-alikes on the screen that differ in just that. 50 rounds, 48 sentences to record.
+
+**For the parents to check, round three**
+1. Is it fun now? Which of the five does he like, and which would he skip? More of one kind is easy to give.
+2. The pictures and how they come alive; the bubbles' pace (tier by tier, 9 s, 7.5 s, 6 s to cross the screen).
+3. The words: `اِلْتَقِطْ` (catch) / `امسك`, `اِبْنِ` (build) / `ابني`, the pictures' names (`الْمُثَلَّجَاتِ` / `الآيس كريم`, `الْقَارِبَ` / `المركب`, `الْفَانُوسَ`, `الْمَسْجِدَ` / `المسجد`).
+4. Places («تَحْتَ الطَّاوِلَةِ») could come back inside the building rounds ("put the triangle on the square") if he wants them.
+5. Recordings: `circles-line` and 48 sentences, each in both dialects (98 cards).
+
 ## What the stars are for (open, 2026-11-22)
 
 The father: the counter never ends ("If he plays this long enough, it will be a million? He's not really winning anything"), and should there be some competing, and some losing? Ideas were given, and no code changes until he chooses:

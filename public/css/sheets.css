@@ -11,6 +11,8 @@
 .sheet-cards .game-card .art{border-top:1px solid var(--line);pointer-events:none}
 .sheet-star{position:absolute;bottom:8px;left:8px;width:clamp(30px,8vw,42px);height:clamp(30px,8vw,42px);padding:5px;border-radius:50%;background:#fff;box-shadow:var(--shadow)}
 .sheet-star svg{display:block;width:100%;height:100%;fill:var(--gold)}
+/* A door's own games, drawn by their own scripts, stand before the books' (think.html) */
+.own-cards{display:contents}
 
 /* A game: nothing scrolls. The logo and the instruction, the paper, and the strip of marks under it */
 .sheet-page{overscroll-behavior:none}
@@ -27,6 +29,19 @@
 .sheet-marks i{flex:0 1 12px;min-width:4px;height:8px;border-radius:999px;background:var(--line)}
 .sheet-marks i.done{background:var(--accent)}
 .sheet-marks i.now{height:12px;background:var(--accent-pale);box-shadow:inset 0 0 0 2px var(--accent)}
+/* The bar under the paper in the games that let a child move between rounds
+   (the color board, اِجْمَعْ وَعُدَّ): the round before on the right, the marks,
+   this round again, and the next round in green on the left */
+.sheet-nav{flex:none;display:flex;align-items:center;gap:10px;width:100%;max-width:980px}
+.sheet-nav .sheet-marks{flex:1;min-width:0;gap:3px;overflow:hidden}
+.sheet-nav .sheet-marks i{min-width:2px}
+.nav-btn{flex:none;display:grid;place-items:center;width:46px;height:46px;padding:0;border:0;border-radius:50%;background:var(--surface);color:var(--deep);box-shadow:var(--shadow);transition:transform .15s ease}
+.nav-btn svg{width:56%;height:56%}
+.nav-btn.nav-next{background:#35A85A;color:#fff}
+.nav-btn:disabled{opacity:.35;box-shadow:none;cursor:default}
+.nav-btn:active:not(:disabled){transform:scale(.94)}
+.sheet.ended .sheet-nav{visibility:hidden}
+@media (max-height:480px){.nav-btn{width:38px;height:38px}}
 /* After the last round: the praise, then the two buttons */
 .sheet-end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,3cqh,28px)}
 /* The praise stands on an eight-pointed star, sized by the paper */
