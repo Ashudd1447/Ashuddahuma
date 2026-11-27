@@ -1,6 +1,6 @@
 # The Egyptian wording, for review
 
-Every prompt the site can say in Egyptian: 185 of them. When the switch is on Egyptian and a line's Egyptian recording exists, that recording plays and its Egyptian text, exactly as on the card, shows in place of the Fusha (the father, 2026-11-26): record each line as the card reads, or change the card first. The salah door is Fusha only. All of the Egyptian lines are Claude's drafts until a parent corrects them.
+Every prompt the site can say in Egyptian: 187 of them. When the switch is on Egyptian and a line's Egyptian recording exists, that recording plays and its Egyptian text, exactly as on the card, shows in place of the Fusha (the father, 2026-11-26): record each line as the card reads, or change the card first. The salah door is Fusha only. All of the Egyptian lines are Claude's drafts until a parent corrects them.
 
 Where they live: the recording cards in `public/js/record.js` (each `-masri` card, and the lists `COUNT_MASRI` and `HOURS_MASRI` at its top), shown on the Record page (`/admin` → Record audio) beside their Fusha cards. Tell Claude what to change, or change the card; then `node tools/list-egyptian.js` writes this list again.
 
@@ -138,6 +138,13 @@ A prompt with no Egyptian card is said the same way in both settings (one record
 | Bring the light to the crystal | أَوْصِلِ الضَّوْءَ إِلَى الْبِلَّوْرَةِ | وصَّل النور للبلورة | `light-crystal-masri` |
 | Light bounces from mirror to mirror | الضَّوْءُ يَنْعَكِسُ مِنْ مِرْآةٍ إِلَى مِرْآةٍ | النور بينعكس من مراية لمراية | `light-mirrors-masri` |
 | Move the mirror and turn it | حَرِّكِ الْمِرْآةَ وَأَدِرْهَا | حرَّك المراية ولِفَّها | `light-slide-masri` |
+
+## Lab: the balance
+
+| Said when | On screen (Fusha) | Egyptian, to say | Clip |
+|---|---|---|---|
+| The balance: make the two pans equal. The one instruction of every level, said when the game opens and when the line is tapped | اِجْعَلِ الْكِفَّتَيْنِ مُتَسَاوِيَتَيْنِ | خلّي الكفتين متساويين | `balance-line-masri` |
+| The two pans are equal: said when the beam comes level | تَسَاوَتِ الْكِفَّتَانِ | الكفتين اتساووا | `balance-equal-masri` |
 
 ## Archery
 

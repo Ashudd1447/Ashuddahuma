@@ -350,6 +350,24 @@ The block puzzle (`الْمُكَعَّبَاتُ`), the clock (`السَّاع�
 4. Places («تَحْتَ الطَّاوِلَةِ») could come back inside the building rounds ("put the triangle on the square") if he wants them.
 5. Recordings: `circles-line` and 48 sentences, each in both dialects (98 cards).
 
+## 11. The lab's water and weight games (2026-11-27): first `الْمِيزَانُ`
+
+**What he asked for.** The draft "Ashuddahuma — Water & Weight Game Ideas" (made with Claude in chat on 2026-11-26, kept outside the repo beside it) describes three games under `الْمُخْتَبَرُ`: the balance, the water wheel, loading a boat. "ONE GAME AT A TIME", in both dialects, pictures from Recraft, not too easy (with skipping ahead as in the color board), and levels he can move back and forth through himself. He chose: the ayah Ar-Rahman 55:9 opens the game (read by a parent); the balance stands on a lab bench.
+
+**The first version was sent back the same day** (after five or six rounds): glasses of different shapes holding the same water, half glasses, pouring until the sides equalize, a big glass worth two small ones mixed in early ("He can't predict that, and doesn't learn anything from it. Units must be equal"); the clay jug and qulla, a painted room with objects beside the pans, curved pans holding flat cups; guessing which side is heavier ("The goal of EVERY game/level here is to achieve balance"); moves allowed in some rounds and not others; an empty cup told from a full one by color; pouring out into a basin ("unnecessary for this game"). He asked for an outline first, then said "Build".
+
+**The second version** (described in `CLAUDE.md`): a modern classroom pan balance (Recraft, 5 credits) with flat trays on posts; every cup the same and always full; a double cup only from level 29, the same cup exactly twice as tall with a line round its middle; every level is to balance; any cup from anywhere to anywhere; every cup moves the beam; a number on each tray, seen only. Two lines to record instead of sixteen.
+
+**For him to check**
+1. Is the double cup crystal clear (same width, twice as tall, a white line where one cup's worth ends, the tray's number counting it as two)? It starts at level 29, alone against single cups.
+2. Any way that balances counts. In level 3 (two cups against none) he can add two or move one; both are right. Skipping ahead needs a solve within one move of the fewest.
+3. A tap only makes a cup hop; every move is a drag. A tap that sends a cup somewhere would be quicker for small fingers, but it would have to guess where.
+4. On a phone held upright the balance is small (the cups about 20 pixels wide); on the tablet they are about 55.
+5. The words: `اِجْعَلِ الْكِفَّتَيْنِ مُتَسَاوِيَتَيْنِ` / `خلّي الكفتين متساويين`, and `تَسَاوَتِ الْكِفَّتَانِ` / `الكفتين اتساووا`.
+6. Pouring puzzles, his question: the measuring jugs (3 and 5 make 4) he set aside as too advanced at 4; the water-sort puzzle (colored water poured between tubes until each holds one color) is Claude's suggestion for a game of its own later.
+
+**Still to come**: the water wheel and the boat, one at a time, when he says.
+
 ## What the stars are for (open, 2026-11-22)
 
 The father: the counter never ends ("If he plays this long enough, it will be a million? He's not really winning anything"), and should there be some competing, and some losing? Ideas were given, and no code changes until he chooses:

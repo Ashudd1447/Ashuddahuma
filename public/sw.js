@@ -14,7 +14,7 @@
    costs a quick question per file rather than the whole site again.
    A page asked for with a query (story.html?s=<id>) is found offline even if
    it was never opened online: the saved page without the query is used. */
-const CACHE = 'ashudd-2026-11-27T15:54Z'; // the version: the time of the deploy, stamped by tools/prepare-deploy.py; the home page shows it as a date
+const CACHE = 'ashudd-2026-11-27T18:03Z'; // the version: the time of the deploy, stamped by tools/prepare-deploy.py; the home page shows it as a date
 const FILES = [
   '/',
   '/arabic.html',
@@ -56,6 +56,7 @@ const FILES = [
   '/js/typing.js',
   '/js/story.js',
   '/quran/fatihah.json',
+  '/quran/rahman-9.json',
   '/dua/riding.json',
   '/mazes/mazes.json',
   '/typing/layouts.json',
@@ -612,11 +613,16 @@ const FILES = [
   '/archery.html',
   '/css/archery.css',
   '/css/light.css',
+  '/css/balance.css',
   '/css/prayers.css',
   '/css/salah.css',
   '/css/sheets.css',
   '/dua/archery.json',
   '/images/doors/microscope.webp',
+  '/images/balance/stand.webp',
+  '/images/balance/beam.webp',
+  '/images/balance/tray.webp',
+  '/images/balance/card.webp',
   '/images/doors/numbers.webp',
   '/images/doors/think.webp',
   '/images/mazes/balloon.png',
@@ -657,6 +663,8 @@ const FILES = [
   '/images/sports/archer.webp',
   '/js/archery.js',
   '/js/light.js',
+  '/js/balance-engine.js',
+  '/js/balance.js',
   '/js/pray.js',
   '/js/prayers.js',
   '/js/qibla.js',
@@ -665,6 +673,7 @@ const FILES = [
   '/js/wudu.js',
   '/lab.html',
   '/light.html',
+  '/balance.html',
   '/numbers.html',
   '/match.html',
   '/js/match.js',

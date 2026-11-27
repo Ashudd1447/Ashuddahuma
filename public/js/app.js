@@ -218,7 +218,7 @@ function buildExit() {
   link.href = {
     blocks: hub, clock: hub, drive: hub, making: hub, mazes: hub, typing: hub, think: hub,
     circles: 'think.html', collect: 'think.html',
-    build: 'making.html', factory: 'making.html', light: 'lab.html', archery: 'sports.html', qibla: 'salah.html', wudu: 'salah.html', pray: 'salah.html', prayers: 'salah.html',
+    build: 'making.html', factory: 'making.html', light: 'lab.html', balance: 'lab.html', archery: 'sports.html', qibla: 'salah.html', wudu: 'salah.html', pray: 'salah.html', prayers: 'salah.html',
     /* A worksheet game belongs to one of two doors; sheets.js points this at the right one once it knows the game. */
     sheet: 'numbers.html', match: 'numbers.html',
     reading: 'arabic.html', where: 'arabic.html',
